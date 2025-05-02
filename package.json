@@ -1,0 +1,43 @@
+{
+  "name": "msh-backoffice",
+  "version": "1.0.0",
+  "description": "Back office of MSH app",
+  "homepage": "https://github.com/Dadou1985/MSH-BackOffice#readme",
+  "bugs": {
+    "url": "https://github.com/Dadou1985/MSH-BackOffice/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dadou1985/MSH-BackOffice.git"
+  },
+  "license": "ISC",
+  "author": "David Simba",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "build:watch": "webpack --mode development --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:check": "eslint . --check",
+    "lint:fix:check": "eslint . --fix --check",
+    "lint:fix:check:all": "eslint . --fix --check --ext .js,.jsx,.ts,.tsx",
+    "lint:fix:check:all:all": "eslint . --fix --check --ext .js,.jsx,.ts,.tsx --ignore-pattern node_modules/"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "tsx": "^4.19.4"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.3.0",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.1"
+  }
+}
