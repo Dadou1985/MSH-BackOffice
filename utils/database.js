@@ -1,9 +1,10 @@
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const admin = require('firebase-admin');
-const serviceAccount = require('./firebasServiceAccountKey.json'); // Chemin vers ton fichier clé privée
 
-const password = encodeURIComponent("Bec2gaz-2025-05!");
+const dbUser = encodeURIComponent(process.env.DB_USER);
+const dbPassword = encodeURIComponent(process.env.DB_PASSWORD);
+const dbName = process.env.DB_NAME;
 
 // Initialise Firestore
 admin.initializeApp({
@@ -11,7 +12,7 @@ admin.initializeApp({
   });
 const firestore = admin.firestore();
 
-const uri = `mongodb+srv://daddou:${password}@cluster0.at0smnc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://${dbUser}:${dbPassword}@cluster0.at0smnc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -32,7 +33,7 @@ const mongoConnect = async () => {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    await client.db(dbName).command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
@@ -43,7 +44,7 @@ const mongoConnect = async () => {
 const migrate = async () => {
     try {
       await client.connect();
-      const db = client.db('mshDb'); // nom de ta base MongoDB
+      const db = client.db(dbName); // nom de ta base MongoDB
       const collection = db.collection('guestUsers');
   
       const snapshot = await firestore.collection('guestUsers').get();
@@ -89,7 +90,7 @@ async function getSubCollectionsData(docRef) {
 const deepMigration = async () => {
   try {
     await client.connect();
-    const db = client.db('mshDb'); // nom de ta base MongoDB
+    const db = client.db(dbName); // nom de ta base MongoDB
     const collection = db.collection('usersInDepth');
 
     const snapshot = await firestore.collection('guestUsers').get();
