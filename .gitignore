@@ -29,4 +29,4 @@ typings/
 .env.*.local
 
 # Mac files
-.DS_Storeutils/firebasServiceAccountKey.json
+.DS_Store
