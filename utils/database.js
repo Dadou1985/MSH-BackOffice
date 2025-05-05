@@ -1,21 +1,23 @@
+import mongoose from 'mongoose';
+import { MongoClient, ServerApiVersion } from 'mongodb';
+import admin from 'firebase-admin'
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const admin = require('firebase-admin');
-
-const dbUser = encodeURIComponent(process.env.DB_USER);
-const dbPassword = encodeURIComponent(process.env.DB_PASSWORD);
+const mongoDbUri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME;
 
 // Initialise Firestore
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
-const firestore = admin.firestore();
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount)
+//   });
+// const firestore = admin.firestore();
 
-const uri = `mongodb+srv://${dbUser}:${dbPassword}@cluster0.at0smnc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+if (!mongoDbUri) {
+  throw new Error('MongoDB URI is not defined in the environment variables.');
+}
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
+const client = new MongoClient(mongoDbUri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -29,15 +31,22 @@ const mongoDatabase = dbName;
 const mongoCollection = 'hotels';
 
 const mongoConnect = async () => {
+  // try {
+  //   // Connect the client to the server	(optional starting in v4.7)
+  //   await client.connect();
+  //   // Send a ping to confirm a successful connection
+  //   await client.db(dbName).command({ ping: 1 });
+  //   console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  // } finally {
+  //   // Ensures that the client will close when you finish/error
+  //   await client.close();
+  // }
+
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db(dbName).command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+    await mongoose.connect(mongoDbUri);
+    console.log('Connecté à MongoDB avec Mongoose');
+  } catch (error) {
+    console.error('Erreur de connexion à MongoDB:', error);
   }
 }
 
@@ -173,7 +182,4 @@ const largeMigration = async () => {
 }
 
 
-module.exports.mongoConnect = mongoConnect;
-module.exports.migrate = migrate;
-module.exports.deepMigration = deepMigration;
-module.exports.largeMigration = largeMigration;
+export { mongoConnect, migrate, deepMigration, largeMigration };

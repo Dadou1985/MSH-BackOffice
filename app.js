@@ -1,6 +1,6 @@
 import express from 'express';
-// import mongoose from 'mongoose';
 import { PORT } from './config/env.js';
+import { mongoConnect } from './utils/database.js';
 
 const app = express();
 // const mongoFunctions = require('./utils/database');
@@ -11,9 +11,19 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, async () => {
+    try {
+        await mongoConnect();
+        console.log('MongoDB connected');
+    } catch (error) {
+        console.error('MongoDB connection error:', error);
     }
-);
+
+    if (process.env.NODE_ENV === 'development') {
+        console.log(`Server is running in development mode`);
+    } else {
+        console.log(`Server is running in production mode`);
+    }
+});
 
 export default app;
