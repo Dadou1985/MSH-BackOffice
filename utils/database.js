@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
 
 const BATCH_SIZE = 500;
 const firestoreCollection = 'hotels';
-const mongoDatabase = 'mshDb';
+const mongoDatabase = dbName;
 const mongoCollection = 'hotels';
 
 const mongoConnect = async () => {
