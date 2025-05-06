@@ -15,11 +15,8 @@ const itemSchema = new mongoose.Schema({
     }
 });
 
-const checklistSchema = new mongoose.Schema({
+export const checklistSchema = new mongoose.Schema({
     matin: [itemSchema],
     nuit: [itemSchema],
     soir: [itemSchema]
 });
-
-const Checklist = mongoose.model('Checklist', checklistSchema);
-export default Checklist;

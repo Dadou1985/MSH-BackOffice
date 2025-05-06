@@ -35,7 +35,7 @@ const chatRoomSchema = new mongoose.Schema({
     }
 });
 
-const chatSchema = new mongoose.Schema({
+export const chatSchema = new mongoose.Schema({
     clientFullName: { type: String, required: true },
     checkoutDate: {
         type: String, // Peut être vide, à valider si nécessaire
@@ -79,6 +79,3 @@ const chatSchema = new mongoose.Schema({
       },
       chatRoom: [chatRoomSchema]
 });
-
-const Chat = mongoose.model('Chat', chatSchema);
-export default Chat;

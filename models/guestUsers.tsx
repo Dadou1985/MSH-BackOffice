@@ -36,5 +36,5 @@ const guestUserSchema = new mongoose.Schema({
   hotelVisitedArray: [{ type: String }]
 });
 
-const GuestUser = mongoose.model('User', guestUserSchema);
+const GuestUser = mongoose.model('GuestUser', guestUserSchema, 'guestUsers');
 export default GuestUser;

@@ -27,5 +27,5 @@ const businessUserSchema = new mongoose.Schema({
   hotelRegion: { type: String }
 });
 
-const BusinessUser = mongoose.model('User', businessUserSchema);
+const BusinessUser = mongoose.model('BusinessUser', businessUserSchema, 'businessUsers');
 export default BusinessUser;

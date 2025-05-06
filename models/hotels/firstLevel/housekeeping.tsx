@@ -23,7 +23,7 @@ const itemSchema = new mongoose.Schema({
       }
 });
 
-const housekeepingSchema = new mongoose.Schema({
+export const housekeepingSchema = new mongoose.Schema({
   towel: [itemSchema],
   pillow: [itemSchema],
   iron: [itemSchema],
@@ -33,6 +33,3 @@ const housekeepingSchema = new mongoose.Schema({
   hairDryer: [itemSchema],
   babyBed: [itemSchema],
 });
-
-const Housekeeping = mongoose.model('Housekeeping', housekeepingSchema);
-export default Housekeeping;
