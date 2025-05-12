@@ -13,10 +13,6 @@ const chatRoomSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    markup: {
-        type: Number,
-        required: true
-    },
     photo: {
         type: String,
         default: null
@@ -33,9 +29,9 @@ const chatRoomSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-});
+}, { timestamps: true });
 
-const chatSchema = new mongoose.Schema({
+export const chatSchema = new mongoose.Schema({
     clientFullName: { type: String, required: true },
     checkoutDate: {
         type: String, // Peut être vide, à valider si nécessaire
@@ -52,10 +48,6 @@ const chatSchema = new mongoose.Schema({
       isChatting: {
         type: Boolean,
         default: false
-      },
-      markup: {
-        type: Number,
-        required: true
       },
       room: {
         type: String,
@@ -78,7 +70,4 @@ const chatSchema = new mongoose.Schema({
         required: true
       },
       chatRoom: [chatRoomSchema]
-});
-
-const Chat = mongoose.model('Chat', chatSchema);
-export default Chat;
+}, { timestamps: true });

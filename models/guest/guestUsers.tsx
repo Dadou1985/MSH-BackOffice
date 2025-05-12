@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
+import { journeySchema } from './first level/journey';
+import { tokenSchema } from './first level/token';
 
 const guestUserSchema = new mongoose.Schema({
-  _id: { type: String, required: true },
   notificationStatus: { type: String, default: 'default' },
   gender: { type: String },
   photo: { type: String, default: null },
@@ -33,8 +34,11 @@ const guestUserSchema = new mongoose.Schema({
   classement: { type: String },
   city: { type: String },
   logo: { type: String },
-  hotelVisitedArray: [{ type: String }]
-});
+  hotelVisitedArray: [{ type: String }],
+  journeyId: { type: String },
+  journey: [journeySchema], // Attention : corrige si c’est une faute
+  token: [tokenSchema], // Attention : corrige si c’est une faute
+}, { timestamps: true });
 
-const GuestUser = mongoose.model('User', guestUserSchema);
+const GuestUser = mongoose.model('guestUser', guestUserSchema, 'guestUsers');
 export default GuestUser;

@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const businessUserSchema = new mongoose.Schema({
-  _id: { type: String, required: true },
   country: { type: String },
   createdAt: { type: Date },
   username: { type: String },
@@ -25,7 +24,7 @@ const businessUserSchema = new mongoose.Schema({
   hotelName: { type: String },
   room: { type: String },
   hotelRegion: { type: String }
-});
+}, { timestamps: true });
 
-const BusinessUser = mongoose.model('User', businessUserSchema);
+const BusinessUser = mongoose.model('businessUser', businessUserSchema, 'businessUsers');
 export default BusinessUser;

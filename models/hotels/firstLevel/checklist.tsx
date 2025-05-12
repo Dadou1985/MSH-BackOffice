@@ -5,21 +5,14 @@ const itemSchema = new mongoose.Schema({
     type: String,
     required: true
     },
-    markup: {
-    type: Number,
-    required: true
-    },
     status: {
     type: Boolean,
     required: true
     }
-});
+}, { timestamps: true });   
 
-const checklistSchema = new mongoose.Schema({
+export const checklistSchema = new mongoose.Schema({
     matin: [itemSchema],
     nuit: [itemSchema],
     soir: [itemSchema]
 });
-
-const Checklist = mongoose.model('Checklist', checklistSchema);
-export default Checklist;

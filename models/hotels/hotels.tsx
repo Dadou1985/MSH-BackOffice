@@ -8,17 +8,16 @@ import {
   noteSchema, 
   stickerSchema, 
   lostAndFoundSchema
- } from './firstLevel/firstLevel';
-import Chat from './firstLevel/chat';
-import Checklist from './firstLevel/checklist';
-import Housekeeping from './firstLevel/housekeeping';
+} from './firstLevel/firstLevel';
+import { chatSchema } from './firstLevel/chat';
+import { checklistSchema } from './firstLevel/checklist';
+import { housekeepingSchema } from './firstLevel/housekeeping';
 
 const hotelSchema = new mongoose.Schema({
     country: { type: String, required: true },
     code_postal: { type: String, required: true },
     partnership: { type: Boolean, required: true },
     departement: { type: String, required: true },
-    markup: { type: Number, required: true }, // Timestamp probable
     mail: { type: String, required: true },
     city: { type: String, required: true },
     classement: { type: String, required: true }, // Ex: "2 étoiles"
@@ -40,9 +39,9 @@ const hotelSchema = new mongoose.Schema({
     note: [noteSchema],
     sticker: [stickerSchema],
     lostAndFound: [lostAndFoundSchema],
-    chat: [Chat],
-    housekeeping: [Housekeeping],
-    checklist: [Checklist]       // Lien vers le cab
+    chat: [chatSchema],
+    housekeeping: [housekeepingSchema],
+    checklist: [checklistSchema]       // Lien vers le cab
 }, { timestamps: true });
 
 const Hotel = mongoose.model('Hotel', hotelSchema);

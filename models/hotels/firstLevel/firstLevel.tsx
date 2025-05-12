@@ -6,13 +6,13 @@ const cabSchema = new mongoose.Schema({
     date: { type: String, required: true },   // Format "DD/MM/YYYY"
     destination: { type: String, required: true }, // Ex: "Aéroport"
     hour: { type: String, required: true },        // Format "HH:mm"
-    markup: { type: Number },                // timestamp ou identifiant numérique
     model: { type: String },
     modelClone: { type: String },
     pax: { type: String },                   // nombre de passagers, peut être typé en Number si besoin
     room: { type: String },
     status: { type: Boolean, default: false }
-});
+} , { timestamps: true });
+
 const clockSchema = new mongoose.Schema({
     author: {
         type: String,
@@ -34,10 +34,6 @@ const clockSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      markup: {
-        type: Number,
-        required: true,
-      },
       room: {
         type: String,
         required: true,
@@ -46,7 +42,8 @@ const clockSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
       }
-});
+}, { timestamps: true });
+
 const maintenanceSchema = new mongoose.Schema({
     author: {
         type: String,
@@ -68,10 +65,6 @@ const maintenanceSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      markup: {
-        type: Number,
-        required: true
-      },
       room: {
         type: String,
         required: true
@@ -88,7 +81,8 @@ const maintenanceSchema = new mongoose.Schema({
         type: String,
         required: true
       }
-});
+}, { timestamps: true });
+
 const roomChangeSchema = new mongoose.Schema({
     author: {
         type: String,
@@ -117,10 +111,6 @@ const roomChangeSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      markup: {
-        type: Number,
-        required: true
-      },
       reason: {
         type: String,
         required: true
@@ -140,7 +130,8 @@ const roomChangeSchema = new mongoose.Schema({
         type: String,
         required: true
       }
-});
+}, { timestamps: true });
+
 const safeSchema = new mongoose.Schema({
     amount: {
         type: String,
@@ -154,10 +145,6 @@ const safeSchema = new mongoose.Schema({
         type: String, // Vous pouvez changer en `Date` si le format est normalisé
         required: true
       },
-      markup: {
-        type: Number,
-        required: true
-      },
       shift: {
         type: String,
         required: true
@@ -166,7 +153,8 @@ const safeSchema = new mongoose.Schema({
         type: String,
         required: true
       }
-});
+}, { timestamps: true });
+
 const noteSchema = new mongoose.Schema({
     author: {
         type: String,
@@ -188,10 +176,6 @@ const noteSchema = new mongoose.Schema({
         type: Boolean,
         required: true
       },
-      markup: {
-        type: Number,
-        required: true
-      },
       status: {
         type: String,
         default: 'default'
@@ -208,14 +192,11 @@ const noteSchema = new mongoose.Schema({
         type: String,
         required: true
       }
-});
+}, { timestamps: true });
+
 const stickerSchema = new mongoose.Schema({
     author: {
         type: String,
-        required: true
-      },
-      markup: {
-        type: Number,
         required: true
       },
       text: {
@@ -226,7 +207,8 @@ const stickerSchema = new mongoose.Schema({
         type: String,
         required: true
       }
-});
+}, { timestamps: true });
+
 const lostAndFoundSchema = new mongoose.Schema({
     author: {
         type: String,
@@ -248,10 +230,6 @@ const lostAndFoundSchema = new mongoose.Schema({
         type: String,
         required: false // ou `required: true` si l'image est obligatoire
       },
-      markup: {
-        type: Number,
-        required: true
-      },
       place: {
         type: String,
         required: true
@@ -268,7 +246,7 @@ const lostAndFoundSchema = new mongoose.Schema({
         type: String,
         required: true
       }
-});
+}, { timestamps: true });
 
 export { 
     cabSchema, 

@@ -13,17 +13,13 @@ const itemSchema = new mongoose.Schema({
         type: String, // À convertir en `Date` si vous parsez ce champ à l'enregistrement
         required: true
       },
-      markup: {
-        type: Number,
-        required: true
-      },
       room: {
         type: String,
         required: true
       }
-});
+}, { timestamps: true });
 
-const housekeepingSchema = new mongoose.Schema({
+export const housekeepingSchema = new mongoose.Schema({
   towel: [itemSchema],
   pillow: [itemSchema],
   iron: [itemSchema],
@@ -32,7 +28,4 @@ const housekeepingSchema = new mongoose.Schema({
   soap: [itemSchema],
   hairDryer: [itemSchema],
   babyBed: [itemSchema],
-});
-
-const Housekeeping = mongoose.model('Housekeeping', housekeepingSchema);
-export default Housekeeping;
+}, { timestamps: true });
