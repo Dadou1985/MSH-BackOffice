@@ -3,7 +3,6 @@ import { journeySchema } from './first level/journey';
 import { tokenSchema } from './first level/token';
 
 const guestUserSchema = new mongoose.Schema({
-  _id: { type: String, required: true },
   notificationStatus: { type: String, default: 'default' },
   gender: { type: String },
   photo: { type: String, default: null },

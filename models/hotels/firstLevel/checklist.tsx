@@ -5,15 +5,11 @@ const itemSchema = new mongoose.Schema({
     type: String,
     required: true
     },
-    markup: {
-    type: Number,
-    required: true
-    },
     status: {
     type: Boolean,
     required: true
     }
-});
+}, { timestamps: true });   
 
 export const checklistSchema = new mongoose.Schema({
     matin: [itemSchema],

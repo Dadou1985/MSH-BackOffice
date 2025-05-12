@@ -18,7 +18,6 @@ const hotelSchema = new mongoose.Schema({
     code_postal: { type: String, required: true },
     partnership: { type: Boolean, required: true },
     departement: { type: String, required: true },
-    markup: { type: Number, required: true }, // Timestamp probable
     mail: { type: String, required: true },
     city: { type: String, required: true },
     classement: { type: String, required: true }, // Ex: "2 étoiles"
