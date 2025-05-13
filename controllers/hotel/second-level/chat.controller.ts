@@ -1,6 +1,5 @@
-import Hotel from '../../../models/hotels/hotels'; // Adjust path as needed
-import { Request, Response } from 'express';
-
+import Hotel from '../../../models/hotels/hotels.ts'; // Adjust path as needed
+import type { Request, Response } from 'express';
 // Create a new chatRoom message in a specific chat thread
 export const createChatRoomMessage = async (req: Request, res: Response) => {
   const { hotelId, chatId } = req.params;

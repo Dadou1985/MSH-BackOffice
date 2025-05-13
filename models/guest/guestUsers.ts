@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { journeySchema } from './first level/journey';
-import { tokenSchema } from './first level/token';
+import { journeySchema } from './first-level/journey.ts';
+import { tokenSchema } from './first-level/token.ts';
 
 const guestUserSchema = new mongoose.Schema({
   notificationStatus: { type: String, default: 'default' },

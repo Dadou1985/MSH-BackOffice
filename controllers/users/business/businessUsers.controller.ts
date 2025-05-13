@@ -1,4 +1,4 @@
-import BusinessUsers from "../../../models/businessUsers";
+import BusinessUsers from "../../../models/businessUsers.ts";
 
 const getAllBusinessUsers = async (req, res) => {
     try {

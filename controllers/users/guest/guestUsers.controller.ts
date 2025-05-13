@@ -1,4 +1,4 @@
-import GuestUsers from "../../../models/guest/guestUsers";
+import GuestUsers from "../../../models/guest/guestUsers.ts";
 
 const getAllGuestUsers = async (req, res) => {
     try {

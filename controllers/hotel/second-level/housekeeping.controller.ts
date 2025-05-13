@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import Hotel from '../../../models/hotels/hotels';
+import type { Request, Response } from 'express';
+import Hotel from '../../../models/hotels/hotels.ts';
 
 // Helper to get the correct category (towel, pillow, etc.)
 const getCategoryArray = (hotel: any, category: string) => {

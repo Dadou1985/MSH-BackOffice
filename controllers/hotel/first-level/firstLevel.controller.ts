@@ -1,4 +1,4 @@
-import Hotel from "../../../models/hotels/hotels";
+import Hotel from "../../../models/hotels/hotels.ts";
 
 
 const handleCreteField = (field, hotel, data) => {
@@ -30,12 +30,6 @@ const handleCreteField = (field, hotel, data) => {
         case 'chat':
             hotel.chat.push(data);
             break;
-        case 'housekeeping':
-            hotel.housekeeping.push(data);
-            break;
-        case 'checklist':
-            hotel.checklist.push(data);
-            break;
 
         default:
             break;
@@ -43,11 +37,11 @@ const handleCreteField = (field, hotel, data) => {
 }
 
 const createField = async (req, res) => {
-    const { id, field } = req.params;
+    const { hotelId, field } = req.params;
     const data = req.body;
 
     try {
-        const hotel = await Hotel.findById(id);
+        const hotel = await Hotel.findById(hotelId);
         if (!hotel) {
             return res.status(404).json({ message: "Hotel not found" });
         }
@@ -89,12 +83,6 @@ const handleGetAllFields = (field, hotel) => {
             break;
         case 'chat':
             hotel.chat.find();
-            break;
-        case 'housekeeping':
-            hotel.housekeeping.find();
-            break;
-        case 'checklist':
-            hotel.checklist.find();
             break;
     
         default:

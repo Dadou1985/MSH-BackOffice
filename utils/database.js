@@ -3,7 +3,9 @@ import { MongoClient, ServerApiVersion } from 'mongodb';
 import admin from 'firebase-admin'
 
 const mongoDbUri = process.env.MONGODB_URI;
-const dbName = process.env.DB_NAME;
+const dbName = process.env.MONGO_DB_NAME;
+
+console.log(dbName)
 
 // Initialise Firestore
 // admin.initializeApp({
@@ -43,7 +45,7 @@ const mongoConnect = async () => {
   // }
 
   try {
-    await mongoose.connect(mongoDbUri);
+    await mongoose.connect(mongoDbUri, { dbName: process.env.MONGO_DB_NAME, useNewUrlParser: true, useUnifiedTopology: true });
     console.log('Connecté à MongoDB avec Mongoose');
   } catch (error) {
     console.error('Erreur de connexion à MongoDB:', error);

@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import Hotel from '../../../models/hotels/hotels';
+import type { Request, Response } from 'express';
+import Hotel from '../../../models/hotels/hotels.ts';
 
-const getChecklistArray = (hotel: any, period: 'matin' | 'soir' | 'nuit') => {
+const getChecklistArray = (hotel: any, period: any) => {
   if (!hotel.checklist || !hotel.checklist[period]) {
     throw new Error(`Checklist period '${period}' does not exist`);
   }
@@ -71,9 +71,13 @@ export const updateChecklistItem = async (req: Request, res: Response) => {
 // DELETE
 export const deleteChecklistItem = async (req: Request, res: Response) => {
   const { hotelId, itemId } = req.params;
-  const { period } = req.body;
+  const { period } = req.query;
 
   try {
+    if (!period || (period !== 'matin' && period !== 'soir' && period !== 'nuit')) {
+      return res.status(400).json({ message: 'Period query parameter is required and must be one of: matin, soir, nuit' });
+    }
+
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
 

@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import Support from '../models/support';
+import type { Request, Response } from 'express';
+import Support from '../models/support.ts';
 
 // CREATE
 export const addSupportMessage = async (req: Request, res: Response) => {
