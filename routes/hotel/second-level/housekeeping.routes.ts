@@ -18,6 +18,6 @@ router.get('/:hotelId/:category', getHousekeepingItems);
 router.put('/:hotelId/:category/:itemId', updateHousekeepingItem);
 
 // Delete a housekeeping item
-router.delete('/:hotelId/:itemId', deleteHousekeepingItem);
+router.delete('/:hotelId/:itemId/:category', deleteHousekeepingItem);
 
 export default router;

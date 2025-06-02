@@ -12,7 +12,7 @@ const getCategoryArray = (hotel: any, category: string) => {
 // CREATE
 export const addHousekeepingItem = async (req: Request, res: Response) => {
   const { hotelId, category } = req.params;
-  const { item } = req.body;
+  const item = req.body;
 
   try {
     const hotel = await Hotel.findById(hotelId);
@@ -22,7 +22,7 @@ export const addHousekeepingItem = async (req: Request, res: Response) => {
     categoryArray.push(item);
 
     await hotel.save();
-    res.status(200).json({ message: 'Item added', housekeeping: hotel.housekeeping });
+    res.status(200).json({ message: 'Item added', item: item });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -51,7 +51,7 @@ export const getHousekeepingItems = async (req: Request, res: Response) => {
 // UPDATE
 export const updateHousekeepingItem = async (req: Request, res: Response) => {
   const { hotelId, itemId, category } = req.params;
-  const { updates } = req.body;
+  const updates = req.body;
 
   try {
     const hotel = await Hotel.findById(hotelId);
@@ -72,8 +72,7 @@ export const updateHousekeepingItem = async (req: Request, res: Response) => {
 
 // DELETE
 export const deleteHousekeepingItem = async (req: Request, res: Response) => {
-  const { hotelId, itemId } = req.params;
-  const { category } = req.body;
+  const { hotelId, itemId, category } = req.params;
 
   try {
     const hotel = await Hotel.findById(hotelId);

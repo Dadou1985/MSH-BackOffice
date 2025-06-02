@@ -11,17 +11,17 @@ const getChecklistArray = (hotel: any, period: any) => {
 // CREATE
 export const addChecklistItem = async (req: Request, res: Response) => {
   const { hotelId, period } = req.params;
-  const { task, status } = req.body;
+  const item = req.body;
 
   try {
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
 
     const checklistArray = getChecklistArray(hotel, period as any);
-    checklistArray.push({ task, status });
+    checklistArray.push(item);
 
     await hotel.save();
-    res.status(200).json({ message: 'Checklist item added', checklist: hotel.checklist });
+    res.status(200).json({ message: 'Checklist item added', item: item });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -49,7 +49,7 @@ export const getChecklistItems = async (req: Request, res: Response) => {
 // UPDATE
 export const updateChecklistItem = async (req: Request, res: Response) => {
   const { hotelId, itemId, period } = req.params;
-  const { updates } = req.body;
+  const updates = req.body;
 
   try {
     const hotel = await Hotel.findById(hotelId);
@@ -62,7 +62,7 @@ export const updateChecklistItem = async (req: Request, res: Response) => {
     item.set(updates);
     await hotel.save();
 
-    res.status(200).json({ message: 'Checklist item updated', item });
+    res.status(200).json({ message: 'Checklist item updated', item: item });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -70,8 +70,7 @@ export const updateChecklistItem = async (req: Request, res: Response) => {
 
 // DELETE
 export const deleteChecklistItem = async (req: Request, res: Response) => {
-  const { hotelId, itemId } = req.params;
-  const { period } = req.query;
+  const { hotelId, itemId, period } = req.params;
 
   try {
     if (!period || (period !== 'matin' && period !== 'soir' && period !== 'nuit')) {

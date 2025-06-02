@@ -1,17 +1,28 @@
 import mongoose from 'mongoose';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import admin from 'firebase-admin'
-
+import Hotel from '../models/hotels/hotels.ts';
 const mongoDbUri = process.env.MONGODB_URI;
 const dbName = process.env.MONGO_DB_NAME;
 
 console.log(dbName)
 
-// Initialise Firestore
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount)
-//   });
-// const firestore = admin.firestore();
+//Initialise Firestore
+admin.initializeApp({
+    credential: admin.credential.cert({
+      "type": process.env.FIREBASE_TYPE,
+      "project_id": process.env.FIREBASE_PROJECT_ID,
+      "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+      "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Replace escaped newlines
+      "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+      "client_id": process.env.FIREBASE_CLIENT_ID,
+      "auth_uri": process.env.FIREBASE_AUTH_URI,
+      "token_uri": process.env.FIREBASE_TOKEN_URI,
+      "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
+      "client_x509_cert_url": process.env.FIREBASE_CLIENT_CERT_URL
+    })
+  });
+const firestore = admin.firestore();
 
 
 if (!mongoDbUri) {
@@ -160,7 +171,7 @@ const largeMigration = async () => {
 
       const docs = [];
       snapshot.forEach(doc => {
-        docs.push({ _id: doc.id, ...doc.data() });
+        docs.push({ _id: new mongoose.Types.ObjectId(), ...doc.data() });
       });
 
       await mongoCol.insertMany(docs);
@@ -169,7 +180,6 @@ const largeMigration = async () => {
 
       lastDoc = snapshot.docs[snapshot.docs.length - 1];
 
-      // Si moins de documents que batch, on a atteint la fin
       if (snapshot.size < BATCH_SIZE) {
         hasMore = false;
       }
@@ -183,5 +193,81 @@ const largeMigration = async () => {
   }
 }
 
+const migrateHotelIds = async () => {
+  await client.connect();
 
-export { mongoConnect, migrate, deepMigration, largeMigration };
+  const cursor = Hotel.find().cursor();
+
+  let batch = [];
+
+  for await (const hotel of cursor) {
+    const oldId = hotel?._id?.toString?.();
+    if (!oldId) {
+      console.warn("⛔️ Document without valid _id, skipping:", hotel);
+      continue;
+    }
+
+    if (oldId.length > 24) {
+      const newId = oldId.slice(0, 24).padEnd(24, '0');
+
+      batch.push({
+        insertOne: {
+          document: {
+            ...hotel.toObject(),
+            _id: new mongoose.Types.ObjectId(newId)
+          }
+        }
+      });
+
+      batch.push({
+        deleteOne: { filter: { _id: hotel._id } }
+      });
+
+      if (batch.length >= BATCH_SIZE * 2) {
+        await Hotel.bulkWrite(batch);
+        batch = [];
+      }
+    }
+  }
+
+  if (batch.length > 0) {
+    await Hotel.bulkWrite(batch);
+  }
+
+  console.log("✅ Migration terminée");
+  process.exit();
+};
+
+
+const deleteHotelsInBatches = async () => {
+  try {
+    await client.connect();
+
+    const BATCH_SIZE = 500;
+    let hasMore = true;
+    let totalDeleted = 0;
+
+    while (hasMore) {
+      const hotels = await Hotel.find().limit(BATCH_SIZE).select('_id');
+
+      if (hotels.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      const ids = hotels.map(h => h._id);
+      const result = await Hotel.deleteMany({ _id: { $in: ids } });
+      totalDeleted += result.deletedCount;
+
+      console.log(`🗑️ Supprimé ${result.deletedCount} documents`);
+    }
+
+    console.log(`✅ Suppression terminée. Total supprimé : ${totalDeleted}`);
+  } catch (error) {
+    console.error('Erreur lors de la suppression par lots :', error);
+  } finally {
+    await mongoose.disconnect();
+  }
+};
+
+export { mongoConnect, migrate, deepMigration, largeMigration, migrateHotelIds, deleteHotelsInBatches };

@@ -34,7 +34,7 @@ const hotelSchema = new mongoose.Schema({
     cab: [cabSchema],
     clock: [clockSchema],
     maintenance: [maintenanceSchema],
-    roomChangeSchema: [roomChangeSchema],
+    roomChange: [roomChangeSchema],
     safe: [safeSchema],
     note: [noteSchema],
     sticker: [stickerSchema],
@@ -43,6 +43,16 @@ const hotelSchema = new mongoose.Schema({
     housekeeping: [housekeepingSchema],
     checklist: [checklistSchema]       // Lien vers le cab
 }, { timestamps: true });
+
+// hotelSchema.set('toJSON', {
+//   virtuals: true,         // Inclut les champs virtuels (comme id si tu en as)
+//   versionKey: false,      // Supprime __v du JSON renvoyé
+//   transform: (doc, ret) => {
+//     ret.id = ret._id;     // Ajoute une propriété "id" plus pratique à consommer côté client
+//     delete ret._id;       // (Optionnel) Supprime _id si tu veux ne renvoyer que "id"
+//     return ret;
+//   }
+// });
 
 const Hotel = mongoose.model('Hotel', hotelSchema);
 export default Hotel;
