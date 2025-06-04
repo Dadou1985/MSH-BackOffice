@@ -49,7 +49,7 @@ export const updateChatRoomMessage = async (req: Request, res: Response) => {
     const chat = hotel.chat.id(chatId);
     if (!chat) return res.status(404).json({ message: 'Chat not found' });
 
-    const message = chat.chatRoom.id(messageId);
+    const message = chat.chatRoom.find((i: any) => i._id.toString() === messageId);
     if (!message) return res.status(404).json({ message: 'Message not found' });
 
     message.set(updateData);

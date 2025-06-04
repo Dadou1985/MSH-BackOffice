@@ -1,23 +1,30 @@
 import express from 'express';
 import {
-  addSupportMessage,
-  getSupportMessages,
-  updateSupportMessage,
-  deleteSupportMessage
+  createFeedbackCollection,
+  createFeedback,
+  getAllFeedbacks,
+  updateFeedbackByHotelId,
+  deleteFeedbackByHotelId
 } from '../controllers/feedback.controller.ts';
 
 const router = express.Router();
 
-// Créer un message de support
-router.post('/:hotelId/messages', addSupportMessage);
+// Créer une collection feedback
+router.post('/', createFeedbackCollection);
 
-// Lire tous les messages de support
-router.get('/:hotelId/messages', getSupportMessages);
+// Créer une collection feedback
+router.post('/:id/:category', createFeedback);
 
-// Mettre à jour un message de support
-router.put('/:hotelId/messages/:messageId', updateSupportMessage);
+// Lire tous les feedbacks
+router.get('/:id', getAllFeedbacks);
 
-// Supprimer un message de support
-router.delete('/:hotelId/messages/:messageId', deleteSupportMessage);
+// Lire un feedback par hotelId
+// router.get('/:hotelId', getFeedbackByHotelId);
+
+// Mettre à jour un feedback par hotelId
+// router.put('/:hotelId', updateFeedbackByHotelId);
+
+// Supprimer un feedback par hotelId
+// router.delete('/:hotelId', deleteFeedbackByHotelId);
 
 export default router;

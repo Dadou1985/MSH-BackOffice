@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import BusinessUsers from "../../../models/businessUsers.ts";
 
 const getAllBusinessUsers = async (req, res) => {
@@ -13,8 +14,9 @@ const getAllBusinessUsers = async (req, res) => {
 }
 
 const getBusinessUserById = async (req, res) => {
-    const { id } = req.params;
     try {
+        const { id } = req.params;
+          
         const businessUser = await BusinessUsers.findById(id);
         if (!businessUser) {
             return res.status(404).json({ message: "Business user not found" });

@@ -12,7 +12,7 @@ const itemSchema = new mongoose.Schema({
 }, { timestamps: true });   
 
 export const checklistSchema = new mongoose.Schema({
-    matin: [itemSchema],
-    nuit: [itemSchema],
-    soir: [itemSchema]
+    morning: [itemSchema],
+    night: [itemSchema],
+    evening: [itemSchema]
 });

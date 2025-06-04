@@ -14,6 +14,7 @@ const getHotels = async (req, res) => {
 
 const getHotelById = async (req, res) => {
     const { id } = req.params;
+    console.log("Hotel ID:::::::::::::::", id);
     try {
         const hotel = await Hotel.findById(id);
         if (!hotel) {

@@ -55,35 +55,26 @@ const createField = async (req, res) => {
     }
 }
 
-const handleGetAllFields = (field, hotel) => {
+const handleGetAllFields = async (field, hotel) => {
     switch (field) {
         case 'cab':
-            hotel.cab.find();
-            break;
+            return hotel.cab;
         case 'clock':
-            hotel.clock.find();
-            break;
+            return hotel.clock;
         case 'maintenance':
-            hotel.maintenance.find();
-            break;
+            return hotel.maintenance;
         case 'roomChange':
-            hotel.roomChange.find();
-            break;
+            return hotel.roomChange;
         case 'safe':
-            hotel.safe.find();
-            break;
+            return hotel.safe;
         case 'note':
-            hotel.note.find();
-            break;
+            return hotel.note;
         case 'sticker':
-            hotel.sticker.find();
-            break;
+            return hotel.sticker;
         case 'lostAndFound':
-            hotel.lostAndFound.find();
-            break;
+            return hotel.lostAndFound;
         case 'chat':
-            hotel.chat.find();
-            break;
+            return hotel.chat;
     
         default:
             break;
@@ -99,50 +90,42 @@ const getAllFields = async (req, res) => {
             return res.status(404).json({ message: "Hotel not found" });
         }
 
-        handleGetAllFields(field, hotel);
+        const hotelFeature = await handleGetAllFields(field, hotel);
+        if (!hotelFeature) {
+            return res.status(404).json({ message: "Field not found" });
+        }
 
-        res.status(201).json(hotel);
+        res.status(201).json(hotelFeature);
     } catch (error) {
         res.status(500).json({ message: "Error getting all fields" });
     }
 }
 
-const handleGetFieldById = (field, hotel, id) => {
+const handleGetFieldById = async (field, hotel, id) => {
     switch (field) {
         case 'cab':
-            hotel.cab.id(id);
-            break;
+            return hotel.cab.id(id);
         case 'clock':
-            hotel.clock.id(id);
-            break;
+            return hotel.clock.id(id);
         case 'maintenance':
-            hotel.maintenance.id(id);
-            break;
+            return hotel.maintenance.id(id);
         case 'roomChange':
-            hotel.roomChange.id(id);
-            break;
+            return hotel.roomChange.id(id);
         case 'safe':
-            hotel.safe.id(id);
-            break;
+            return hotel.safe.id(id);
         case 'note':
-            hotel.note.id(id);
-            break;
+            return hotel.note.id(id);
         case 'sticker':
-            hotel.sticker.id(id);
-            break;
+            return hotel.sticker.id(id);
         case 'lostAndFound':
-            hotel.lostAndFound.id(id);
-            break;
+            return hotel.lostAndFound.id(id);
         case 'chat':
-            hotel.chat.id(id);
-            break;
+            return hotel.chat.id(id);
         case 'housekeeping':
-            hotel.housekeeping.id(id);
-            break;
+            return hotel.housekeeping.id(id);
         case 'checklist':
-            hotel.checklist.id(id);
-            break;
-    
+            return hotel.checklist.id(id);
+         
         default:
             break;
     }
@@ -157,9 +140,9 @@ const getFieldById = async (req, res) => {
             return res.status(404).json({ message: "Hotel not found" });
         }
 
-        handleGetFieldById(field, hotel, id);
+        const hotelFeatureById = await handleGetFieldById(field, hotel, id);
 
-        res.status(201).json(hotel);
+        res.status(201).json(hotelFeatureById);
     } catch (error) {
         res.status(500).json({ message: "Error getting field by id" });
     }
@@ -168,32 +151,23 @@ const getFieldById = async (req, res) => {
 const handleUpdateField = (field, hotel, id, data) => {
     switch (field) {
         case 'cab':
-            hotel.cab.id(id).set(data);
-            break;
+            return hotel.cab.id(id).set(data);
         case 'clock':
-            hotel.clock.id(id).set(data);
-            break;
+            return hotel.clock.id(id).set(data);
         case 'maintenance':
-            hotel.maintenance.id(id).set(data);
-            break;
+            return hotel.maintenance.id(id).set(data);
         case 'roomChange':
-            hotel.roomChange.id(id).set(data);
-            break;
+            return hotel.roomChange.id(id).set(data);
         case 'safe':
-            hotel.safe.id(id).set(data);
-            break;
+            return hotel.safe.id(id).set(data);
         case 'note':
-            hotel.note.id(id).set(data);
-            break;
+            return hotel.note.id(id).set(data);
         case 'sticker':
-            hotel.sticker.id(id).set(data);
-            break;
+            return hotel.sticker.id(id).set(data);
         case 'lostAndFound':
-            hotel.lostAndFound.id(id).set(data);
-            break;
+            return hotel.lostAndFound.id(id).set(data);
         case 'chat':
-            hotel.chat.id(id).set(data);
-            break;
+            return hotel.chat.id(id).set(data);
     
         default:
             break;
@@ -222,32 +196,23 @@ const updateField = async (req, res) => {
 const handleDeleteField = (field, hotel, id) => {
     switch (field) {
         case 'cab':
-            hotel.cab.id(id).remove();
-            break;
+            return hotel?.cab?.id(id)?.deleteOne();
         case 'clock':
-            hotel.clock.id(id).remove();
-            break;
+            return hotel?.clock?.id(id)?.deleteOne();
         case 'maintenance':
-            hotel.maintenance.id(id).remove();
-            break;
+            return hotel?.maintenance?.id(id)?.deleteOne();
         case 'roomChange':
-            hotel.roomChange.id(id).remove();
-            break;
+            return hotel?.roomChange?.id(id)?.deleteOne();
         case 'safe':
-            hotel.safe.id(id).remove();
-            break;
+            return hotel?.safe?.id(id)?.deleteOne();
         case 'note':
-            hotel.note.id(id).remove();
-            break;
+            return hotel?.note?.id(id)?.deleteOne();
         case 'sticker':
-            hotel.sticker.id(id).remove();
-            break;
+            return hotel?.sticker?.id(id)?.deleteOne();
         case 'lostAndFound':
-            hotel.lostAndFound.id(id).remove();
-            break;
+            return hotel?.lostAndFound?.id(id)?.deleteOne();
         case 'chat':
-            hotel.chat.id(id).remove();
-            break;
+            return hotel?.chat?.id(id)?.deleteOne();
     
         default:
             break;
@@ -268,7 +233,7 @@ const deleteField = async (req, res) => {
         await hotel.save();
         res.status(201).json(hotel);
     } catch (error) {
-        res.status(500).json({ message: "Error deleting field" });
+        res.status(500).json({ message: error.message || "Error deleting field" });
     }
 }
 

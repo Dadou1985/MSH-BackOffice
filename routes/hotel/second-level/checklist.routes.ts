@@ -20,6 +20,6 @@ router.get('/:hotelId/:period', getChecklistItems);
 router.put('/:hotelId/:period/:itemId', updateChecklistItem);
 
 // DELETE
-router.delete('/:hotelId/:itemId', deleteChecklistItem);
+router.delete('/:hotelId/:period/:itemId', deleteChecklistItem);
 
 export default router;
