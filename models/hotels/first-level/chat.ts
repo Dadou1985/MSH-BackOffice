@@ -28,8 +28,23 @@ const chatRoomSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
+    },
+    userId: {
+      type: String,
+      required: false
     }
 }, { timestamps: true });
+
+// dans chat.ts
+
+const tokenSchema = new mongoose.Schema({
+  endpoint: { type: String, required: true },
+  expirationTime: { type: Number, default: null },
+  keys: {
+    auth: { type: String, required: true },
+    p256dh: { type: String, required: true },
+  }
+}, { _id: false }); // pas besoin d’_id ici si imbriqué
 
 export const chatSchema = new mongoose.Schema({
     clientFullName: { type: String, required: true },
@@ -57,12 +72,8 @@ export const chatSchema = new mongoose.Schema({
         type: Boolean,
         default: false
       },
-      title: {
-        type: String,
-        required: true
-      },
       token: {
-        type: String,
+        type: tokenSchema,
         default: null
       },
       userId: {

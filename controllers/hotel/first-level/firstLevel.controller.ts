@@ -125,7 +125,7 @@ const handleGetFieldById = async (field, hotel, id) => {
             return hotel.housekeeping.id(id);
         case 'checklist':
             return hotel.checklist.id(id);
-    
+         
         default:
             break;
     }
@@ -196,32 +196,23 @@ const updateField = async (req, res) => {
 const handleDeleteField = (field, hotel, id) => {
     switch (field) {
         case 'cab':
-            hotel.cab.id(id).remove();
-            break;
+            return hotel?.cab?.id(id)?.deleteOne();
         case 'clock':
-            hotel.clock.id(id).remove();
-            break;
+            return hotel?.clock?.id(id)?.deleteOne();
         case 'maintenance':
-            hotel.maintenance.id(id).remove();
-            break;
+            return hotel?.maintenance?.id(id)?.deleteOne();
         case 'roomChange':
-            hotel.roomChange.id(id).remove();
-            break;
+            return hotel?.roomChange?.id(id)?.deleteOne();
         case 'safe':
-            hotel.safe.id(id).remove();
-            break;
+            return hotel?.safe?.id(id)?.deleteOne();
         case 'note':
-            hotel.note.id(id).remove();
-            break;
+            return hotel?.note?.id(id)?.deleteOne();
         case 'sticker':
-            hotel.sticker.id(id).remove();
-            break;
+            return hotel?.sticker?.id(id)?.deleteOne();
         case 'lostAndFound':
-            hotel.lostAndFound.id(id).remove();
-            break;
+            return hotel?.lostAndFound?.id(id)?.deleteOne();
         case 'chat':
-            hotel.chat.id(id).remove();
-            break;
+            return hotel?.chat?.id(id)?.deleteOne();
     
         default:
             break;
@@ -242,7 +233,7 @@ const deleteField = async (req, res) => {
         await hotel.save();
         res.status(201).json(hotel);
     } catch (error) {
-        res.status(500).json({ message: "Error deleting field" });
+        res.status(500).json({ message: error.message || "Error deleting field" });
     }
 }
 

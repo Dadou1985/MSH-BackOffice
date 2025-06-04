@@ -40,8 +40,8 @@ const hotelSchema = new mongoose.Schema({
     sticker: [stickerSchema],
     lostAndFound: [lostAndFoundSchema],
     chat: [chatSchema],
-    housekeeping: [housekeepingSchema],
-    checklist: [checklistSchema]       // Lien vers le cab
+    housekeeping: housekeepingSchema,
+    checklist: checklistSchema      
 }, { timestamps: true });
 
 // hotelSchema.set('toJSON', {

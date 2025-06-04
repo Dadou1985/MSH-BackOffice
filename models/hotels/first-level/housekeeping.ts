@@ -9,10 +9,6 @@ const itemSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      createdAt: {
-        type: String, // À convertir en `Date` si vous parsez ce champ à l'enregistrement
-        required: true
-      },
       room: {
         type: String,
         required: true
