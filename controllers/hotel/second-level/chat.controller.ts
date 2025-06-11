@@ -1,4 +1,6 @@
 import Hotel from '../../../models/hotels/hotels.ts'; // Adjust path as needed
+import { io } from '../../../app.js'; // Import your socket.io instance
+
 import type { Request, Response } from 'express';
 // Create a new chatRoom message in a specific chat thread
 export const createChatRoomMessage = async (req: Request, res: Response) => {
@@ -7,16 +9,31 @@ export const createChatRoomMessage = async (req: Request, res: Response) => {
 
   try {
     const hotel = await Hotel.findById(hotelId);
-    if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
+    if (!hotel) {
+      return res.status(404).json({ message: 'Hotel not found' });
+    }
 
     const chat = hotel.chat.id(chatId);
-    if (!chat) return res.status(404).json({ message: 'Chat not found' });
+    if (!chat || !Array.isArray(chat.chatRoom)) {
+      return res.status(404).json({ message: 'Chat not found or chatRoom missing' });
+    }
 
     chat.chatRoom.push(messageData);
     await hotel.save();
+
+    // Debug log (utile en développement)
+    console.log(`📨 Message ajouté dans chat_${chatId}`, messageData);
+
+    // Emission à tous les clients dans le salon
+    io.to(`chat_${chatId}`).emit('newChatRoomMessage', {
+      chatId,
+      message: messageData,
+    });
+
     res.status(201).json(chat.chatRoom[chat.chatRoom.length - 1]);
   } catch (err) {
-    res.status(500).json({ message: 'Error creating chatRoom message', error: err });
+    console.error('Erreur création chatRoom:', err);
+    res.status(500).json({ message: 'Erreur lors de la création du message', error: err });
   }
 };
 
@@ -74,6 +91,7 @@ export const deleteChatRoomMessage = async (req: Request, res: Response) => {
     chat.chatRoom.pull(messageId);
 
     await hotel.save();
+    io.to(`chat_${chatId}`).emit('chatRoomMessageDeleted', { chatId, messageId });
     res.status(200).json({ message: 'Message deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting message', error: err });

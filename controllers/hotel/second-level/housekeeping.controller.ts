@@ -1,5 +1,7 @@
 import type { Request, Response } from 'express';
+import type { Server } from 'socket.io';
 import Hotel from '../../../models/hotels/hotels.ts';
+import { io } from '../../../app.js';
 
 // Helper to get the correct category (towel, pillow, etc.)
 const getCategoryArray = async(hotel: any, category: string) => {
@@ -34,6 +36,9 @@ export const addHousekeepingItem = async (req: Request, res: Response) => {
     categoryArray.push(item);
 
     await hotel.save();
+
+    io.to(hotelId).emit(`${category}Created`, item);
+
     res.status(200).json({ message: 'Item added', item: item });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -76,6 +81,8 @@ export const updateHousekeepingItem = async (req: Request, res: Response) => {
     item.set(updates);
     await hotel.save();
 
+    io.to(hotelId).emit(`${category}Updated`, item);
+
     res.status(200).json({ message: 'Item updated', item });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -96,6 +103,8 @@ export const deleteHousekeepingItem = async (req: Request, res: Response) => {
 
     categoryArray.pull(itemId);
     await hotel.save();
+
+    io.to(hotelId).emit(`${category}Deleted`, itemId);
 
     res.status(200).json({ message: 'Item deleted' });
   } catch (error: any) {

@@ -1,4 +1,5 @@
 import GuestUsers from "../../../models/guest/guestUsers.ts";
+import { io } from "../../../app.js";
 
 const getAllGuestUsers = async (req, res) => {
     try {
@@ -30,6 +31,9 @@ const createGuestUser = async (req, res) => {
     try {
         const newGuestUser = new GuestUsers(guestUserData);
         await newGuestUser.save();
+
+        io.emit('guestUserCreated', newGuestUser);
+
         res.status(201).json(newGuestUser);
     } catch (error) {
         res.status(500).json({ message: "Error creating guest user" });
@@ -44,6 +48,9 @@ const updateGuestUser = async (req, res) => {
         if (!updatedGuestUserData) {
             return res.status(404).json({ message: "Guest user not found" });
         }
+
+        io.emit('guestUserUpdated', updatedGuestUserData);
+
         res.status(200).json(updatedGuestUserData);
     }
     catch (error) {

@@ -3,7 +3,10 @@ import { PORT } from './config/env.js';
 import { mongoConnect } from './utils/database.js';
 import cookieParser from 'cookie-parser';
 import { errorMiddleware } from './middleware/errorMiddelware.js';
-
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.js';
+// Import des routes
 import hotelRoutes from './routes/hotel/hotel.routes.ts';
 import chatRoutes from './routes/hotel/second-level/chat.routes.ts';
 import checklistRoutes from './routes/hotel/second-level/checklist.routes.ts';
@@ -15,7 +18,18 @@ import guestUsersRoutes from './routes/user/guestUsers.routes.ts';
 import housekeepingRoutes from './routes/hotel/second-level/housekeeping.routes.ts';
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+    },
+});
 
+registerAppSocketHandlers(io);
+registerChatSocketHandlers(io); // Si vous avez besoin de gérer les sockets pour le chat, décommentez cette ligne
+
+// Middleware pour gérer les requêtes JSON et les URL encodées
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -30,12 +44,15 @@ app.use('/api/v1/business-users', businessUsersRoutes);
 app.use('/api/v1/guest-users', guestUsersRoutes);
 app.use('/api/v1/housekeeping', housekeepingRoutes);
 
+
+
 app.use(errorMiddleware);
 
-app.listen(PORT, async () => {
+httpServer.listen(PORT, async () => {
     try {
         await mongoConnect();
         console.log('MongoDB connected', PORT);
+
     } catch (error) {
         console.error('MongoDB connection error:', error);
     }
@@ -47,4 +64,5 @@ app.listen(PORT, async () => {
     }
 });
 
+export { io };
 export default app;
