@@ -1,5 +1,5 @@
 import Hotel from "../../../models/hotels/hotels.ts";
-
+import { io } from '../../../app.js'; // Import your socket.io instance
 
 const handleCreteField = (field, hotel, data) => {
     switch (field) {
@@ -39,6 +39,10 @@ const handleCreteField = (field, hotel, data) => {
 const createField = async (req, res) => {
     const { hotelId, field } = req.params;
     const data = req.body;
+    // const io = req.app.get('io'); // ⬅️ Récupération de l'instance Socket.IO
+    if (!io) {
+        return res.status(500).json({ message: "Socket.IO instance not found" });
+    }
 
     try {
         const hotel = await Hotel.findById(hotelId);
@@ -49,6 +53,9 @@ const createField = async (req, res) => {
         handleCreteField(field, hotel, data);
 
         await hotel.save();
+        // Émission en temps réel
+        io.to(hotelId).emit(`${field}Created`, data);
+
         res.status(201).json(hotel);
     } catch (error) {
         res.status(500).json({ message: "Error creating field" });
@@ -177,6 +184,11 @@ const handleUpdateField = (field, hotel, id, data) => {
 const updateField = async (req, res) => {
     const { hotelId, field, id } = req.params;
     const data = req.body;
+    // const io = req.app.get('io'); // ⬅️ Récupération de l'instance Socket.IO
+    
+    if (!io) {
+        return res.status(500).json({ message: "Socket.IO instance not found" });
+    }
 
     try {
         const hotel = await Hotel.findById(hotelId);
@@ -187,6 +199,7 @@ const updateField = async (req, res) => {
         handleUpdateField(field, hotel, id, data);
 
         await hotel.save();
+        io.to(hotelId).emit(`${field}Updated`, data);
         res.status(201).json(hotel);
     } catch (error) {
         res.status(500).json({ message: "Error updating field" });
@@ -221,6 +234,11 @@ const handleDeleteField = (field, hotel, id) => {
 
 const deleteField = async (req, res) => {
     const { hotelId, field, id } = req.params;
+    // const io = req.app.get('io'); // ⬅️ Récupération de l'instance Socket.IO
+    
+    if (!io) {
+        return res.status(500).json({ message: "Socket.IO instance not found" });
+    }
 
     try {
         const hotel = await Hotel.findById(hotelId);
@@ -231,6 +249,7 @@ const deleteField = async (req, res) => {
         handleDeleteField(field, hotel, id);
 
         await hotel.save();
+        io.to(hotelId).emit(`${field}Deleted`, id);
         res.status(201).json(hotel);
     } catch (error) {
         res.status(500).json({ message: error.message || "Error deleting field" });

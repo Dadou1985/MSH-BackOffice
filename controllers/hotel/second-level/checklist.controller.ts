@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import Hotel from '../../../models/hotels/hotels.ts';
+import { io } from '../../../app.js';
 
 const getChecklistArray = async(hotel: any, period: any) => {
   if (!hotel.checklist) {
@@ -28,6 +29,7 @@ export const addChecklistItem = async (req: Request, res: Response) => {
     checklistArray.push(item);
 
     await hotel.save();
+    io.to(hotelId).emit('checklistCreated', { period, item });
     res.status(200).json({ message: 'Checklist item added', item: item });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -68,6 +70,7 @@ export const updateChecklistItem = async (req: Request, res: Response) => {
 
     item.set(updates);
     await hotel.save();
+    io.to(hotelId).emit('checklistUpdated', { period, item });
 
     res.status(200).json({ message: 'Checklist item updated', item: item });
   } catch (error: any) {
@@ -93,6 +96,7 @@ export const deleteChecklistItem = async (req: Request, res: Response) => {
 
     checklistArray.pull(itemId);
     await hotel.save();
+    io.to(hotelId).emit('checklistDeleted', { period, itemId });
 
     res.status(200).json({ message: 'Checklist item deleted' });
   } catch (error: any) {
