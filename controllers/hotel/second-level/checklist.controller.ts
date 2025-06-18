@@ -84,7 +84,7 @@ export const deleteChecklistItem = async (req: Request, res: Response) => {
 
   try {
     if (!period || (period !== 'morning' && period !== 'evening' && period !== 'night')) {
-      return res.status(400).json({ message: 'Period query parameter is required and must be one of: matin, soir, nuit' });
+      return res.status(400).json({ message: 'Period query parameter is required and must be one of: morning, evening, night' });
     }
 
     const hotel = await Hotel.findById(hotelId);

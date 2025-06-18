@@ -6,6 +6,8 @@ import { errorMiddleware } from './middleware/errorMiddelware.js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.js';
+import { startApolloServer } from './graphql/server.ts';
+
 // Import des routes
 import hotelRoutes from './routes/hotel/hotel.routes.ts';
 import chatRoutes from './routes/hotel/second-level/chat.routes.ts';
@@ -33,20 +35,18 @@ registerChatSocketHandlers(io); // Si vous avez besoin de gérer les sockets pou
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-app.use('/api/v1/hotel', hotelRoutes);
-app.use('/api/v1/chat', chatRoutes);
-app.use('/api/v1/checklist', checklistRoutes);
-app.use('/api/v1/generic', genericRoutes);
-app.use('/api/v1/support', supportRoutes);
-app.use('/api/v1/feedback', feedbackRoutes);
-app.use('/api/v1/business-users', businessUsersRoutes);
-app.use('/api/v1/guest-users', guestUsersRoutes);
-app.use('/api/v1/housekeeping', housekeepingRoutes);
-
-
-
 app.use(errorMiddleware);
+await startApolloServer(app);
+
+// app.use('/api/v1/hotel', hotelRoutes);
+// app.use('/api/v1/chat', chatRoutes);
+// app.use('/api/v1/checklist', checklistRoutes);
+// app.use('/api/v1/generic', genericRoutes);
+// app.use('/api/v1/support', supportRoutes);
+// app.use('/api/v1/feedback', feedbackRoutes);
+// app.use('/api/v1/business-users', businessUsersRoutes);
+// app.use('/api/v1/guest-users', guestUsersRoutes);
+// app.use('/api/v1/housekeeping', housekeepingRoutes);
 
 httpServer.listen(PORT, async () => {
     try {
