@@ -5,29 +5,101 @@ export const typeDefs = gql`
  # GraphQL Query Definitions
 
   type Query {
-  # Queries for Hotels
-    getHotels: [Hotel]
-    getHotelById(id: ID!): Hotel
+    # Queries for Hotels
+      getHotels: [Hotel]
+      getHotelById(id: ID!): Hotel
 
-  # Queries for Checklists
-    getHotelChecklist(hotelId: ID!): Checklist
-    getHotelChecklistByPeriod(hotelId: ID!, period: String!): [ChecklistItem]
+    # Queries for Checklists
+      getHotelChecklist(hotelId: ID!): Checklist
+
+    # Queries for Features
+      getHotelHousekeeping(hotelId: ID!): Housekeeping
+      getHotelHousekeepingByCategory(hotelId: ID!, category: String!): [HousekeepingItemEntry]
+      getHotelRoomChange(hotelId: ID!): [RoomChangeItem]
+      getHotelSafe(hotelId: ID!): [SafeItem]
+      getHotelMaintenance(hotelId: ID!): [MaintenanceItem]
+      getHotelCab(hotelId: ID!): [CabItem]
+      getHotelClock(hotelId: ID!): [ClockItem]
+      getHotelNote(hotelId: ID!): [NoteItem]
+      getHotelSticker(hotelId: ID!): [StickerItem]
+
+    # Queries for Chat
+      getChatByUserId(userId: String!): [Chat]
+      getChatByRoom(room: String!): Chat
+
+    # Queries for Guest Users
+      getGuestUsers: [GuestUser]
+      getGuestUserById(id: ID!): GuestUser
+
+    # Queries for Business Users
+      getBusinessUsers: [BusinessUser]
+      getBusinessUserById(id: ID!): BusinessUser
+
+    # Queries for Feedback
+      getFeedbacks: [Feedback]
+      getFeedbackById(id: ID!): Feedback
+      
+    # Queries for Support
+      getSupports: [Support]
+      getSupportById(id: ID!): Support
   }
 
   #########################
   # GraphQL Mutations Definitions
 
   type Mutation {
-  # Mutations for Hotels
-    createHotel(input: HotelInput!): Hotel
-    updateHotel(id: ID!, input: HotelInput!): Hotel
-    deleteHotel(id: ID!): Boolean
+    # Mutations for Hotels
+      createHotel(input: HotelInput!): Hotel
+      updateHotel(id: ID!, input: HotelInput!): Hotel
+      deleteHotel(id: ID!): Boolean
+      updateHotelField(hotelId: ID!, field: String!, value: String!): Hotel
+      updateHotelChecklist(hotelId: ID!, checklist: ChecklistInput!): Hotel
+      updateHotelHousekeeping(hotelId: ID!, housekeeping: HousekeepingInput!): Hotel
+      updateHotelChats(hotelId: ID!, chat: [ChatInput]!): Hotel
+      updateHotelRoomChange(hotelId: ID!, roomChange: [RoomChangeItemInput]!): Hotel
+      updateHotelMaintenance(hotelId: ID!, maintenance: [MaintenanceItemInput]!): Hotel
+      updateHotelCab(hotelId: ID!, cab: [CabItemInput]!): Hotel
+      updateHotelClock(hotelId: ID!, clock: [ClockItemInput]!): Hotel
+      updateHotelNote(hotelId: ID!, note: [NoteItemInput]!): Hotel
+      updateHotelSticker(hotelId: ID!, sticker: [StickerItemInput]!): Hotel
+      updateHotelSafe(hotelId: ID!, safe: [SafeItemInput]!): Hotel
+      updateHotelLostAndFound(hotelId: ID!, lostAndFound: [LostAndFoundItemInput]!): Hotel
 
-  # Mutations for Checklists
-    createChecklist(input: ChecklistInput!): Checklist
-    addChecklistItem(id: ID!, period: String!, item: ChecklistItemInput!): Checklist
-    updateChecklistItem(id: ID!, period: String!, itemId: ID!, item: ChecklistItemInput!): Checklist
-    deleteChecklistItem(id: ID!, period: String!, itemId: ID!): Checklist
+    # Mutations for Checklists
+      createChecklist(input: ChecklistInput!): Checklist
+      addChecklistItem(hotelId: ID!, period: String!, item: ChecklistItemInput!): Checklist
+      updateChecklistItem(hotelId: ID!, period: String!, itemId: ID!, item: ChecklistItemInput!): Checklist
+      deleteChecklistItem(hotelId: ID!, period: String!, itemId: ID!): Checklist
+
+    # Chat-specific mutations
+      addChatToHotel(hotelId: ID!, chat: ChatInput!): Hotel
+      removeChatFromHotel(hotelId: ID!, userId: String!): Hotel
+      addMessageToChatRoom(hotelId: ID!, userId: String!, message: ChatRoomMessageInput!): Chat
+
+    # Add and remove items for complex hotel fields
+    addHotelCabItem(hotelId: ID!, cabItem: CabItemInput!): Hotel
+    removeHotelCabItem(hotelId: ID!, cabItemId: ID!): Hotel
+
+    addHotelClockItem(hotelId: ID!, clockItem: ClockItemInput!): Hotel
+    removeHotelClockItem(hotelId: ID!, clockItemId: ID!): Hotel
+
+    addHotelNoteItem(hotelId: ID!, noteItem: NoteItemInput!): Hotel
+    removeHotelNoteItem(hotelId: ID!, noteItemId: ID!): Hotel
+
+    addHotelStickerItem(hotelId: ID!, stickerItem: StickerItemInput!): Hotel
+    removeHotelStickerItem(hotelId: ID!, stickerItemId: ID!): Hotel
+
+    addHotelRoomChangeItem(hotelId: ID!, roomChangeItem: RoomChangeItemInput!): Hotel
+    removeHotelRoomChangeItem(hotelId: ID!, roomChangeItemId: ID!): Hotel
+
+    addHotelSafeItem(hotelId: ID!, safeItem: SafeItemInput!): Hotel
+    removeHotelSafeItem(hotelId: ID!, safeItemId: ID!): Hotel
+
+    addHotelMaintenanceItem(hotelId: ID!, maintenanceItem: MaintenanceItemInput!): Hotel
+    removeHotelMaintenanceItem(hotelId: ID!, maintenanceItemId: ID!): Hotel
+
+    addHotelLostAndFoundItem(hotelId: ID!, lostAndFoundItem: LostAndFoundItemInput!): Hotel
+    removeHotelLostAndFoundItem(hotelId: ID!, lostAndFoundItemId: ID!): Hotel
   }
 
   #########################
@@ -52,6 +124,17 @@ export const typeDefs = gql`
     base64Url: String
     appLink: String
     logo: String
+    cab: [CabItem]
+    clock: [ClockItem]
+    note: [NoteItem]
+    sticker: [StickerItem]
+    housekeeping: Housekeeping
+    roomChange: [RoomChangeItem]
+    safe: [SafeItem]
+    maintenance: [MaintenanceItem]
+    checklist: Checklist
+    chat: [Chat]
+    lostAndFound: [LostAndFoundItem]
   }
 
   input HotelInput {
@@ -72,6 +155,17 @@ export const typeDefs = gql`
     base64Url: String
     appLink: String
     logo: String
+    cab: [CabItemInput]
+    clock: [ClockItemInput]
+    note: [NoteItemInput]
+    sticker: [StickerItemInput]
+    housekeeping: HousekeepingInput
+    roomChange: [RoomChangeItemInput]
+    safe: [SafeItemInput]
+    maintenance: [MaintenanceItemInput]
+    checklist: ChecklistInput
+    chat: [ChatInput]
+    lostAndFound: [LostAndFoundItemInput]
   }
 
 
@@ -153,13 +247,11 @@ export const typeDefs = gql`
     details: String
     fromRoom: String
     img: String
-    markup: Float
     reason: String
     reasonClone: String
     state: String
     status: Boolean
     toRoom: String
-    userId: String
   }
 
   input RoomChangeItemInput {
@@ -169,121 +261,101 @@ export const typeDefs = gql`
     details: String
     fromRoom: String
     img: String
-    markup: Float
     reason: String
     reasonClone: String
     state: String
     status: Boolean
     toRoom: String
-    userId: String
   }
 
   type SafeItem {
     _id: ID
+    amount: String
     author: String
     date: String
-    hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
-    status: String
-    text: String
-    title: String
-    userId: String
+    shift: String
+    shiftClone: String
   }
 
   input SafeItemInput {
+    amount: String
     author: String
     date: String
-    hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
-    status: String
-    text: String
-    title: String
-    userId: String
+    shift: String
+    shiftClone: String
   }
 
   type MaintenanceItem {
     _id: ID
     author: String
+    client: String
     date: String
-    hour: String
+    details: String
+    room: String
     img: String
-    isChecked: Boolean
-    markup: Float
     status: String
-    text: String
-    title: String
-    userId: String
+    category: String
+    categoryClone: String
   }
 
   input MaintenanceItemInput {
     author: String
+    client: String
     date: String
-    hour: String
+    details: String
+    room: String
     img: String
-    isChecked: Boolean
-    markup: Float
     status: String
-    text: String
-    title: String
-    userId: String
+    category: String
+    categoryClone: String
   }
 
   type CabItem {
     _id: ID
     author: String
+    client: String
     date: String
     hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
+    destination: String
+    room: String
     status: String
-    text: String
-    title: String
-    userId: String
+    model: String
+    modelClone: String
+    pax: String
   }
 
   input CabItemInput {
     author: String
+    client: String
     date: String
     hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
+    destination: String
+    room: String
     status: String
-    text: String
-    title: String
-    userId: String
+    model: String
+    modelClone: String
+    pax: String
   }
 
   type ClockItem {
     _id: ID
     author: String
+    client: String
     date: String
+    day: Float
     hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
+    room: String
     status: String
-    text: String
-    title: String
-    userId: String
   }
 
   input ClockItemInput {
     author: String
+    client: String
     date: String
+    day: Float
     hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
+    room: String
     status: String
-    text: String
-    title: String
-    userId: String
   }
 
   type NoteItem {
@@ -293,11 +365,9 @@ export const typeDefs = gql`
     hour: String
     img: String
     isChecked: Boolean
-    markup: Float
     status: String
     text: String
     title: String
-    userId: String
   }
 
   input NoteItemInput {
@@ -306,39 +376,48 @@ export const typeDefs = gql`
     hour: String
     img: String
     isChecked: Boolean
-    markup: Float
     status: String
     text: String
     title: String
-    userId: String
   }
 
   type StickerItem {
     _id: ID
     author: String
-    date: String
-    hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
-    status: String
     text: String
     title: String
-    userId: String
   }
 
   input StickerItemInput {
     author: String
-    date: String
-    hour: String
-    img: String
-    isChecked: Boolean
-    markup: Float
-    status: String
     text: String
     title: String
-    userId: String
   }
+
+  type LostAndFoundItem {
+    _id: ID
+    author: String
+    date: String
+    description: String
+    details: String
+    img: String
+    place: String
+    placeClone: String
+    status: String
+    category: String
+  } 
+
+  input LostAndFoundItemInput {
+    author: String
+    date: String
+    description: String
+    details: String
+    img: String
+    place: String
+    placeClone: String
+    status: String
+    category: String
+  } 
 
   #########################
   # Chat Type Definitions
