@@ -9,24 +9,6 @@ export const typeDefs = gql`
       getHotels: [Hotel]
       getHotelById(id: ID!): Hotel
 
-    # Queries for Checklists
-      getHotelChecklist(hotelId: ID!): Checklist
-
-    # Queries for Features
-      getHotelHousekeeping(hotelId: ID!): Housekeeping
-      getHotelHousekeepingByCategory(hotelId: ID!, category: String!): [HousekeepingItemEntry]
-      getHotelRoomChange(hotelId: ID!): [RoomChangeItem]
-      getHotelSafe(hotelId: ID!): [SafeItem]
-      getHotelMaintenance(hotelId: ID!): [MaintenanceItem]
-      getHotelCab(hotelId: ID!): [CabItem]
-      getHotelClock(hotelId: ID!): [ClockItem]
-      getHotelNote(hotelId: ID!): [NoteItem]
-      getHotelSticker(hotelId: ID!): [StickerItem]
-
-    # Queries for Chat
-      getChatByUserId(userId: String!): [Chat]
-      getChatByRoom(room: String!): Chat
-
     # Queries for Guest Users
       getGuestUsers: [GuestUser]
       getGuestUserById(id: ID!): GuestUser
@@ -52,18 +34,12 @@ export const typeDefs = gql`
       createHotel(input: HotelInput!): Hotel
       updateHotel(id: ID!, input: HotelInput!): Hotel
       deleteHotel(id: ID!): Boolean
-      updateHotelField(hotelId: ID!, field: String!, value: String!): Hotel
       updateHotelChecklist(hotelId: ID!, checklist: ChecklistInput!): Hotel
       updateHotelHousekeeping(hotelId: ID!, housekeeping: HousekeepingInput!): Hotel
       updateHotelChats(hotelId: ID!, chat: [ChatInput]!): Hotel
-      updateHotelRoomChange(hotelId: ID!, roomChange: [RoomChangeItemInput]!): Hotel
-      updateHotelMaintenance(hotelId: ID!, maintenance: [MaintenanceItemInput]!): Hotel
-      updateHotelCab(hotelId: ID!, cab: [CabItemInput]!): Hotel
-      updateHotelClock(hotelId: ID!, clock: [ClockItemInput]!): Hotel
-      updateHotelNote(hotelId: ID!, note: [NoteItemInput]!): Hotel
-      updateHotelSticker(hotelId: ID!, sticker: [StickerItemInput]!): Hotel
-      updateHotelSafe(hotelId: ID!, safe: [SafeItemInput]!): Hotel
-      updateHotelLostAndFound(hotelId: ID!, lostAndFound: [LostAndFoundItemInput]!): Hotel
+      addHotelFieldItem(hotelId: ID!, field: String!, item: GenericItemInput!): Hotel
+      removeHotelFieldItem(hotelId: ID!, field: String!, itemId: ID!): Hotel
+      updateHotelFieldItem(hotelId: ID!, field: String!, itemId: ID!, updates: GenericItemInput!): GenericItem
 
     # Mutations for Checklists
       createChecklist(input: ChecklistInput!): Checklist
@@ -75,31 +51,6 @@ export const typeDefs = gql`
       addChatToHotel(hotelId: ID!, chat: ChatInput!): Hotel
       removeChatFromHotel(hotelId: ID!, userId: String!): Hotel
       addMessageToChatRoom(hotelId: ID!, userId: String!, message: ChatRoomMessageInput!): Chat
-
-    # Add and remove items for complex hotel fields
-    addHotelCabItem(hotelId: ID!, cabItem: CabItemInput!): Hotel
-    removeHotelCabItem(hotelId: ID!, cabItemId: ID!): Hotel
-
-    addHotelClockItem(hotelId: ID!, clockItem: ClockItemInput!): Hotel
-    removeHotelClockItem(hotelId: ID!, clockItemId: ID!): Hotel
-
-    addHotelNoteItem(hotelId: ID!, noteItem: NoteItemInput!): Hotel
-    removeHotelNoteItem(hotelId: ID!, noteItemId: ID!): Hotel
-
-    addHotelStickerItem(hotelId: ID!, stickerItem: StickerItemInput!): Hotel
-    removeHotelStickerItem(hotelId: ID!, stickerItemId: ID!): Hotel
-
-    addHotelRoomChangeItem(hotelId: ID!, roomChangeItem: RoomChangeItemInput!): Hotel
-    removeHotelRoomChangeItem(hotelId: ID!, roomChangeItemId: ID!): Hotel
-
-    addHotelSafeItem(hotelId: ID!, safeItem: SafeItemInput!): Hotel
-    removeHotelSafeItem(hotelId: ID!, safeItemId: ID!): Hotel
-
-    addHotelMaintenanceItem(hotelId: ID!, maintenanceItem: MaintenanceItemInput!): Hotel
-    removeHotelMaintenanceItem(hotelId: ID!, maintenanceItemId: ID!): Hotel
-
-    addHotelLostAndFoundItem(hotelId: ID!, lostAndFoundItem: LostAndFoundItemInput!): Hotel
-    removeHotelLostAndFoundItem(hotelId: ID!, lostAndFoundItemId: ID!): Hotel
   }
 
   #########################
@@ -293,7 +244,7 @@ export const typeDefs = gql`
     details: String
     room: String
     img: String
-    status: String
+    status: Boolean
     category: String
     categoryClone: String
   }
@@ -305,7 +256,7 @@ export const typeDefs = gql`
     details: String
     room: String
     img: String
-    status: String
+    status: Boolean
     category: String
     categoryClone: String
   }
@@ -318,7 +269,7 @@ export const typeDefs = gql`
     hour: String
     destination: String
     room: String
-    status: String
+    status: Boolean
     model: String
     modelClone: String
     pax: String
@@ -331,7 +282,7 @@ export const typeDefs = gql`
     hour: String
     destination: String
     room: String
-    status: String
+    status: Boolean
     model: String
     modelClone: String
     pax: String
@@ -345,7 +296,7 @@ export const typeDefs = gql`
     day: Float
     hour: String
     room: String
-    status: String
+    status: Boolean
   }
 
   input ClockItemInput {
@@ -355,7 +306,7 @@ export const typeDefs = gql`
     day: Float
     hour: String
     room: String
-    status: String
+    status: Boolean
   }
 
   type NoteItem {
@@ -403,7 +354,7 @@ export const typeDefs = gql`
     img: String
     place: String
     placeClone: String
-    status: String
+    status: Boolean
     category: String
   } 
 
@@ -415,7 +366,7 @@ export const typeDefs = gql`
     img: String
     place: String
     placeClone: String
-    status: String
+    status: Boolean
     category: String
   } 
 
@@ -596,5 +547,73 @@ export const typeDefs = gql`
     token: TokenInput
     userId: String!
     chatRoom: [ChatRoomMessageInput]
+  }
+  #########################
+  # Generic Item Type/Inputs
+
+  input GenericItemInput {
+    _id: ID
+    author: String
+    client: String
+    date: String
+    details: String
+    destination: String
+    description: String
+    hour: String
+    img: String
+    isChecked: Boolean
+    model: String
+    modelClone: String
+    pax: String
+    place: String
+    placeClone: String
+    reason: String
+    reasonClone: String
+    room: String
+    shift: String
+    shiftClone: String
+    state: String
+    status: Boolean
+    text: String
+    title: String
+    amount: String
+    category: String
+    categoryClone: String
+    day: Float
+    fromRoom: String
+    toRoom: String
+  }
+
+  type GenericItem {
+    _id: ID
+    author: String
+    client: String
+    date: String
+    details: String
+    destination: String
+    description: String
+    hour: String
+    img: String
+    isChecked: Boolean
+    model: String
+    modelClone: String
+    pax: String
+    place: String
+    placeClone: String
+    reason: String
+    reasonClone: String
+    room: String
+    shift: String
+    shiftClone: String
+    state: String
+    status: Boolean
+    text: String
+    title: String
+    amount: String
+    category: String
+    categoryClone: String
+    day: Float
+    fromRoom: String
+    toRoom: String
   }
 `;
