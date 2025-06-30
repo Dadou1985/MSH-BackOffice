@@ -34,9 +34,6 @@ export const typeDefs = gql`
       createHotel(input: HotelInput!): Hotel
       updateHotel(id: ID!, input: HotelInput!): Hotel
       deleteHotel(id: ID!): Boolean
-      updateHotelChecklist(hotelId: ID!, checklist: ChecklistInput!): Hotel
-      updateHotelHousekeeping(hotelId: ID!, housekeeping: HousekeepingInput!): Hotel
-      updateHotelChats(hotelId: ID!, chat: [ChatInput]!): Hotel
       addHotelFieldItem(hotelId: ID!, field: String!, item: GenericItemInput!): Hotel
       removeHotelFieldItem(hotelId: ID!, field: String!, itemId: ID!): Hotel
       updateHotelFieldItem(hotelId: ID!, field: String!, itemId: ID!, updates: GenericItemInput!): GenericItem
@@ -49,8 +46,26 @@ export const typeDefs = gql`
 
     # Chat-specific mutations
       addChatToHotel(hotelId: ID!, chat: ChatInput!): Hotel
+      updateChatFromHotel(hotelId: ID!, userId: String!, updates: ChatInput!): Chat
       removeChatFromHotel(hotelId: ID!, userId: String!): Hotel
       addMessageToChatRoom(hotelId: ID!, userId: String!, message: ChatRoomMessageInput!): Chat
+      updateChatRoomMessage(hotelId: ID!, userId: String!, messageId: ID!, updates: ChatRoomMessageInput!): ChatRoomMessage
+      deleteChatRoomMessage(hotelId: ID!, userId: String!, messageId: ID!): Chat
+
+    # Housekeeping-specific mutations
+      addHousekeepingItem(hotelId: ID!, category: String!, item: HousekeepingItemEntryInput!): [HousekeepingItemEntry]
+      updateHousekeepingItem(hotelId: ID!, category: String!, itemId: ID!, updates: HousekeepingItemEntryInput!): HousekeepingItemEntry
+      removeHousekeepingItem(hotelId: ID!, category: String!, itemId: ID!): [HousekeepingItemEntry]
+
+    # Guest User Mutations
+      createGuestUser(input: GuestUserInput!): GuestUser
+      updateGuestUser(id: ID!, input: GuestUserInput!): GuestUser
+      deleteGuestUser(id: ID!): Boolean
+
+    # Business User Mutations
+      createBusinessUser(input: BusinessUserInput!): BusinessUser
+      updateBusinessUser(id: ID!, input: BusinessUserInput!): BusinessUser
+      deleteBusinessUser(id: ID!): Boolean
   }
 
   #########################
@@ -125,8 +140,6 @@ export const typeDefs = gql`
   type ChecklistItem {
     task: String!
     status: Boolean!
-    createdAt: String
-    updatedAt: String
   }
 
   type Checklist {
@@ -154,8 +167,6 @@ export const typeDefs = gql`
     checkoutDate: String!
     client: String!
     room: String!
-    createdAt: String
-    updatedAt: String
   }
 
   input HousekeepingItemEntryInput {
@@ -203,6 +214,7 @@ export const typeDefs = gql`
     state: String
     status: Boolean
     toRoom: String
+    userId: String
   }
 
   input RoomChangeItemInput {
@@ -217,6 +229,7 @@ export const typeDefs = gql`
     state: String
     status: Boolean
     toRoom: String
+    userId: String
   }
 
   type SafeItem {
@@ -316,9 +329,10 @@ export const typeDefs = gql`
     hour: String
     img: String
     isChecked: Boolean
-    status: String
+    state: String
     text: String
     title: String
+    userId: String
   }
 
   input NoteItemInput {
@@ -327,9 +341,10 @@ export const typeDefs = gql`
     hour: String
     img: String
     isChecked: Boolean
-    status: String
+    state: String
     text: String
     title: String
+    userId: String
   }
 
   type StickerItem {
@@ -582,6 +597,7 @@ export const typeDefs = gql`
     day: Float
     fromRoom: String
     toRoom: String
+    userId: String
   }
 
   type GenericItem {
@@ -605,8 +621,8 @@ export const typeDefs = gql`
     room: String
     shift: String
     shiftClone: String
-    state: String
     status: Boolean
+    state: String
     text: String
     title: String
     amount: String
@@ -615,5 +631,6 @@ export const typeDefs = gql`
     day: Float
     fromRoom: String
     toRoom: String
+    userId: String
   }
 `;

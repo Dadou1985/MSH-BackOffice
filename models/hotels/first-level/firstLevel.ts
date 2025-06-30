@@ -176,7 +176,7 @@ const noteSchema = new mongoose.Schema({
         type: Boolean,
         required: true
       },
-      status: {
+      state: {
         type: String,
         default: 'default'
       },

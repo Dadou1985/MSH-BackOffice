@@ -108,6 +108,57 @@ export const resolvers = {
       return chatEntry;
     },
 
+    updateChatRoomMessage: async (_, { hotelId, userId, messageId, updates }) => {
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error("Hotel not found");
+
+      const chatEntry = hotel.chat.find(c => c.userId === userId);
+      if (!chatEntry) throw new Error("Chat not found for user");
+
+      const message = chatEntry.chatRoom.id(messageId);
+      if (!message) throw new Error("Message not found");
+
+      Object.assign(message, updates);
+      await hotel.save();
+      return message;
+    },
+
+    deleteChatRoomMessage: async (_, { hotelId, userId, messageId }) => {
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error("Hotel not found");
+
+      const chatEntry = hotel.chat.find(c => c.userId === userId);
+      if (!chatEntry) throw new Error("Chat not found for user");
+
+      const message = chatEntry.chatRoom.id(messageId);
+      if (!message) throw new Error("Message not found");
+
+      message.deleteOne();
+      await hotel.save();
+      return chatEntry;
+    },
+
+    addChatToHotel: async (_, { hotelId, chat }) => {
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error("Hotel not found");
+
+      hotel.chat.push(chat);
+      await hotel.save();
+      return hotel;
+    },
+
+    updateChatFromHotel: async (_, { hotelId, userId, updates }) => {
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error("Hotel not found");
+
+      const chatEntry = hotel.chat.find(c => c.userId === userId);
+      if (!chatEntry) throw new Error("Chat not found");
+
+      Object.assign(chatEntry, updates);
+      await hotel.save();
+      return chatEntry;
+    },
+
     // New mutations for updating specific hotel fields
     addHotelFieldItem: async (_, { hotelId, field, item }) => {
       const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
@@ -176,20 +227,87 @@ export const resolvers = {
       return item;
     },
 
-    updateHotelChecklist: async (_, { hotelId, checklist }) => {
-      const updatedHotel = await Hotel.findByIdAndUpdate(hotelId, { $set: { checklist } }, { new: true });
-      if (!updatedHotel) throw new Error("Hotel not found");
-      return updatedHotel;
+    // Housekeeping-specific mutations
+    addHousekeepingItem: async (_, { hotelId, category, item }) => {
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error("Hotel not found");
+
+      const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
+      if (!housekeepingCategories.includes(category)) {
+        throw new Error(`${category} is not a valid housekeeping category`);
+      }
+
+      if (!hotel.housekeeping[category]) {
+        throw new Error(`${category} is not a valid housekeeping category`);
+      }
+
+      hotel.housekeeping[category].push(item);
+      await hotel.save();
+      return hotel.housekeeping[category];
     },
-    updateHotelHousekeeping: async (_, { hotelId, housekeeping }) => {
-      const updatedHotel = await Hotel.findByIdAndUpdate(hotelId, { $set: { housekeeping } }, { new: true });
-      if (!updatedHotel) throw new Error("Hotel not found");
-      return updatedHotel;
+
+    updateHousekeepingItem: async (_, { hotelId, category, itemId, updates }) => {
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error("Hotel not found");
+
+      const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
+      if (!housekeepingCategories.includes(category)) {
+        throw new Error(`${category} is not a valid housekeeping category`);
+      }
+
+      const item = hotel.housekeeping[category]?.id(itemId);
+      if (!item) throw new Error("Housekeeping item not found");
+
+      Object.assign(item, updates);
+      await hotel.save();
+      return item;
     },
-    updateHotelChats: async (_, { hotelId, chat }) => {
-      const updatedHotel = await Hotel.findByIdAndUpdate(hotelId, { $set: { chat } }, { new: true });
-      if (!updatedHotel) throw new Error("Hotel not found");
-      return updatedHotel;
+
+    removeHousekeepingItem: async (_, { hotelId, category, itemId }) => {
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error("Hotel not found");
+
+      const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
+      if (!housekeepingCategories.includes(category)) {
+        throw new Error(`${category} is not a valid housekeeping category`);
+      }
+
+      if (!Array.isArray(hotel.housekeeping[category])) {
+        throw new Error(`${category} is not a valid housekeeping category`);
+      }
+
+      const item = hotel.housekeeping[category].id(itemId);
+      if (!item) throw new Error("Item not found");
+
+      item.deleteOne();
+      await hotel.save();
+      return hotel.housekeeping[category];
+    },
+
+    // GuestUser mutations
+    createGuestUser: async (_, { input }) => {
+      const newGuestUser = new GuestUser(input);
+      return await newGuestUser.save();
+    },
+    updateGuestUser: async (_, { id, input }) => {
+      return await GuestUser.findByIdAndUpdate(id, input, { new: true });
+    },
+    deleteGuestUser: async (_, { id }) => {
+      await GuestUser.findByIdAndDelete(id);
+      return true;
+    },
+
+    // BusinessUser mutations
+    createBusinessUser: async (_, { input }) => {
+      const newBusinessUser = new BusinessUser(input);
+      return await newBusinessUser.save();
+    },
+    updateBusinessUser: async (_, { id, input }) => {
+      return await BusinessUser.findByIdAndUpdate(id, input, { new: true });
+    },
+    deleteBusinessUser: async (_, { id }) => {
+      await BusinessUser.findByIdAndDelete(id);
+      return true;
     },
   },
 };
