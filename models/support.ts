@@ -24,7 +24,7 @@ const chatRoomSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const supportSchema = new mongoose.Schema({
-  hotellName: { type: String, required: true },
+  hotelName: { type: String, required: true },
   checkoutDate: {
     type: String, // Peut être vide, à valider si nécessaire
     default: ''

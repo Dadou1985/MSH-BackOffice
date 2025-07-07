@@ -66,6 +66,22 @@ export const typeDefs = gql`
       createBusinessUser(input: BusinessUserInput!): BusinessUser
       updateBusinessUser(id: ID!, input: BusinessUserInput!): BusinessUser
       deleteBusinessUser(id: ID!): Boolean
+
+    # Feedback Mutations
+      createFeedback(input: FeedbackInput!): Feedback
+      updateFeedback(id: ID!, input: FeedbackInput!): Feedback
+      deleteFeedback(id: ID!): Boolean
+      addFeedbackCategoryItem(feedbackId: ID!, field: String!, category: CategoryInput!): Feedback
+      updateFeedbackCategoryItem(feedbackId: ID!, field: String!, itemId: ID!, updates: CategoryInput!): Category
+      removeFeedbackCategoryItem(feedbackId: ID!, field: String!, itemId: ID!): Feedback
+
+    # Support Mutations
+      createSupport(input: SupportInput!): Support
+      updateSupport(id: ID!, updates: SupportInput!): Support
+      deleteSupport(id: ID!): Boolean
+      addMessageToSupportChatRoom(supportId: ID!, message: SupportRoomMessageInput!): Support
+      updateSupportChatRoomMessage(supportId: ID!, messageId: ID!, updates: SupportRoomMessageInput!): SupportRoomMessage
+      deleteSupportChatRoomMessage(supportId: ID!, messageId: ID!): Support
   }
 
   #########################
@@ -463,21 +479,142 @@ export const typeDefs = gql`
 
   type GuestUser {
     id: ID!
-    firstName: String!
-    lastName: String!
-    email: String!
-    roomNumber: String!
-    hotelId: String!
-    createdAt: String
-    updatedAt: String
+    notificationStatus: String
+    gender: String
+    photo: String
+    guestCategory: String
+    language: String
+    password: String
+    lastTimeConnected: Float
+    localLanguage: String
+    email: String
+    username: String
+    website: String
+    phone: String
+    babyBed: Boolean
+    towel: Boolean
+    pillow: Boolean
+    iron: Boolean
+    toiletPaper: Boolean
+    blanket: Boolean
+    soap: Boolean
+    hairDryer: Boolean
+    newConnection: Boolean
+    checkoutDate: String
+    room: String
+    hotelRegion: String
+    hotelPhone: String
+    hotelName: String
+    hotelId: String
+    hotelDept: String
+    classement: String
+    city: String
+    logo: String
+    hotelVisitedArray: [String]
+    journeyId: String
+    journey: [Journey]
+    token: [Token]
   }
 
   input GuestUserInput {
-    firstName: String!
-    lastName: String!
-    email: String!
-    roomNumber: String!
+    notificationStatus: String
+    gender: String
+    photo: String     
+    guestCategory: String
+    language: String
+    password: String
+    lastTimeConnected: Float 
+    localLanguage: String
+    email: String
+    username: String
+    website: String
+    phone: String
+    babyBed: Boolean 
+    towel: Boolean 
+    pillow: Boolean 
+    iron: Boolean 
+    toiletPaper: Boolean 
+    blanket: Boolean 
+    soap: Boolean 
+    hairDryer: Boolean 
+    newConnection: Boolean 
+    checkoutDate: String
+    room: String
+    hotelRegion: String
+    hotelPhone: String
+    hotelName: String
+    hotelId: String
+    hotelDept: String
+    classement: String
+    city: String
+    logo: String
+    hotelVisitedArray: [String]
+    journeyId: String
+    journey: [JourneyInput]
+    token: [TokenInput]
+  }
+
+  # Journey Input/Output Types
+  input JourneyInput {
+    cab: [CabJourneyInput]
+    clock: [ClockJourneyInput]
+    housekeeping: [String]
+    maintenace: [MaintenanceJourneyInput]
+    roomChange: [RoomChangeJourneyInput]
+  }
+
+  input CabJourneyInput {
+    carType: String!
+    destination: String!
+    hour: String!
+    pax: String!
+  }
+
+  input ClockJourneyInput {
+    hour: String!
+    date: String!
     hotelId: String!
+  }
+
+  input MaintenanceJourneyInput {
+    details: String!
+    reason: String!
+  }
+
+  input RoomChangeJourneyInput {
+    details: String!
+    reason: String!
+  }
+
+  type Journey {
+    cab: [CabJourney]
+    clock: [ClockJourney]
+    housekeeping: [String]
+    maintenace: [MaintenanceJourney]
+    roomChange: [RoomChangeJourney]
+  }
+
+  type CabJourney {
+    carType: String!
+    destination: String!
+    hour: String!
+    pax: String!
+  }
+
+  type ClockJourney {
+    hour: String!
+    date: String!
+    hotelId: String!
+  }
+
+  type MaintenanceJourney {
+    details: String!
+    reason: String!
+  }
+
+  type RoomChangeJourney {
+    details: String!
+    reason: String!
   }
 
   #########################
@@ -485,41 +622,79 @@ export const typeDefs = gql`
 
   type BusinessUser {
     id: ID!
-    email: String!
-    role: String!
-    hotelId: String!
+    country: String
     createdAt: String
+    username: String
+    website: String
+    mail: String
+    phone: String
+    adresse: String
+    email: String
+    password: String
+    pricingModel: String
+    language: String
+    base64Url: String
+    adminStatus: Boolean
+    code_postal: String
+    appLink: String
+    city: String
+    hotelDept: String
+    classement: String
+    logo: String
+    hotelId: String
+    hotelName: String
+    room: String
+    hotelRegion: String
     updatedAt: String
   }
 
   input BusinessUserInput {
-    email: String!
-    role: String!
-    hotelId: String!
+    country: String
+    username: String
+    website: String
+    mail: String
+    phone: String
+    adresse: String
+    email: String
+    password: String
+    pricingModel: String
+    language: String
+    base64Url: String
+    adminStatus: Boolean
+    code_postal: String
+    appLink: String
+    city: String
+    hotelDept: String
+    classement: String
+    logo: String
+    hotelId: String
+    hotelName: String
+    room: String
+    hotelRegion: String
   }
 
   #########################
   # Feedback Type Definitions
 
   type Category {
-    author: String!
-    hotelDept: String!
-    hotelName: String!
-    hotelRegion: String!
-    text: String!
+    author: String
+    hotelDept: String
+    hotelName: String
+    hotelRegion: String
+    text: String
   }
 
   input CategoryInput {
-    author: String!
-    hotelDept: String!
-    hotelName: String!
-    hotelRegion: String!
-    text: String!
+    author: String
+    hotelDept: String
+    hotelName: String
+    hotelRegion: String
+    text: String
   }
 
   type Feedback {
-    id: ID!
-    hotelId: String!
+    id: ID
+    hotelId: String
     satisfaction: [Category]
     improvement: [Category]
     createdAt: String
@@ -527,7 +702,7 @@ export const typeDefs = gql`
   }
 
   input FeedbackInput {
-    hotelId: String!
+    hotelId: String
     satisfaction: [CategoryInput]
     improvement: [CategoryInput]
   }
@@ -535,33 +710,44 @@ export const typeDefs = gql`
   #########################
   # Support Type Definitions
 
+  type SupportRoomMessage {
+    id: ID
+    author: String
+    date: String
+    email: String
+    photo: String
+    text: String
+  }
+
+  input SupportRoomMessageInput {
+    author: String
+    date: String
+    email: String
+    photo: String
+    text: String
+  }
+
   type Support {
     id: ID!
-    guestLanguage: String!
-    hotelResponding: Boolean!
-    isChatting: Boolean!
-    markup: Float!
-    room: String!
-    status: Boolean!
-    title: String!
-    token: Token
-    userId: String!
-    chatRoom: [ChatRoomMessage]
+    hotelName: String
+    checkoutDate: String
+    adminSpeak: Boolean
+    hotelId: String
+    status: Boolean
+    pricingModel: String
+    chatRoom: [SupportRoomMessage]
     createdAt: String
     updatedAt: String
   }
 
   input SupportInput {
-    guestLanguage: String!
-    hotelResponding: Boolean!
-    isChatting: Boolean!
-    markup: Float!
-    room: String!
-    status: Boolean!
-    title: String!
-    token: TokenInput
-    userId: String!
-    chatRoom: [ChatRoomMessageInput]
+    hotelName: String
+    checkoutDate: String
+    adminSpeak: Boolean
+    hotelId: String
+    status: Boolean
+    pricingModel: String
+    chatRoom: [SupportRoomMessageInput]
   }
   #########################
   # Generic Item Type/Inputs

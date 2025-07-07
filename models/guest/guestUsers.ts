@@ -9,7 +9,7 @@ const guestUserSchema = new mongoose.Schema({
   guestCategory: { type: String },
   language: { type: String },
   password: { type: String },
-  lastTimeConnected: { type: Date }, // converti depuis timestamp
+  lastTimeConnected: { type: String }, // changed from Date to String
   localLanguage: { type: String },
   email: { type: String },
   username: { type: String },
