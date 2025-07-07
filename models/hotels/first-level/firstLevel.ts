@@ -73,11 +73,11 @@ const maintenanceSchema = new mongoose.Schema({
         type: Boolean,
         required: true
       },
-      type: {
+      category: {
         type: String,
         required: true
       },
-      typeClone: {
+      categoryClone: {
         type: String,
         required: true
       }
@@ -176,7 +176,7 @@ const noteSchema = new mongoose.Schema({
         type: Boolean,
         required: true
       },
-      status: {
+      state: {
         type: String,
         default: 'default'
       },
@@ -242,7 +242,7 @@ const lostAndFoundSchema = new mongoose.Schema({
         type: Boolean,
         required: true
       },
-      type: {
+      category: {
         type: String,
         required: true
       }
