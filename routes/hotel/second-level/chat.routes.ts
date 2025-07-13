@@ -6,7 +6,7 @@ import {
   getChatRoomMessages,
   updateChatRoomMessage,
   deleteChatRoomMessage
-} from '../../../controllers/hotel/second-level/chat.controller.ts';
+} from '../../../controllers/hotel/second-level/chat.controller.js';
 
 const router = express.Router({ mergeParams: true });
 

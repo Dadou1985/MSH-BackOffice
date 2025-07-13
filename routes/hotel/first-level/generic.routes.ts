@@ -5,7 +5,7 @@ import {
     getFieldById,
     updateField,
     deleteField
-  } from '../../../controllers/hotel/first-level/firstLevel.controller.ts';
+  } from '../../../controllers/hotel/first-level/firstLevel.controller.js';
 
 const router = express.Router();
 

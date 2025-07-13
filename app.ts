@@ -1,25 +1,25 @@
 import express from 'express';
-import { PORT } from './config/env.ts';
-import { mongoConnect } from './utils/database.ts';
+import { PORT } from './config/env.js';
+import { mongoConnect } from './utils/database.js';
 import cookieParser from 'cookie-parser';
-import { errorMiddleware } from './middleware/errorMiddelware.ts';
+import { errorMiddleware } from './middleware/errorMiddelware.js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.ts';
-import { startApolloServer } from './graphql/server.ts';
+import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.js';
+import { startApolloServer } from './graphql/server.js';
 import helmet from 'helmet';
 import cors from 'cors';
 
 // Import des routes
-import hotelRoutes from './routes/hotel/hotel.routes.ts';
-import chatRoutes from './routes/hotel/second-level/chat.routes.ts';
-import checklistRoutes from './routes/hotel/second-level/checklist.routes.ts';
-import genericRoutes from './routes/hotel/first-level/generic.routes.ts';
-import supportRoutes from './routes/support.routes.ts';
-import feedbackRoutes from './routes/feedbacks.routes.ts';
-import businessUsersRoutes from './routes/user/businessUsers.routes.ts';
-import guestUsersRoutes from './routes/user/guestUsers.routes.ts';
-import housekeepingRoutes from './routes/hotel/second-level/housekeeping.routes.ts';
+import hotelRoutes from './routes/hotel/hotel.routes.js';
+import chatRoutes from './routes/hotel/second-level/chat.routes.js';
+import checklistRoutes from './routes/hotel/second-level/checklist.routes.js';
+import genericRoutes from './routes/hotel/first-level/generic.routes.js';
+import supportRoutes from './routes/support.routes.js';
+import feedbackRoutes from './routes/feedbacks.routes.js';
+import businessUsersRoutes from './routes/user/businessUsers.routes.js';
+import guestUsersRoutes from './routes/user/guestUsers.routes.js';
+import housekeepingRoutes from './routes/hotel/second-level/housekeeping.routes.js';
 
 const app = express();
 const allowedOrigins = [

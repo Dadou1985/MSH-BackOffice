@@ -4,7 +4,7 @@ import {
   getHousekeepingItems,
   updateHousekeepingItem,
   deleteHousekeepingItem,
-} from '../../../controllers/hotel/second-level/housekeeping.controller.ts';
+} from '../../../controllers/hotel/second-level/housekeeping.controller.js';
 
 const router = express.Router();
 

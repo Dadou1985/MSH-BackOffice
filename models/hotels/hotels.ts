@@ -9,10 +9,10 @@ import {
   noteSchema, 
   stickerSchema, 
   lostAndFoundSchema
-} from './first-level/firstLevel.ts';
-import { chatSchema } from './first-level/chat.ts';
-import { checklistSchema } from './first-level/checklist.ts';
-import { housekeepingSchema } from './first-level/housekeeping.ts';
+} from './first-level/firstLevel.js';
+import { chatSchema } from './first-level/chat.js';
+import { checklistSchema } from './first-level/checklist.js';
+import { housekeepingSchema } from './first-level/housekeeping.js';
 
 const hotelSchema = new mongoose.Schema({
     country: { type: String, required: true },

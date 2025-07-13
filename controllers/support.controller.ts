@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import Support from '../models/support.ts';
+import Support from '../models/support.js';
 
 // CREATE CHAT SUPPORT
 export const createSupportDocument = async (req: Request, res: Response) => {

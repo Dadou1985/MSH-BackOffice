@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import admin from 'firebase-admin'
-import Hotel from '../models/hotels/hotels.ts';
+import Hotel from '../models/hotels/hotels.js';
 const mongoDbUri = process.env.MONGODB_URI;
 const dbName = process.env.MONGO_DB_NAME;
 

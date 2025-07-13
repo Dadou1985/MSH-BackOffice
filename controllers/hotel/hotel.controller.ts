@@ -1,4 +1,4 @@
-import Hotel from "../../models/hotels/hotels.ts";
+import Hotel from "../../models/hotels/hotels.js";
 import type { Request, Response } from 'express';
 
 

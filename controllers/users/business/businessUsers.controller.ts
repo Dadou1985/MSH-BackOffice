@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import BusinessUsers from "../../../models/businessUsers.ts";
+import BusinessUsers from "../../../models/businessUsers.js";
 
 import type { Request, Response } from 'express';
 

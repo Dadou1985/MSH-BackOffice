@@ -12,11 +12,11 @@
   },
   "license": "ISC",
   "author": "David Simba",
-  "main": "dist/app.ts",
+  "main": "dist/app.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/app.ts",
+    "start": "node dist/app.js",
     "dev": "nodemon app.ts",
     "build": "tsc",
     "lint": "eslint .",

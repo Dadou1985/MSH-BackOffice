@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import Feedbacks from '../models/feedbacks.ts';
+import Feedbacks from '../models/feedbacks.js';
 
 const getCategoryArray = (fbCollection: any, category: string) => {
   if (!fbCollection || !fbCollection[category]) {
