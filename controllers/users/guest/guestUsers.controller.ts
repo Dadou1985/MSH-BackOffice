@@ -1,5 +1,5 @@
-import GuestUsers from "../../../models/guest/guestUsers.ts";
-import { io } from "../../../app.ts";
+import GuestUsers from "../../../models/guest/guestUsers.js";
+import { io } from "../../../app.js";
 
 import type { Request, Response } from 'express';
 

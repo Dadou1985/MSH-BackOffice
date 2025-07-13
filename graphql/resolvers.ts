@@ -1,10 +1,10 @@
-import Hotel from '../models/hotels/hotels.ts';
-import BusinessUser from '../models/businessUsers.ts';
-import GuestUser from '../models/guest/guestUsers.ts';
-import Support from '../models/support.ts';
-import Feedbacks from '../models/feedbacks.ts';
-import { getAllBusinessUsers } from '../controllers/users/business/businessUsers.controller.ts';
-import { io } from '../app.ts';
+import Hotel from '../models/hotels/hotels.js';
+import BusinessUser from '../models/businessUsers.js';
+import GuestUser from '../models/guest/guestUsers.js';
+import Support from '../models/support.js';
+import Feedbacks from '../models/feedbacks.js';
+import { getAllBusinessUsers } from '../controllers/users/business/businessUsers.controller.js';
+import { io } from '../app.js';
 
 import type {
   HotelType,

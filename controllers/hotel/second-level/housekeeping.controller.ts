@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import type { Server } from 'socket.io';
-import Hotel from '../../../models/hotels/hotels.ts';
-import { io } from '../../../app.ts';
+import Hotel from '../../../models/hotels/hotels.js';
+import { io } from '../../../app.js';
 
 // Helper to get the correct category (towel, pillow, etc.)
 const getCategoryArray = async(hotel: any, category: string) => {

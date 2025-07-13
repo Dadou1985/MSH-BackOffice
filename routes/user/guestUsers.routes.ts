@@ -5,7 +5,7 @@ import {
   createGuestUser,
   updateGuestUser,
   deleteGuestUser
-} from '../../controllers/users/guest/guestUsers.controller.ts';
+} from '../../controllers/users/guest/guestUsers.controller.js';
 
 const router = express.Router();
 

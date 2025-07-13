@@ -1,4 +1,4 @@
-// routes/support.routes.ts
+// routes/support.routes.js
 import express from 'express';
 import {
   createSupportDocument,
@@ -8,7 +8,7 @@ import {
   deleteSupportMessage,
   updateSupportDocument,
   getAllSupportDocuments
-} from '../controllers/support.controller.ts';
+} from '../controllers/support.controller.js';
 
 const router = express.Router();
 
