@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import Hotel from '../../../models/hotels/hotels.ts';
-import { io } from '../../../app.js';
+import { io } from '../../../app.ts';
 
 const getChecklistArray = async(hotel: any, period: any) => {
   if (!hotel.checklist) {

@@ -7,21 +7,23 @@ const dbName = process.env.MONGO_DB_NAME;
 
 console.log(dbName)
 
+const serviceAccount = {
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: (process.env.FIREBASE_PRIVATE_KEY ?? '').replace(/\\n/g, '\n'),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL
+} as admin.ServiceAccount;
+
 //Initialise Firestore
 admin.initializeApp({
-    credential: admin.credential.cert({
-      "type": process.env.FIREBASE_TYPE,
-      "project_id": process.env.FIREBASE_PROJECT_ID,
-      "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
-      "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Replace escaped newlines
-      "client_email": process.env.FIREBASE_CLIENT_EMAIL,
-      "client_id": process.env.FIREBASE_CLIENT_ID,
-      "auth_uri": process.env.FIREBASE_AUTH_URI,
-      "token_uri": process.env.FIREBASE_TOKEN_URI,
-      "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
-      "client_x509_cert_url": process.env.FIREBASE_CLIENT_CERT_URL
-    })
-  });
+  credential: admin.credential.cert(serviceAccount),
+});
+
 const firestore = admin.firestore();
 
 
@@ -56,7 +58,7 @@ const mongoConnect = async () => {
   // }
 
   try {
-    await mongoose.connect(mongoDbUri, { dbName: process.env.MONGO_DB_NAME, useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(mongoDbUri, { dbName: process.env.MONGO_DB_NAME});
     console.log('Connecté à MongoDB avec Mongoose');
   } catch (error) {
     console.error('Erreur de connexion à MongoDB:', error);
@@ -71,7 +73,7 @@ const migrate = async () => {
   
       const snapshot = await firestore.collection('guestUsers').get();
   
-      const docs = [];
+      const docs: any = [];
       snapshot.forEach(doc => {
         docs.push({ _id: doc.id, ...doc.data() }); 
         // _id: doc.id pour garder les ID Firestore, sinon MongoDB créera ses propres _id
@@ -90,15 +92,15 @@ const migrate = async () => {
     }
 }
 
-async function getSubCollectionsData(docRef) {
+async function getSubCollectionsData(docRef: any) {
   const subcollections = await docRef.listCollections();
-  const result = {};
+  const result: Record<string, any[]> = {};
 
   for (const subcol of subcollections) {
     const subSnapshot = await subcol.get();
     result[subcol.id] = [];
 
-    subSnapshot.forEach(subdoc => {
+    subSnapshot.forEach((subdoc: any) => {
       result[subcol.id].push({
         _id: subdoc.id,
         ...subdoc.data()
@@ -117,7 +119,7 @@ const deepMigration = async () => {
 
     const snapshot = await firestore.collection('guestUsers').get();
 
-    const docs = [];
+    const docs: any = [];
 
     for (const doc of snapshot.docs) {
       const data = doc.data();
@@ -169,7 +171,7 @@ const largeMigration = async () => {
         break;
       }
 
-      const docs = [];
+      const docs: any = [];
       snapshot.forEach(doc => {
         docs.push({ _id: new mongoose.Types.ObjectId(), ...doc.data() });
       });

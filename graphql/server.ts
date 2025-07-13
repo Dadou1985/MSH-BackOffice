@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
-import { typeDefs } from './typeDefs.js';
-import { resolvers } from './resolvers.js';
+import { typeDefs } from './typeDefs.ts';
+import { resolvers } from './resolvers.ts';
 
 export async function startApolloServer(app: any, io: any) {
     const server = new ApolloServer({

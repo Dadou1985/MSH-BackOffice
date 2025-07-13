@@ -4,7 +4,20 @@ import GuestUser from '../models/guest/guestUsers.ts';
 import Support from '../models/support.ts';
 import Feedbacks from '../models/feedbacks.ts';
 import { getAllBusinessUsers } from '../controllers/users/business/businessUsers.controller.ts';
-import { io } from '../app.js';
+import { io } from '../app.ts';
+
+import type {
+  HotelType,
+  GuestUserType,
+  BusinessUserType,
+  FeedbackType,
+  SupportType,
+  ChatRoomMessage,
+  HousekeepingItem,
+  ChecklistItem,
+  FeedbackCategory,
+  HotelFieldItem
+} from '../type/type.ts';
 
 export const resolvers = {
   Query: {
@@ -13,47 +26,50 @@ export const resolvers = {
       @returns {Promise<Hotel[]>} Liste des hôtels
     */
     getHotels: async () => await Hotel.find(),
-    getHotelById: async (_, { id }) => await Hotel.findById(id),
+    getHotelById: async (_: any, { id }: any) => await Hotel.findById(id),
     getFeedbacks: async () => await Feedbacks.find(),
-    getFeedbackById: async (_, { id }) => await Feedbacks.findOne({hotelId: id}),
+    getFeedbackById: async (_: any, { id }: any) => await Feedbacks.findOne({hotelId: id}),
     getSupports: async () => await Support.find(),
-    getSupportById: async (_, { id }) => await Support.findOne({hotelId: id}),
+    getSupportById: async (_: any, { id }: any) => await Support.findOne({hotelId: id}),
     getBusinessUsers: async () => await BusinessUser.find(),
-    getBusinessUserById: async (_, { id }) => await BusinessUser.findOne({userId: id}),
+    getBusinessUserById: async (_: any, { id }: any) => await BusinessUser.findOne({userId: id}),
 
     // Combined user queries
     getGuestUsers: async () => {
       const guestUsers = await GuestUser.find();
       return guestUsers
     },
-    getGuestUserById: async (_, { id }) => {
+    getGuestUserById: async (_: any, { id }: any) => {
       const guestUser = await GuestUser.findOne({userId: id});
       return guestUser;
     },
   },
 
   Mutation: {
-    createHotel: async (_, { input }) => {
+    createHotel: async (_: unknown, { input }: { input: HotelType }): Promise<HotelType> => {
       const newHotel = new Hotel(input);
       return await newHotel.save();
     },
-    updateHotel: async (_, { id, input }) => {
+    updateHotel: async (_: unknown, { id, input }: { id: string, input: Partial<HotelType> }): Promise<HotelType | null> => {
       return await Hotel.findByIdAndUpdate(id, input, { new: true });
     },
 
-    deleteHotel: async (_, { id }) => {
+    deleteHotel: async (_: unknown, { id }: { id: string }): Promise<string> => {
       const result = await Hotel.findByIdAndDelete(id);
       return "Hotel deleted";
     },
     // New mutations for updating specific hotel fields
-    addHotelFieldItem: async (_, { hotelId, field, item }) => {
+    addHotelFieldItem: async (
+      _: unknown,
+      { hotelId, field, item }: { hotelId: string; field: string; item: HotelFieldItem }
+    ): Promise<HotelType> => {
       const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
     
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not allowed or is not a list field`);
       }
     
-      const hotel = await Hotel.findById(hotelId);
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
     
       if (!Array.isArray(hotel[field])) {
@@ -65,21 +81,24 @@ export const resolvers = {
       io.to(hotelId).emit(`${field}Added`, item);
       return hotel;
     },
-    removeHotelFieldItem: async (_, { hotelId, field, itemId }) => {
+    removeHotelFieldItem: async (
+      _: unknown,
+      { hotelId, field, itemId }: { hotelId: string; field: string; itemId: string }
+    ): Promise<HotelType> => {
       const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
 
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not allowed or is not a list field`);
       }
 
-      const hotel = await Hotel.findById(hotelId);
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
       if (!Array.isArray(hotel[field])) {
         throw new Error(`${field} is not an array`);
       }
 
-      const item = hotel[field].id(itemId);
+      const item = hotel[field].find((item: any) => item.id === itemId);
       if (!item) {
         throw new Error(`Item with ID ${itemId} not found in ${field}`);
       }
@@ -89,21 +108,24 @@ export const resolvers = {
       io.to(hotelId).emit(`${field}Removed`, itemId);
       return hotel;
     },
-    updateHotelFieldItem: async (_, { hotelId, field, itemId, updates }) => {
+    updateHotelFieldItem: async (
+      _: unknown,
+      { hotelId, field, itemId, updates }: { hotelId: string; field: string; itemId: string; updates: Partial<HotelFieldItem> }
+    ): Promise<HotelFieldItem> => {
       const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
 
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not allowed or is not a list field`);
       }
 
-      const hotel = await Hotel.findById(hotelId);
+      const hotel: HotelType = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
       if (!Array.isArray(hotel[field])) {
         throw new Error(`${field} is not an array`);
       }
 
-      const item = hotel[field].id(itemId);
+      const item = hotel[field].find((item: any) => item.id === itemId);
       if (!item) {
         throw new Error(`Item with ID ${itemId} not found in ${field}`);
       }
@@ -114,8 +136,11 @@ export const resolvers = {
       return item;
     },
 
-    createChecklist: async (_, { hotelId, checklist }) => {
-        const hotel = await Hotel.findById(hotelId);
+    createChecklist: async (
+      _: unknown,
+      { hotelId, checklist }: { hotelId: string; checklist: Record<string, ChecklistItem[]> }
+    ): Promise<Record<string, ChecklistItem[]>> => {
+        const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
         hotel.checklist = checklist;
@@ -123,8 +148,11 @@ export const resolvers = {
         io.to(hotelId).emit(`checklistUpdated`, hotel.checklist);
         return hotel.checklist;
     },
-    addChecklistItem: async (_, { hotelId, period, item }) => {
-        const hotel = await Hotel.findById(hotelId);
+    addChecklistItem: async (
+      _: unknown,
+      { hotelId, period, item }: { hotelId: string; period: string; item: ChecklistItem }
+    ): Promise<ChecklistItem> => {
+        const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
         if (!hotel.checklist[period]) hotel.checklist[period] = [];
@@ -133,8 +161,11 @@ export const resolvers = {
         io.to(hotelId).emit(`checklistItemAdded`, { period, item });
         return item;
     },
-    updateChecklistItem: async (_, { hotelId, period, itemId, updates }) => {
-        const hotel = await Hotel.findById(hotelId);
+    updateChecklistItem: async (
+      _: unknown,
+      { hotelId, period, itemId, updates }: { hotelId: string; period: string; itemId: string; updates: Partial<ChecklistItem> }
+    ): Promise<ChecklistItem> => {
+        const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
         const item = hotel.checklist[period]?.id(itemId);
@@ -145,8 +176,11 @@ export const resolvers = {
         io.to(hotelId).emit(`checklistItemUpdated`, { period, item });
         return item;
     },
-    deleteChecklistItem: async (_, { hotelId, period, itemId }) => {
-        const hotel = await Hotel.findById(hotelId);
+    deleteChecklistItem: async (
+      _: unknown,
+      { hotelId, period, itemId }: { hotelId: string; period: string; itemId: string }
+    ): Promise<string> => {
+        const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
         hotel.checklist[period].pull(itemId);
@@ -156,21 +190,27 @@ export const resolvers = {
     },
 
     // Chat-specific mutations
-    removeChatFromHotel: async (_, { hotelId, userId }) => {
-      const hotel = await Hotel.findById(hotelId);
+    removeChatFromHotel: async (
+      _: unknown,
+      { hotelId, userId }: { hotelId: string; userId: string }
+    ): Promise<HotelType> => {
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
-      hotel.chat = hotel.chat.filter(c => c.userId !== userId);
+      hotel.chat = hotel.chat.filter((c: { userId: string; }) => c.userId !== userId);
       await hotel.save();
       io.to(hotelId).emit(`chatRemoved`, userId);
       return hotel;
     },
 
-    addMessageToChatRoom: async (_, { hotelId, userId, message }) => {
-      const hotel = await Hotel.findById(hotelId);
+    addMessageToChatRoom: async (
+      _: unknown,
+      { hotelId, userId, message }: { hotelId: string; userId: string; message: ChatRoomMessage }
+    ): Promise<any> => { // TODO: Replace 'any' with proper Chat type if available
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
-      const chatEntry = hotel.chat.find(c => c.userId === userId);
+      const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
       if (!chatEntry) throw new Error("Chat not found for user");
 
       chatEntry.chatRoom.push(message);
@@ -179,11 +219,14 @@ export const resolvers = {
       return chatEntry;
     },
 
-    updateChatRoomMessage: async (_, { hotelId, userId, messageId, updates }) => {
-      const hotel = await Hotel.findById(hotelId);
+    updateChatRoomMessage: async (
+      _: unknown,
+      { hotelId, userId, messageId, updates }: { hotelId: string; userId: string; messageId: string; updates: Partial<ChatRoomMessage> }
+    ): Promise<ChatRoomMessage> => {
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
-      const chatEntry = hotel.chat.find(c => c.userId === userId);
+      const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
       if (!chatEntry) throw new Error("Chat not found for user");
 
       const message = chatEntry.chatRoom.id(messageId);
@@ -195,11 +238,14 @@ export const resolvers = {
       return message;
     },
 
-    deleteChatRoomMessage: async (_, { hotelId, userId, messageId }) => {
-      const hotel = await Hotel.findById(hotelId);
+    deleteChatRoomMessage: async (
+      _: unknown,
+      { hotelId, userId, messageId }: { hotelId: string; userId: string; messageId: string }
+    ): Promise<any> => { // TODO: Replace 'any' with proper Chat type if available
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
-      const chatEntry = hotel.chat.find(c => c.userId === userId);
+      const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
       if (!chatEntry) throw new Error("Chat not found for user");
 
       const message = chatEntry.chatRoom.id(messageId);
@@ -211,8 +257,11 @@ export const resolvers = {
       return chatEntry;
     },
 
-    addChatToHotel: async (_, { hotelId, chat }) => {
-      const hotel = await Hotel.findById(hotelId);
+    addChatToHotel: async (
+      _: unknown,
+      { hotelId, chat }: { hotelId: string; chat: any } // TODO: Define Chat type in types.ts
+    ): Promise<HotelType> => {
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
       hotel.chat.push(chat);
@@ -221,11 +270,14 @@ export const resolvers = {
       return hotel;
     },
 
-    updateChatFromHotel: async (_, { hotelId, userId, updates }) => {
-      const hotel = await Hotel.findById(hotelId);
+    updateChatFromHotel: async (
+      _: unknown,
+      { hotelId, userId, updates }: { hotelId: string; userId: string; updates: Partial<any> } // TODO: Replace 'any' with Chat type
+    ): Promise<any> => { // TODO: Replace 'any' with Chat type
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
-      const chatEntry = hotel.chat.find(c => c.userId === userId);
+      const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
       if (!chatEntry) throw new Error("Chat not found");
 
       Object.assign(chatEntry, updates);
@@ -235,8 +287,11 @@ export const resolvers = {
     },
 
     // Housekeeping-specific mutations
-    addHousekeepingItem: async (_, { hotelId, category, item }) => {
-      const hotel = await Hotel.findById(hotelId);
+    addHousekeepingItem: async (
+      _: unknown,
+      { hotelId, category, item }: { hotelId: string; category: string; item: HousekeepingItem }
+    ): Promise<HousekeepingItem[]> => {
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
       const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
@@ -254,8 +309,11 @@ export const resolvers = {
       return hotel.housekeeping[category];
     },
 
-    updateHousekeepingItem: async (_, { hotelId, category, itemId, updates }) => {
-      const hotel = await Hotel.findById(hotelId);
+    updateHousekeepingItem: async (
+      _: unknown,
+      { hotelId, category, itemId, updates }: { hotelId: string; category: string; itemId: string; updates: Partial<HousekeepingItem> }
+    ): Promise<HousekeepingItem> => {
+      const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
       const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
@@ -272,8 +330,11 @@ export const resolvers = {
       return item;
     },
 
-    removeHousekeepingItem: async (_, { hotelId, category, itemId }) => {
-      const hotel = await Hotel.findById(hotelId);
+    removeHousekeepingItem: async (
+      _: unknown,
+      { hotelId, category, itemId }: { hotelId: string; category: string; itemId: string }
+    ): Promise<HousekeepingItem[]> => {
+      const hotel: HotelType = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
       const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
@@ -285,7 +346,7 @@ export const resolvers = {
         throw new Error(`${category} is not a valid housekeeping category`);
       }
 
-      const item = hotel.housekeeping[category].id(itemId);
+      const item = hotel.housekeeping[category].find((item: any) => item.id === itemId);
       if (!item) throw new Error("Item not found");
 
       item.deleteOne();
@@ -295,21 +356,30 @@ export const resolvers = {
     },
 
     // Feedback mutations
-    createFeedback: async (_, { input }) => {
+    createFeedback: async (
+      _: unknown,
+      { input }: { input: FeedbackType }
+    ): Promise<FeedbackType> => {
       const newFeedback = new Feedbacks(input);
       const savedFeedback = await newFeedback.save();
       io.to(savedFeedback.hotelId).emit(`feedbackCreated`, savedFeedback);
       return savedFeedback;
     },
-    updateFeedback: async (_, { id, input }) => {
+    updateFeedback: async (
+      _: unknown,
+      { id, input }: { id: string; input: Partial<FeedbackType> }
+    ): Promise<FeedbackType | null> => {
       const updatedFeedback = await Feedbacks.findByIdAndUpdate(id, input, { new: true });
       if (updatedFeedback) {
         io.to(updatedFeedback.hotelId).emit(`feedbackUpdated`, updatedFeedback);
       }
       return updatedFeedback;
     },
-    deleteFeedback: async (_, { id }) => {
-      const feedback = await Feedbacks.findById(id);
+    deleteFeedback: async (
+      _: unknown,
+      { id }: { id: string }
+    ): Promise<boolean> => {
+      const feedback: any = await Feedbacks.findById(id);
       if (!feedback) throw new Error("Feedback not found");
       await Feedbacks.findByIdAndDelete(id);
       io.to(feedback.hotelId).emit(`feedbackDeleted`, id);
@@ -317,13 +387,16 @@ export const resolvers = {
     },
 
     // Feedback Category mutations (generic for satisfaction & improvement)
-    addFeedbackCategoryItem: async (_, { feedbackId, field, category }) => {
+    addFeedbackCategoryItem: async (
+      _: unknown,
+      { feedbackId, field, category }: { feedbackId: string; field: string; category: FeedbackCategory }
+    ): Promise<FeedbackType> => {
       const allowedFields = ['satisfaction', 'improvement'];
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not a valid category field`);
       }
 
-      const feedback = await Feedbacks.findOne({hotelId: feedbackId});
+      const feedback: any = await Feedbacks.findOne({hotelId: feedbackId});
       if (!feedback) throw new Error("Feedback not found");
 
       feedback[field].push(category);
@@ -332,13 +405,16 @@ export const resolvers = {
       return feedback;
     },
 
-    updateFeedbackCategoryItem: async (_, { feedbackId, field, itemId, updates }) => {
+    updateFeedbackCategoryItem: async (
+      _: unknown,
+      { feedbackId, field, itemId, updates }: { feedbackId: string; field: string; itemId: string; updates: Partial<FeedbackCategory> }
+    ): Promise<FeedbackCategory> => {
       const allowedFields = ['satisfaction', 'improvement'];
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not a valid category field`);
       }
 
-      const feedback = await Feedbacks.findOne({hotelId: feedbackId});
+      const feedback: any = await Feedbacks.findOne({hotelId: feedbackId});
       if (!feedback) throw new Error("Feedback not found");
 
       const item = feedback[field].id(itemId);
@@ -350,13 +426,16 @@ export const resolvers = {
       return item;
     },
 
-    removeFeedbackCategoryItem: async (_, { feedbackId, field, itemId }) => {
+    removeFeedbackCategoryItem: async (
+      _: unknown,
+      { feedbackId, field, itemId }: { feedbackId: string; field: string; itemId: string }
+    ): Promise<FeedbackType> => {
       const allowedFields = ['satisfaction', 'improvement'];
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not a valid category field`);
       }
 
-      const feedback = await Feedbacks.findOne({hotelId: feedbackId});
+      const feedback: any = await Feedbacks.findOne({hotelId: feedbackId});
       if (!feedback) throw new Error("Feedback not found");
 
       const item = feedback[field].id(itemId);
@@ -369,53 +448,83 @@ export const resolvers = {
     },
 
     // GuestUser mutations
-    createGuestUser: async (_, { input }) => {
+    createGuestUser: async (
+      _: unknown,
+      { input }: { input: GuestUserType }
+    ): Promise<GuestUserType> => {
       const newGuestUser = new GuestUser(input);
       return await newGuestUser.save();
     },
-    updateGuestUser: async (_, { id, input }) => {
+    updateGuestUser: async (
+      _: unknown,
+      { id, input }: { id: string; input: Partial<GuestUserType> }
+    ): Promise<GuestUserType | null> => {
       return await GuestUser.findByIdAndUpdate(id, input, { new: true });
     },
-    deleteGuestUser: async (_, { id }) => {
+    deleteGuestUser: async (
+      _: unknown,
+      { id }: { id: string }
+    ): Promise<boolean> => {
       await GuestUser.findByIdAndDelete(id);
       return true;
     },
 
     // BusinessUser mutations
-    createBusinessUser: async (_, { input }) => {
+    createBusinessUser: async (
+      _: unknown,
+      { input }: { input: BusinessUserType }
+    ): Promise<BusinessUserType> => {
       const newBusinessUser = new BusinessUser(input);
       return await newBusinessUser.save();
     },
-    updateBusinessUser: async (_, { id, input }) => {
+    updateBusinessUser: async (
+      _: unknown,
+      { id, input }: { id: string; input: Partial<BusinessUserType> }
+    ): Promise<BusinessUserType | null> => {
       return await BusinessUser.findByIdAndUpdate(id, input, { new: true });
     },
-    deleteBusinessUser: async (_, { id }) => {
+    deleteBusinessUser: async (
+      _: unknown,
+      { id }: { id: string }
+    ): Promise<boolean> => {
       await BusinessUser.findByIdAndDelete(id);
       return true;
     },
 
     // Support-specific mutations
-    createSupport: async (_, { input }) => {
+    createSupport: async (
+      _: unknown,
+      { input }: { input: SupportType }
+    ): Promise<SupportType> => {
       const newSupport = new Support(input);
       const savedSupport = await newSupport.save();
       io.to(savedSupport.hotelId).emit(`supportCreated`, savedSupport);
       return savedSupport;
     },
-    updateSupport: async (_, { id, updates }) => {
+    updateSupport: async (
+      _: unknown,
+      { id, updates }: { id: string; updates: Partial<SupportType> }
+    ): Promise<SupportType | null> => {
       const updatedSupport = await Support.findByIdAndUpdate(id, updates, { new: true });
       if (updatedSupport) {
         io.to(updatedSupport.hotelId).emit(`supportUpdated`, updatedSupport);
       }
       return updatedSupport;
     },
-    deleteSupport: async (_, { id }) => {
+    deleteSupport: async (
+      _: unknown,
+      { id }: { id: string }
+    ): Promise<boolean> => {
       const support = await Support.findById(id);
       if (!support) throw new Error("Support not found");
       await Support.findByIdAndDelete(id);
       io.to(support.hotelId).emit(`supportDeleted`, id);
       return true;
     },
-    addMessageToSupportChatRoom: async (_, { supportId, message }) => {
+    addMessageToSupportChatRoom: async (
+      _: unknown,
+      { supportId, message }: { supportId: string; message: any } // TODO: Define SupportChatRoomMessage type in types.ts
+    ): Promise<SupportType> => {
       const support = await Support.findOne({hotelId: supportId});
       if (!support) throw new Error("Support not found");
 
@@ -424,7 +533,10 @@ export const resolvers = {
       io.to(supportId).emit(`supportChatRoomMessageAdded`, message);
       return support;
     },
-    updateSupportChatRoomMessage: async (_, { supportId, messageId, updates }) => {
+    updateSupportChatRoomMessage: async (
+      _: unknown,
+      { supportId, messageId, updates }: { supportId: string; messageId: string; updates: Partial<any> } // TODO: Define SupportChatRoomMessage type
+    ): Promise<any> => { // TODO: Replace 'any' with SupportChatRoomMessage type
       const support = await Support.findOne({hotelId: supportId});
       if (!support) throw new Error("Support not found");
 
@@ -436,7 +548,10 @@ export const resolvers = {
       io.to(supportId).emit(`supportChatRoomMessageUpdated`, message);
       return message;
     },
-    deleteSupportChatRoomMessage: async (_, { supportId, messageId }) => {
+    deleteSupportChatRoomMessage: async (
+      _: unknown,
+      { supportId, messageId }: { supportId: string; messageId: string }
+    ): Promise<SupportType> => {
       const support = await Support.findOne({hotelId: supportId});
       if (!support) throw new Error("Support not found");
 

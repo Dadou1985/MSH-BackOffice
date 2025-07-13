@@ -14,5 +14,5 @@ const feedbacksSchema = new mongoose.Schema({
   improvement: [categorySchema], // Attention : corrige si c’est une faute
 }, { timestamps: true });
 
-const Feedbacks = mongoose.model('feedbacks', feedbacksSchema);
+const Feedbacks = mongoose.model('Feedbacks', feedbacksSchema);
 export default Feedbacks;

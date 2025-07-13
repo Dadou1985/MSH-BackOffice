@@ -27,6 +27,7 @@
     "lint:fix:check:all:all": "eslint . --fix --check --ext .js,.jsx,.ts,.tsx --ignore-pattern node_modules/"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^24.0.13",

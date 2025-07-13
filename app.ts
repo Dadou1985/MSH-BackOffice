@@ -1,11 +1,11 @@
 import express from 'express';
-import { PORT } from './config/env.js';
-import { mongoConnect } from './utils/database.js';
+import { PORT } from './config/env.ts';
+import { mongoConnect } from './utils/database.ts';
 import cookieParser from 'cookie-parser';
-import { errorMiddleware } from './middleware/errorMiddelware.js';
+import { errorMiddleware } from './middleware/errorMiddelware.ts';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.js';
+import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.ts';
 import { startApolloServer } from './graphql/server.ts';
 import helmet from 'helmet';
 import cors from 'cors';
