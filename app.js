@@ -7,6 +7,8 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.js';
 import { startApolloServer } from './graphql/server.ts';
+import helmet from 'helmet';
+import { ApolloServer } from "apollo-server-express";
 
 // Import des routes
 import hotelRoutes from './routes/hotel/hotel.routes.ts';
@@ -36,7 +38,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(errorMiddleware);
-await startApolloServer(app);
+app.use(helmet()); // Sécurise l'application en définissant des en-têtes HTTP appropriés
+await startApolloServer(app, io);
 
 // app.use('/api/v1/hotel', hotelRoutes);
 // app.use('/api/v1/chat', chatRoutes);
