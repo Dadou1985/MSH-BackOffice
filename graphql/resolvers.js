@@ -4,6 +4,7 @@ import GuestUser from '../models/guest/guestUsers.ts';
 import Support from '../models/support.ts';
 import Feedbacks from '../models/feedbacks.ts';
 import { getAllBusinessUsers } from '../controllers/users/business/businessUsers.controller.ts';
+import { io } from '../app.js';
 
 export const resolvers = {
   Query: {
@@ -61,6 +62,7 @@ export const resolvers = {
     
       hotel[field].push(item);
       await hotel.save();
+      io.to(hotelId).emit(`${field}Added`, item);
       return hotel;
     },
     removeHotelFieldItem: async (_, { hotelId, field, itemId }) => {
@@ -84,6 +86,7 @@ export const resolvers = {
 
       item.deleteOne();
       await hotel.save();
+      io.to(hotelId).emit(`${field}Removed`, itemId);
       return hotel;
     },
     updateHotelFieldItem: async (_, { hotelId, field, itemId, updates }) => {
@@ -107,6 +110,7 @@ export const resolvers = {
 
       Object.assign(item, updates);
       await hotel.save();
+      io.to(hotelId).emit(`${field}Updated`, item);
       return item;
     },
 
@@ -116,6 +120,7 @@ export const resolvers = {
 
         hotel.checklist = checklist;
         await hotel.save();
+        io.to(hotelId).emit(`checklistUpdated`, hotel.checklist);
         return hotel.checklist;
     },
     addChecklistItem: async (_, { hotelId, period, item }) => {
@@ -125,6 +130,7 @@ export const resolvers = {
         if (!hotel.checklist[period]) hotel.checklist[period] = [];
         hotel.checklist[period].push(item);
         await hotel.save();
+        io.to(hotelId).emit(`checklistItemAdded`, { period, item });
         return item;
     },
     updateChecklistItem: async (_, { hotelId, period, itemId, updates }) => {
@@ -136,6 +142,7 @@ export const resolvers = {
 
         Object.assign(item, updates);
         await hotel.save();
+        io.to(hotelId).emit(`checklistItemUpdated`, { period, item });
         return item;
     },
     deleteChecklistItem: async (_, { hotelId, period, itemId }) => {
@@ -144,6 +151,7 @@ export const resolvers = {
 
         hotel.checklist[period].pull(itemId);
         await hotel.save();
+        io.to(hotelId).emit(`checklistItemDeleted`, { period, itemId });
         return "Item deleted";
     },
 
@@ -154,6 +162,7 @@ export const resolvers = {
 
       hotel.chat = hotel.chat.filter(c => c.userId !== userId);
       await hotel.save();
+      io.to(hotelId).emit(`chatRemoved`, userId);
       return hotel;
     },
 
@@ -166,6 +175,7 @@ export const resolvers = {
 
       chatEntry.chatRoom.push(message);
       await hotel.save();
+      io.to(hotelId).emit(`chatRoomMessageAdded`, { userId, message });
       return chatEntry;
     },
 
@@ -181,6 +191,7 @@ export const resolvers = {
 
       Object.assign(message, updates);
       await hotel.save();
+      io.to(hotelId).emit(`chatRoomMessageUpdated`, { userId, message });
       return message;
     },
 
@@ -196,6 +207,7 @@ export const resolvers = {
 
       message.deleteOne();
       await hotel.save();
+      io.to(hotelId).emit(`chatRoomMessageDeleted`, { userId, messageId });
       return chatEntry;
     },
 
@@ -205,6 +217,7 @@ export const resolvers = {
 
       hotel.chat.push(chat);
       await hotel.save();
+      io.to(hotelId).emit(`chatAdded`, chat);
       return hotel;
     },
 
@@ -217,6 +230,7 @@ export const resolvers = {
 
       Object.assign(chatEntry, updates);
       await hotel.save();
+      io.to(hotelId).emit(`chatUpdated`, { userId, updates });
       return chatEntry;
     },
 
@@ -236,6 +250,7 @@ export const resolvers = {
 
       hotel.housekeeping[category].push(item);
       await hotel.save();
+      io.to(hotelId).emit(`housekeepingItemAdded`, { category, item });
       return hotel.housekeeping[category];
     },
 
@@ -253,6 +268,7 @@ export const resolvers = {
 
       Object.assign(item, updates);
       await hotel.save();
+      io.to(hotelId).emit(`housekeepingItemUpdated`, { category, item });
       return item;
     },
 
@@ -274,19 +290,29 @@ export const resolvers = {
 
       item.deleteOne();
       await hotel.save();
+      io.to(hotelId).emit(`housekeepingItemRemoved`, { category, itemId });
       return hotel.housekeeping[category];
     },
 
     // Feedback mutations
     createFeedback: async (_, { input }) => {
       const newFeedback = new Feedbacks(input);
-      return await newFeedback.save();
+      const savedFeedback = await newFeedback.save();
+      io.to(savedFeedback.hotelId).emit(`feedbackCreated`, savedFeedback);
+      return savedFeedback;
     },
     updateFeedback: async (_, { id, input }) => {
-      return await Feedbacks.findByIdAndUpdate(id, input, { new: true });
+      const updatedFeedback = await Feedbacks.findByIdAndUpdate(id, input, { new: true });
+      if (updatedFeedback) {
+        io.to(updatedFeedback.hotelId).emit(`feedbackUpdated`, updatedFeedback);
+      }
+      return updatedFeedback;
     },
     deleteFeedback: async (_, { id }) => {
+      const feedback = await Feedbacks.findById(id);
+      if (!feedback) throw new Error("Feedback not found");
       await Feedbacks.findByIdAndDelete(id);
+      io.to(feedback.hotelId).emit(`feedbackDeleted`, id);
       return true;
     },
 
@@ -302,6 +328,7 @@ export const resolvers = {
 
       feedback[field].push(category);
       await feedback.save();
+      io.to(feedback.hotelId).emit(`feedbackCategoryItemAdded`, { field, category });
       return feedback;
     },
 
@@ -319,6 +346,7 @@ export const resolvers = {
 
       Object.assign(item, updates);
       await feedback.save();
+      io.to(feedback.hotelId).emit(`feedbackCategoryItemUpdated`, { field, item });
       return item;
     },
 
@@ -336,6 +364,7 @@ export const resolvers = {
 
       item.deleteOne();
       await feedback.save();
+      io.to(feedback.hotelId).emit(`feedbackCategoryItemRemoved`, { field, itemId });
       return feedback;
     },
 
@@ -368,13 +397,22 @@ export const resolvers = {
     // Support-specific mutations
     createSupport: async (_, { input }) => {
       const newSupport = new Support(input);
-      return await newSupport.save();
+      const savedSupport = await newSupport.save();
+      io.to(savedSupport.hotelId).emit(`supportCreated`, savedSupport);
+      return savedSupport;
     },
     updateSupport: async (_, { id, updates }) => {
-      return await Support.findByIdAndUpdate(id, updates, { new: true });
+      const updatedSupport = await Support.findByIdAndUpdate(id, updates, { new: true });
+      if (updatedSupport) {
+        io.to(updatedSupport.hotelId).emit(`supportUpdated`, updatedSupport);
+      }
+      return updatedSupport;
     },
     deleteSupport: async (_, { id }) => {
+      const support = await Support.findById(id);
+      if (!support) throw new Error("Support not found");
       await Support.findByIdAndDelete(id);
+      io.to(support.hotelId).emit(`supportDeleted`, id);
       return true;
     },
     addMessageToSupportChatRoom: async (_, { supportId, message }) => {
@@ -383,6 +421,7 @@ export const resolvers = {
 
       support.chatRoom.push(message);
       await support.save();
+      io.to(supportId).emit(`supportChatRoomMessageAdded`, message);
       return support;
     },
     updateSupportChatRoomMessage: async (_, { supportId, messageId, updates }) => {
@@ -394,6 +433,7 @@ export const resolvers = {
 
       Object.assign(message, updates);
       await support.save();
+      io.to(supportId).emit(`supportChatRoomMessageUpdated`, message);
       return message;
     },
     deleteSupportChatRoomMessage: async (_, { supportId, messageId }) => {
@@ -405,6 +445,7 @@ export const resolvers = {
 
       message.deleteOne();
       await support.save();
+      io.to(supportId).emit(`supportChatRoomMessageDeleted`, messageId);
       return support;
     },
   },

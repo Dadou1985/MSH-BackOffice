@@ -2,11 +2,15 @@ import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './typeDefs.js';
 import { resolvers } from './resolvers.js';
 
-export async function startApolloServer(app) {
+export async function startApolloServer(app, io) {
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-    });
+        context: ({ req }) => ({
+          req,
+          io // ⬅️ injecte l'instance de Socket.IO dans le contexte
+        })
+      });
 
     await server.start();
     server.applyMiddleware({ app, path: '/graphql' });
