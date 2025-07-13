@@ -6,7 +6,7 @@ export async function startApolloServer(app: any, io: any) {
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        context: ({ req }) => ({
+        context: ({ req }: any) => ({
           req,
           io // ⬅️ injecte l'instance de Socket.IO dans le contexte
         })
