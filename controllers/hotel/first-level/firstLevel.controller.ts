@@ -1,7 +1,9 @@
-import Hotel from "../../../models/hotels/hotels";
+import Hotel from "../../../models/hotels/hotels.ts";
 import { io } from '../../../app.js'; // Import your socket.io instance
 
-const handleCreteField = (field, hotel, data) => {
+import type { Request, Response } from 'express';
+
+const handleCreteField = (field: String, hotel: any, data: any) => {
     switch (field) {
         case 'cab':
             hotel.cab.push(data);
@@ -36,7 +38,7 @@ const handleCreteField = (field, hotel, data) => {
     }
 }
 
-const createField = async (req, res) => {
+const createField = async (req: Request, res: Response) => {
     const { hotelId, field } = req.params;
     const data = req.body;
     // const io = req.app.get('io'); // ⬅️ Récupération de l'instance Socket.IO
@@ -62,7 +64,7 @@ const createField = async (req, res) => {
     }
 }
 
-const handleGetAllFields = async (field, hotel) => {
+const handleGetAllFields = async (field: String, hotel: any) => {
     switch (field) {
         case 'cab':
             return hotel.cab;
@@ -88,7 +90,7 @@ const handleGetAllFields = async (field, hotel) => {
     }
 }
 
-const getAllFields = async (req, res) => {
+const getAllFields = async (req: Request, res: Response) => {
     const { hotelId, field } = req.params;
 
     try {
@@ -108,7 +110,7 @@ const getAllFields = async (req, res) => {
     }
 }
 
-const handleGetFieldById = async (field, hotel, id) => {
+const handleGetFieldById = async (field: String, hotel: any, id: any) => {
     switch (field) {
         case 'cab':
             return hotel.cab.id(id);
@@ -138,7 +140,7 @@ const handleGetFieldById = async (field, hotel, id) => {
     }
 }
 
-const getFieldById = async (req, res) => {
+const getFieldById = async (req: Request, res: Response) => {
     const { hotelId, field, id } = req.params;
 
     try {
@@ -155,7 +157,7 @@ const getFieldById = async (req, res) => {
     }
 }
 
-const handleUpdateField = (field, hotel, id, data) => {
+const handleUpdateField = (field: String, hotel: any, id: any, data: any) => {
     switch (field) {
         case 'cab':
             return hotel.cab.id(id).set(data);
@@ -181,7 +183,7 @@ const handleUpdateField = (field, hotel, id, data) => {
     }
 }
 
-const updateField = async (req, res) => {
+const updateField = async (req: Request, res: Response) => {
     const { hotelId, field, id } = req.params;
     const data = req.body;
     // const io = req.app.get('io'); // ⬅️ Récupération de l'instance Socket.IO
@@ -206,7 +208,7 @@ const updateField = async (req, res) => {
     }
 }
 
-const handleDeleteField = (field, hotel, id) => {
+const handleDeleteField = (field: String, hotel: any, id: any) => {
     switch (field) {
         case 'cab':
             return hotel?.cab?.id(id)?.deleteOne();
@@ -232,7 +234,7 @@ const handleDeleteField = (field, hotel, id) => {
     }
 }
 
-const deleteField = async (req, res) => {
+const deleteField = async (req: Request, res: Response) => {
     const { hotelId, field, id } = req.params;
     // const io = req.app.get('io'); // ⬅️ Récupération de l'instance Socket.IO
     
@@ -252,7 +254,8 @@ const deleteField = async (req, res) => {
         io.to(hotelId).emit(`${field}Deleted`, id);
         res.status(201).json(hotel);
     } catch (error) {
-        res.status(500).json({ message: error.message || "Error deleting field" });
+        const errorMessage = error instanceof Error ? error.message : "Error deleting field";
+        res.status(500).json({ message: errorMessage });
     }
 }
 

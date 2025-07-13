@@ -1,7 +1,10 @@
 import GuestUsers from "../../../models/guest/guestUsers.ts";
 import { io } from "../../../app.js";
 
-const getAllGuestUsers = async (req, res) => {
+import type { Request, Response } from 'express';
+
+
+const getAllGuestUsers = async (req: Request, res: Response) => {
     try {
         const guestUsers = await GuestUsers.find();
         if (!guestUsers || guestUsers.length === 0) {
@@ -13,7 +16,7 @@ const getAllGuestUsers = async (req, res) => {
     }
 }
 
-const getGuestUserById = async (req, res) => {
+const getGuestUserById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const guestUser = await GuestUsers.findById(id);
@@ -26,7 +29,7 @@ const getGuestUserById = async (req, res) => {
     }
 }
 
-const createGuestUser = async (req, res) => {
+const createGuestUser = async (req: Request, res: Response) => {
     const guestUserData = req.body;
     try {
         const newGuestUser = new GuestUsers(guestUserData);
@@ -40,7 +43,7 @@ const createGuestUser = async (req, res) => {
     }
 }
 
-const updateGuestUser = async (req, res) => {
+const updateGuestUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     const guestUserData = req.body;
     try {
@@ -58,7 +61,7 @@ const updateGuestUser = async (req, res) => {
     }
 }
 
-const deleteGuestUser = async (req, res) => {
+const deleteGuestUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const deletedGuestUser = await GuestUsers.findByIdAndDelete(id);

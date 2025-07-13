@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 import BusinessUsers from "../../../models/businessUsers.ts";
 
-const getAllBusinessUsers = async (req, res) => {
+import type { Request, Response } from 'express';
+
+const getAllBusinessUsers = async (req: Request, res: Response) => {
     try {
         const businessUsers = await BusinessUsers.find();
         if (!businessUsers || businessUsers.length === 0) {
@@ -13,7 +15,7 @@ const getAllBusinessUsers = async (req, res) => {
     }
 }
 
-const getBusinessUserById = async (req, res) => {
+const getBusinessUserById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
           
@@ -27,7 +29,7 @@ const getBusinessUserById = async (req, res) => {
     }
 }
 
-const createBusinessUser = async (req, res) => {
+const createBusinessUser = async (req: Request, res: Response) => {
     const businessUserData = req.body;
     try {
         const newBusinessUser = new BusinessUsers(businessUserData);
@@ -38,7 +40,7 @@ const createBusinessUser = async (req, res) => {
     }
 }
 
-const updateBusinessUser = async (req, res) => {
+const updateBusinessUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     const businessUserData = req.body;
     try {
@@ -53,7 +55,7 @@ const updateBusinessUser = async (req, res) => {
     }
 }
 
-const deleteBusinessUser = async (req, res) => {
+const deleteBusinessUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const deletedBusinessUser = await BusinessUsers.findByIdAndDelete(id);
