@@ -1,4 +1,4 @@
-import Hotel from "../../../models/hotels/hotels.ts";
+import Hotel from "../../../models/hotels/hotels";
 import { io } from '../../../app.js'; // Import your socket.io instance
 
 const handleCreteField = (field, hotel, data) => {

@@ -8,7 +8,7 @@ import { Server } from 'socket.io';
 import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.js';
 import { startApolloServer } from './graphql/server.ts';
 import helmet from 'helmet';
-import { ApolloServer } from "apollo-server-express";
+import cors from 'cors';
 
 // Import des routes
 import hotelRoutes from './routes/hotel/hotel.routes.ts';
@@ -22,10 +22,15 @@ import guestUsersRoutes from './routes/user/guestUsers.routes.ts';
 import housekeepingRoutes from './routes/hotel/second-level/housekeeping.routes.ts';
 
 const app = express();
+const allowedOrigins = [
+    'https://mysweethotelpro.web.app', // ton front MSH-Pro en production
+    'https://mysweethotel.eu', // ton front MSH en production
+    'http://localhost:3000'           // ton front en dev local
+  ];
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: '*',
+        origin: allowedOrigins,
         methods: ['GET', 'POST'],
     },
 });
@@ -39,6 +44,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(errorMiddleware);
 app.use(helmet()); // Sécurise l'application en définissant des en-têtes HTTP appropriés
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
 await startApolloServer(app, io);
 
 // app.use('/api/v1/hotel', hotelRoutes);
