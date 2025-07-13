@@ -1,5 +1,5 @@
 import Hotel from "../../../models/hotels/hotels.ts";
-import { io } from '../../../app.js'; // Import your socket.io instance
+import { io } from '../../../app.ts'; // Import your socket.io instance
 
 import type { Request, Response } from 'express';
 

@@ -1,0 +1,10 @@
+export type HotelType = any;
+export type GuestUserType = any;
+export type BusinessUserType = any;
+export type FeedbackType = any;
+export type SupportType = any;
+export type ChatRoomMessage = any;
+export type HousekeepingItem = any;
+export type ChecklistItem = any;
+export type FeedbackCategory = any;
+export type HotelFieldItem = any;
