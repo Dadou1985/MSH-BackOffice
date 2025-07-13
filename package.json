@@ -24,8 +24,7 @@
     "lint:check": "eslint . --check",
     "lint:fix:check": "eslint . --fix --check",
     "lint:fix:check:all": "eslint . --fix --check --ext .js,.jsx,.ts,.tsx",
-    "lint:fix:check:all:all": "eslint . --fix --check --ext .js,.jsx,.ts,.tsx --ignore-pattern node_modules/",
-    "type": "commonjs"
+    "lint:fix:check:all:all": "eslint . --fix --check --ext .js,.jsx,.ts,.tsx --ignore-pattern node_modules/"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
