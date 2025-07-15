@@ -82,6 +82,11 @@ export const typeDefs = gql`
       addMessageToSupportChatRoom(supportId: ID!, message: SupportRoomMessageInput!): Support
       updateSupportChatRoomMessage(supportId: ID!, messageId: ID!, updates: SupportRoomMessageInput!): SupportRoomMessage
       deleteSupportChatRoomMessage(supportId: ID!, messageId: ID!): Support
+    
+    # Log User Mutations
+      loginUser(email: String!, password: String!): String
+      logoutUser: Boolean
+
   }
 
   #########################
