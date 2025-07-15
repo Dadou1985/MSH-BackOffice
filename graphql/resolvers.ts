@@ -4,6 +4,8 @@ import GuestUser from '../models/guest/guestUsers.js';
 import Support from '../models/support.js';
 import Feedbacks from '../models/feedbacks.js';
 import { io } from '../app.js';
+import { generateToken } from '../utils/jwt.js';
+import redisClient from '../utils/redisClient.js';
 
 import type {
   HotelType,
@@ -24,44 +26,138 @@ export const resolvers = {
       Récupère tous les hôtels
       @returns {Promise<Hotel[]>} Liste des hôtels
     */
-    getHotels: async () => await Hotel.find(),
-    getHotelById: async (_: any, { id }: any) => await Hotel.findById(id),
-    getFeedbacks: async () => await Feedbacks.find(),
-    getFeedbackById: async (_: any, { id }: any) => await Feedbacks.findOne({hotelId: id}),
-    getSupports: async () => await Support.find(),
-    getSupportById: async (_: any, { id }: any) => await Support.findOne({hotelId: id}),
-    getBusinessUsers: async () => await BusinessUser.find(),
-    getBusinessUserById: async (_: any, { id }: any) => await BusinessUser.findOne({userId: id}),
+    getHotels: async (_: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await Hotel.find();
+    },
+    getHotelById: async (_: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await Hotel.findById(id);
+    },
+    getFeedbacks: async (_: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await Feedbacks.find();
+    },
+    getFeedbackById: async (_: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await Feedbacks.findOne({hotelId: id});
+    },
+    getSupports: async (_: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await Support.find();
+    },
+    getSupportById: async (_: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await Support.findOne({hotelId: id});
+    },
+    getBusinessUsers: async (_: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await BusinessUser.find();
+    },
+    getBusinessUserById: async (_: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return await BusinessUser.findOne({userId: id});
+    },
 
     // Combined user queries
-    getGuestUsers: async () => {
+    getGuestUsers: async (_: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const guestUsers = await GuestUser.find();
       return guestUsers
     },
-    getGuestUserById: async (_: any, { id }: any) => {
+    getGuestUserById: async (_: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const guestUser = await GuestUser.findOne({userId: id});
       return guestUser;
     },
   },
 
   Mutation: {
-    createHotel: async (_: unknown, { input }: { input: HotelType }): Promise<HotelType> => {
+    loginUser: async (
+      _: unknown,
+      { email, password, userCategory }: { email: string; password: string, userCategory: string }
+    ): Promise<{ jwtoken: string }> => {
+      const user = userCategory === 'business' ? await BusinessUser.findOne({ email }) : await GuestUser.findOne({ email });
+      if (!user) throw new Error("User not found");
+    
+      // Remplace ceci par ton vrai mécanisme de mot de passe
+      if (user.password !== password) throw new Error("Invalid credentials");
+    
+      const jwtoken = generateToken({ userId: user.id });
+      return { jwtoken };
+    },
+
+    logout: async (_: unknown, __: unknown, context: any): Promise<boolean> => {
+      const authHeader = context.req.headers.authorization;
+    
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        throw new Error('Authorization header missing');
+      }
+    
+      const token = authHeader.split(' ')[1];
+    
+      // Optionnel : obtenir l'expiration exacte du JWT si tu veux l’adapter dynamiquement
+      const expirySeconds = 60 * 60; // Exemple : 1h
+    
+      try {
+        await redisClient.set(`blacklist:${token}`, '1', { EX: expirySeconds });
+        return true;
+      } catch (err) {
+        console.error('Redis error:', err);
+        throw new Error('Logout failed');
+      }
+    },
+
+    createHotel: async (_: unknown, { input }: { input: HotelType }, context: any): Promise<HotelType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const newHotel = new Hotel(input);
       return await newHotel.save();
     },
-    updateHotel: async (_: unknown, { id, input }: { id: string, input: Partial<HotelType> }): Promise<HotelType | null> => {
+    updateHotel: async (_: unknown, { id, input }: { id: string, input: Partial<HotelType> }, context: any): Promise<HotelType | null> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       return await Hotel.findByIdAndUpdate(id, input, { new: true });
     },
 
-    deleteHotel: async (_: unknown, { id }: { id: string }): Promise<string> => {
+    deleteHotel: async (_: unknown, { id }: { id: string }, context: any): Promise<string> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const result = await Hotel.findByIdAndDelete(id);
       return "Hotel deleted";
     },
     // New mutations for updating specific hotel fields
     addHotelFieldItem: async (
       _: unknown,
-      { hotelId, field, item }: { hotelId: string; field: string; item: HotelFieldItem }
+      { hotelId, field, item }: { hotelId: string; field: string; item: HotelFieldItem },
+      context: any
     ): Promise<HotelType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
     
       if (!allowedFields.includes(field)) {
@@ -82,8 +178,12 @@ export const resolvers = {
     },
     removeHotelFieldItem: async (
       _: unknown,
-      { hotelId, field, itemId }: { hotelId: string; field: string; itemId: string }
+      { hotelId, field, itemId }: { hotelId: string; field: string; itemId: string },
+      context: any
     ): Promise<HotelType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
 
       if (!allowedFields.includes(field)) {
@@ -109,8 +209,12 @@ export const resolvers = {
     },
     updateHotelFieldItem: async (
       _: unknown,
-      { hotelId, field, itemId, updates }: { hotelId: string; field: string; itemId: string; updates: Partial<HotelFieldItem> }
+      { hotelId, field, itemId, updates }: { hotelId: string; field: string; itemId: string; updates: Partial<HotelFieldItem> },
+      context: any
     ): Promise<HotelFieldItem> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
 
       if (!allowedFields.includes(field)) {
@@ -137,8 +241,12 @@ export const resolvers = {
 
     createChecklist: async (
       _: unknown,
-      { hotelId, checklist }: { hotelId: string; checklist: Record<string, ChecklistItem[]> }
+      { hotelId, checklist }: { hotelId: string; checklist: Record<string, ChecklistItem[]> },
+      context: any
     ): Promise<Record<string, ChecklistItem[]>> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
         const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
@@ -149,8 +257,12 @@ export const resolvers = {
     },
     addChecklistItem: async (
       _: unknown,
-      { hotelId, period, item }: { hotelId: string; period: string; item: ChecklistItem }
+      { hotelId, period, item }: { hotelId: string; period: string; item: ChecklistItem },
+      context: any
     ): Promise<ChecklistItem> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
         const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
@@ -162,8 +274,12 @@ export const resolvers = {
     },
     updateChecklistItem: async (
       _: unknown,
-      { hotelId, period, itemId, updates }: { hotelId: string; period: string; itemId: string; updates: Partial<ChecklistItem> }
+      { hotelId, period, itemId, updates }: { hotelId: string; period: string; itemId: string; updates: Partial<ChecklistItem> },
+      context: any
     ): Promise<ChecklistItem> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
         const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
@@ -177,8 +293,12 @@ export const resolvers = {
     },
     deleteChecklistItem: async (
       _: unknown,
-      { hotelId, period, itemId }: { hotelId: string; period: string; itemId: string }
+      { hotelId, period, itemId }: { hotelId: string; period: string; itemId: string },
+      context: any
     ): Promise<string> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
         const hotel: any = await Hotel.findById(hotelId);
         if (!hotel) throw new Error("Hotel not found");
 
@@ -191,8 +311,12 @@ export const resolvers = {
     // Chat-specific mutations
     removeChatFromHotel: async (
       _: unknown,
-      { hotelId, userId }: { hotelId: string; userId: string }
+      { hotelId, userId }: { hotelId: string; userId: string },
+      context: any
     ): Promise<HotelType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -204,8 +328,12 @@ export const resolvers = {
 
     addMessageToChatRoom: async (
       _: unknown,
-      { hotelId, userId, message }: { hotelId: string; userId: string; message: ChatRoomMessage }
+      { hotelId, userId, message }: { hotelId: string; userId: string; message: ChatRoomMessage },
+      context: any
     ): Promise<any> => { // TODO: Replace 'any' with proper Chat type if available
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -220,8 +348,12 @@ export const resolvers = {
 
     updateChatRoomMessage: async (
       _: unknown,
-      { hotelId, userId, messageId, updates }: { hotelId: string; userId: string; messageId: string; updates: Partial<ChatRoomMessage> }
+      { hotelId, userId, messageId, updates }: { hotelId: string; userId: string; messageId: string; updates: Partial<ChatRoomMessage> },
+      context: any
     ): Promise<ChatRoomMessage> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -239,8 +371,12 @@ export const resolvers = {
 
     deleteChatRoomMessage: async (
       _: unknown,
-      { hotelId, userId, messageId }: { hotelId: string; userId: string; messageId: string }
+      { hotelId, userId, messageId }: { hotelId: string; userId: string; messageId: string },
+      context: any
     ): Promise<any> => { // TODO: Replace 'any' with proper Chat type if available
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -258,8 +394,12 @@ export const resolvers = {
 
     addChatToHotel: async (
       _: unknown,
-      { hotelId, chat }: { hotelId: string; chat: any } // TODO: Define Chat type in types.ts
+      { hotelId, chat }: { hotelId: string; chat: any }, // TODO: Define Chat type in types.ts
+      context: any
     ): Promise<HotelType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -271,8 +411,12 @@ export const resolvers = {
 
     updateChatFromHotel: async (
       _: unknown,
-      { hotelId, userId, updates }: { hotelId: string; userId: string; updates: Partial<any> } // TODO: Replace 'any' with Chat type
+      { hotelId, userId, updates }: { hotelId: string; userId: string; updates: Partial<any> }, // TODO: Replace 'any' with Chat type
+      context: any
     ): Promise<any> => { // TODO: Replace 'any' with Chat type
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -288,8 +432,12 @@ export const resolvers = {
     // Housekeeping-specific mutations
     addHousekeepingItem: async (
       _: unknown,
-      { hotelId, category, item }: { hotelId: string; category: string; item: HousekeepingItem }
+      { hotelId, category, item }: { hotelId: string; category: string; item: HousekeepingItem },
+      context: any
     ): Promise<HousekeepingItem[]> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -310,8 +458,12 @@ export const resolvers = {
 
     updateHousekeepingItem: async (
       _: unknown,
-      { hotelId, category, itemId, updates }: { hotelId: string; category: string; itemId: string; updates: Partial<HousekeepingItem> }
+      { hotelId, category, itemId, updates }: { hotelId: string; category: string; itemId: string; updates: Partial<HousekeepingItem> },
+      context: any
     ): Promise<HousekeepingItem> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: any = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -331,8 +483,12 @@ export const resolvers = {
 
     removeHousekeepingItem: async (
       _: unknown,
-      { hotelId, category, itemId }: { hotelId: string; category: string; itemId: string }
+      { hotelId, category, itemId }: { hotelId: string; category: string; itemId: string },
+      context: any
     ): Promise<HousekeepingItem[]> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const hotel: HotelType = await Hotel.findById(hotelId);
       if (!hotel) throw new Error("Hotel not found");
 
@@ -357,8 +513,12 @@ export const resolvers = {
     // Feedback mutations
     createFeedback: async (
       _: unknown,
-      { input }: { input: FeedbackType }
+      { input }: { input: FeedbackType },
+      context: any
     ): Promise<FeedbackType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const newFeedback = new Feedbacks(input);
       const savedFeedback = await newFeedback.save();
       io.to(savedFeedback.hotelId).emit(`feedbackCreated`, savedFeedback);
@@ -366,8 +526,12 @@ export const resolvers = {
     },
     updateFeedback: async (
       _: unknown,
-      { id, input }: { id: string; input: Partial<FeedbackType> }
+      { id, input }: { id: string; input: Partial<FeedbackType> },
+      context: any
     ): Promise<FeedbackType | null> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const updatedFeedback = await Feedbacks.findByIdAndUpdate(id, input, { new: true });
       if (updatedFeedback) {
         io.to(updatedFeedback.hotelId).emit(`feedbackUpdated`, updatedFeedback);
@@ -376,8 +540,12 @@ export const resolvers = {
     },
     deleteFeedback: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string },
+      context: any
     ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const feedback: any = await Feedbacks.findById(id);
       if (!feedback) throw new Error("Feedback not found");
       await Feedbacks.findByIdAndDelete(id);
@@ -388,8 +556,12 @@ export const resolvers = {
     // Feedback Category mutations (generic for satisfaction & improvement)
     addFeedbackCategoryItem: async (
       _: unknown,
-      { feedbackId, field, category }: { feedbackId: string; field: string; category: FeedbackCategory }
+      { feedbackId, field, category }: { feedbackId: string; field: string; category: FeedbackCategory },
+      context: any
     ): Promise<FeedbackType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const allowedFields = ['satisfaction', 'improvement'];
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not a valid category field`);
@@ -406,8 +578,12 @@ export const resolvers = {
 
     updateFeedbackCategoryItem: async (
       _: unknown,
-      { feedbackId, field, itemId, updates }: { feedbackId: string; field: string; itemId: string; updates: Partial<FeedbackCategory> }
+      { feedbackId, field, itemId, updates }: { feedbackId: string; field: string; itemId: string; updates: Partial<FeedbackCategory> },
+      context: any
     ): Promise<FeedbackCategory> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const allowedFields = ['satisfaction', 'improvement'];
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not a valid category field`);
@@ -427,8 +603,12 @@ export const resolvers = {
 
     removeFeedbackCategoryItem: async (
       _: unknown,
-      { feedbackId, field, itemId }: { feedbackId: string; field: string; itemId: string }
+      { feedbackId, field, itemId }: { feedbackId: string; field: string; itemId: string },
+      context: any
     ): Promise<FeedbackType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const allowedFields = ['satisfaction', 'improvement'];
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not a valid category field`);
@@ -449,21 +629,33 @@ export const resolvers = {
     // GuestUser mutations
     createGuestUser: async (
       _: unknown,
-      { input }: { input: GuestUserType }
+      { input }: { input: GuestUserType },
+      context: any
     ): Promise<GuestUserType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const newGuestUser = new GuestUser(input);
       return await newGuestUser.save();
     },
     updateGuestUser: async (
       _: unknown,
-      { id, input }: { id: string; input: Partial<GuestUserType> }
+      { id, input }: { id: string; input: Partial<GuestUserType> },
+      context: any
     ): Promise<GuestUserType | null> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       return await GuestUser.findByIdAndUpdate(id, input, { new: true });
     },
     deleteGuestUser: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string },
+      context: any
     ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       await GuestUser.findByIdAndDelete(id);
       return true;
     },
@@ -471,21 +663,33 @@ export const resolvers = {
     // BusinessUser mutations
     createBusinessUser: async (
       _: unknown,
-      { input }: { input: BusinessUserType }
+      { input }: { input: BusinessUserType },
+      context: any
     ): Promise<BusinessUserType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const newBusinessUser = new BusinessUser(input);
       return await newBusinessUser.save();
     },
     updateBusinessUser: async (
       _: unknown,
-      { id, input }: { id: string; input: Partial<BusinessUserType> }
+      { id, input }: { id: string; input: Partial<BusinessUserType> },
+      context: any
     ): Promise<BusinessUserType | null> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       return await BusinessUser.findByIdAndUpdate(id, input, { new: true });
     },
     deleteBusinessUser: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string },
+      context: any
     ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       await BusinessUser.findByIdAndDelete(id);
       return true;
     },
@@ -493,8 +697,12 @@ export const resolvers = {
     // Support-specific mutations
     createSupport: async (
       _: unknown,
-      { input }: { input: SupportType }
+      { input }: { input: SupportType },
+      context: any
     ): Promise<SupportType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const newSupport = new Support(input);
       const savedSupport = await newSupport.save();
       io.to(savedSupport.hotelId).emit(`supportCreated`, savedSupport);
@@ -502,8 +710,12 @@ export const resolvers = {
     },
     updateSupport: async (
       _: unknown,
-      { id, updates }: { id: string; updates: Partial<SupportType> }
+      { id, updates }: { id: string; updates: Partial<SupportType> },
+      context: any
     ): Promise<SupportType | null> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const updatedSupport = await Support.findByIdAndUpdate(id, updates, { new: true });
       if (updatedSupport) {
         io.to(updatedSupport.hotelId).emit(`supportUpdated`, updatedSupport);
@@ -512,8 +724,12 @@ export const resolvers = {
     },
     deleteSupport: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string },
+      context: any
     ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const support = await Support.findById(id);
       if (!support) throw new Error("Support not found");
       await Support.findByIdAndDelete(id);
@@ -522,8 +738,12 @@ export const resolvers = {
     },
     addMessageToSupportChatRoom: async (
       _: unknown,
-      { supportId, message }: { supportId: string; message: any } // TODO: Define SupportChatRoomMessage type in types.ts
+      { supportId, message }: { supportId: string; message: any }, // TODO: Define SupportChatRoomMessage type in types.ts
+      context: any
     ): Promise<SupportType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const support = await Support.findOne({hotelId: supportId});
       if (!support) throw new Error("Support not found");
 
@@ -534,8 +754,12 @@ export const resolvers = {
     },
     updateSupportChatRoomMessage: async (
       _: unknown,
-      { supportId, messageId, updates }: { supportId: string; messageId: string; updates: Partial<any> } // TODO: Define SupportChatRoomMessage type
+      { supportId, messageId, updates }: { supportId: string; messageId: string; updates: Partial<any> }, // TODO: Define SupportChatRoomMessage type
+      context: any
     ): Promise<any> => { // TODO: Replace 'any' with SupportChatRoomMessage type
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const support = await Support.findOne({hotelId: supportId});
       if (!support) throw new Error("Support not found");
 
@@ -549,8 +773,12 @@ export const resolvers = {
     },
     deleteSupportChatRoomMessage: async (
       _: unknown,
-      { supportId, messageId }: { supportId: string; messageId: string }
+      { supportId, messageId }: { supportId: string; messageId: string },
+      context: any
     ): Promise<SupportType> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
       const support = await Support.findOne({hotelId: supportId});
       if (!support) throw new Error("Support not found");
 
