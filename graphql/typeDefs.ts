@@ -84,7 +84,7 @@ export const typeDefs = gql`
       deleteSupportChatRoomMessage(supportId: ID!, messageId: ID!): Support
     
     # Log User Mutations
-      loginUser(email: String!, password: String!): String
+      loginUser(email: String!, password: String!, userCategory: String!): token
       logoutUser: Boolean
 
   }
