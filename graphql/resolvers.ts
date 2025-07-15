@@ -3,7 +3,6 @@ import BusinessUser from '../models/businessUsers.js';
 import GuestUser from '../models/guest/guestUsers.js';
 import Support from '../models/support.js';
 import Feedbacks from '../models/feedbacks.js';
-import { getAllBusinessUsers } from '../controllers/users/business/businessUsers.controller.js';
 import { io } from '../app.js';
 
 import type {
