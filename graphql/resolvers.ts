@@ -107,7 +107,7 @@ export const resolvers = {
       return { jwtoken };
     },
 
-    logout: async (_: unknown, __: unknown, context: any): Promise<boolean> => {
+    logoutUser: async (_: unknown, __: unknown, context: any): Promise<boolean> => {
       const authHeader = context.req.headers.authorization;
     
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
