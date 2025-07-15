@@ -108,6 +108,7 @@ export const resolvers = {
       return { jwtoken };
     },
 
+    
     logoutUser: async (_: unknown, __: unknown, context: any): Promise<boolean> => {
       const authHeader = context.req.headers.authorization;
     
