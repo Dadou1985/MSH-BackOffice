@@ -6,6 +6,7 @@ import Feedbacks from '../models/feedbacks.js';
 import { io } from '../app.js';
 import { generateToken } from '../utils/jwt.js';
 import redisClient from '../utils/redisClient.js';
+import bcrypt from 'bcrypt';
 
 import type {
   HotelType,
@@ -99,10 +100,10 @@ export const resolvers = {
     ): Promise<{ jwtoken: string }> => {
       const user = userCategory === 'business' ? await BusinessUser.findOne({ email }) : await GuestUser.findOne({ email });
       if (!user) throw new Error("User not found");
-    
-      // Remplace ceci par ton vrai mécanisme de mot de passe
-      if (user.password !== password) throw new Error("Invalid credentials");
-    
+
+      const isMatch = await bcrypt.compare(password, user.password as any);
+      if (!isMatch) throw new Error("Invalid credentials");
+
       const jwtoken = generateToken({ userId: user.id });
       return { jwtoken };
     },
