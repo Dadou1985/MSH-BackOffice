@@ -117,7 +117,6 @@ export const resolvers = {
     
       const token = authHeader.split(' ')[1];
     
-      // Optionnel : obtenir l'expiration exacte du JWT si tu veux l’adapter dynamiquement
       const expirySeconds = 60 * 60; // Exemple : 1h
     
       try {

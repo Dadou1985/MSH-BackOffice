@@ -4,5 +4,10 @@ export function generateToken(payload) {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 }
 export function verifyToken(token) {
-    return jwt.verify(token, JWT_SECRET);
+    try {
+        return jwt.verify(token, JWT_SECRET);
+    }
+    catch (error) {
+        throw new Error('Invalid or expired token');
+    }
 }

@@ -6,6 +6,7 @@ import Feedbacks from '../models/feedbacks.js';
 import { io } from '../app.js';
 import { generateToken } from '../utils/jwt.js';
 import redisClient from '../utils/redisClient.js';
+import bcrypt from 'bcrypt';
 export const resolvers = {
     Query: {
         /*
@@ -81,19 +82,18 @@ export const resolvers = {
             const user = userCategory === 'business' ? await BusinessUser.findOne({ email }) : await GuestUser.findOne({ email });
             if (!user)
                 throw new Error("User not found");
-            // Remplace ceci par ton vrai mécanisme de mot de passe
-            if (user.password !== password)
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch)
                 throw new Error("Invalid credentials");
             const jwtoken = generateToken({ userId: user.id });
             return { jwtoken };
         },
-        logout: async (_, __, context) => {
+        logoutUser: async (_, __, context) => {
             const authHeader = context.req.headers.authorization;
             if (!authHeader || !authHeader.startsWith('Bearer ')) {
                 throw new Error('Authorization header missing');
             }
             const token = authHeader.split(' ')[1];
-            // Optionnel : obtenir l'expiration exacte du JWT si tu veux l’adapter dynamiquement
             const expirySeconds = 60 * 60; // Exemple : 1h
             try {
                 await redisClient.set(`blacklist:${token}`, '1', { EX: expirySeconds });
