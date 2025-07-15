@@ -48,6 +48,11 @@ app.use(cors({
     origin: allowedOrigins,
     credentials: true
 }));
+
+app.get('/', (_, res) => {
+  res.send('🟢 MSH Back Office API is running');
+});
+
 await startApolloServer(app, io);
 
 // app.use('/api/v1/hotel', hotelRoutes);
@@ -61,13 +66,13 @@ await startApolloServer(app, io);
 // app.use('/api/v1/housekeeping', housekeepingRoutes);
 
 httpServer.listen(PORT, async () => {
-    try {
-        await mongoConnect();
-        console.log('MongoDB connected', PORT);
+    // try {
+    //     await mongoConnect();
+    //     console.log('MongoDB connected', PORT);
 
-    } catch (error) {
-        console.error('MongoDB connection error:', error);
-    }
+    // } catch (error) {
+    //     console.error('MongoDB connection error:', error);
+    // }
 
     if (process.env.NODE_ENV === 'development') {
         console.log(`Server is running in development mode`);

@@ -1,8 +1,11 @@
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './typeDefs.js';
 import { resolvers } from './resolvers.js';
+import { mongoConnect } from '../utils/database.js';
 
 export async function startApolloServer(app: any, io: any) {
+    await mongoConnect(); // ⬅️ Connect to MongoDB before Apollo Server starts
+
     const server = new ApolloServer({
         typeDefs,
         resolvers,
