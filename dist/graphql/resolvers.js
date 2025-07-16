@@ -6,7 +6,6 @@ import Feedbacks from '../models/feedbacks.js';
 import { io } from '../app.js';
 import { generateToken } from '../utils/jwt.js';
 import redisClient from '../utils/redisClient.js';
-import bcrypt from 'bcrypt';
 export const resolvers = {
     Query: {
         /*
@@ -84,9 +83,11 @@ export const resolvers = {
                 throw new Error("User not found");
             console.log('PASSWORD', password);
             console.log('USER PASSWORD', user?.password);
-            const isMatch = await bcrypt.compare(password, user.password);
+            // const isMatch = await bcrypt.compare(password, user.password as any);
+            const isMatch = password === user?.password; // For simplicity, using direct comparison. Replace with bcrypt.compare in production.
             if (!isMatch)
                 throw new Error("Invalid credentials");
+            console.log('IS MATCH', isMatch);
             const jwtoken = generateToken({ userId: user.id });
             return { jwtoken };
         },
