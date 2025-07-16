@@ -97,11 +97,11 @@ export const resolvers = {
     loginUser: async (
       _: unknown,
       { email, password, userCategory }: { email: string; password: string, userCategory: string }
-    ): Promise<{ jwtoken: string }> => {
+    ): Promise<{ token: string }> => {
       const user = userCategory === 'business' ? await BusinessUser.findOne({ email }) : await GuestUser.findOne({ email });
       if (!user) throw new Error("User not found");
       console.log('PASSWORD', password);
-      console.log('USER ID', user?.id);
+      console.log('USER PASSWORD', user?.password);
 
       // const isMatch = await bcrypt.compare(password, user.password as any);
 
@@ -109,8 +109,8 @@ export const resolvers = {
       if (!isMatch) throw new Error("Invalid credentials");
       console.log('IS MATCH', isMatch);
 
-      const jwtoken = generateToken({ userId: user.id });
-      return { jwtoken };
+      const token = generateToken({ userId: user?._id.toString() });
+      return { token };
     },
 
     
