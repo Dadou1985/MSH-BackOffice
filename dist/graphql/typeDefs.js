@@ -81,6 +81,11 @@ export const typeDefs = gql `
       addMessageToSupportChatRoom(supportId: ID!, message: SupportRoomMessageInput!): Support
       updateSupportChatRoomMessage(supportId: ID!, messageId: ID!, updates: SupportRoomMessageInput!): SupportRoomMessage
       deleteSupportChatRoomMessage(supportId: ID!, messageId: ID!): Support
+    
+    # Log User Mutations
+      loginUser(email: String!, password: String!, userCategory: String!): AuthPayload
+      logoutUser: Boolean
+
   }
 
   #########################
@@ -748,6 +753,11 @@ export const typeDefs = gql `
     pricingModel: String
     chatRoom: [SupportRoomMessageInput]
   }
+
+  type AuthPayload {
+    token: String!
+  }
+
   #########################
   # Generic Item Type/Inputs
 
