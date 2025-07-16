@@ -19,7 +19,7 @@ import type {
   ChecklistItem,
   FeedbackCategory,
   HotelFieldItem
-} from '../type/type.ts';
+} from '../types/type.js';
 
 export const resolvers = {
   Query: {
