@@ -11,16 +11,19 @@ export async function startApolloServer(app: any, io: any) {
         typeDefs,
         resolvers,
         context: async ({ req }: any) => {
-          const token = req.headers.authorization?.split(' ')[1];
+          const authHeader = req.headers.authorization || '';
+          const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
           let user = null;
 
           if (token) {
-            const isBlacklisted = await import('../utils/redisClient.js').then(mod => mod.default.get(`blacklist:${token}`));
-            if (isBlacklisted) {
-              throw new Error('Token is blacklisted');
-            }
-
             try {
+              const redis = await import('../utils/redisClient.js').then(mod => mod.default);
+              const isBlacklisted = await redis.get(`blacklist:${token}`);
+              if (isBlacklisted) {
+                throw new Error('Token is blacklisted');
+              }
+
               user = jwt.verify(token, process.env.JWT_SECRET || 'your-default-secret');
             } catch (err) {
               console.error('JWT verification error:', err);
