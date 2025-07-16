@@ -88,7 +88,7 @@ export const resolvers = {
             if (!isMatch)
                 throw new Error("Invalid credentials");
             console.log('IS MATCH', isMatch);
-            const jwtoken = generateToken({ userId: user.id });
+            const jwtoken = generateToken({ userId: user._id.toString() });
             return { jwtoken };
         },
         logoutUser: async (_, __, context) => {
