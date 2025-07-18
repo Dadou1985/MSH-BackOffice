@@ -82,7 +82,7 @@ export const resolvers = {
             if (!user)
                 throw new Error("User not found");
             console.log('PASSWORD', password);
-            console.log('USER PASSWORD', user?.password);
+            console.log('USER PASSWORD', user?._id);
             // const isMatch = await bcrypt.compare(password, user.password as any);
             const isMatch = password === user?.password; // For simplicity, using direct comparison. Replace with bcrypt.compare in production.
             if (!isMatch)
