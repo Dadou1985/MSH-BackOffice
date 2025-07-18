@@ -101,7 +101,7 @@ export const resolvers = {
       const user = userCategory === 'business' ? await BusinessUser.findOne({ email }) : await GuestUser.findOne({ email });
       if (!user) throw new Error("User not found");
       console.log('PASSWORD', password);
-      console.log('USER PASSWORD', user?._id);
+      console.log('USER PASSWORD', user);
 
       // const isMatch = await bcrypt.compare(password, user.password as any);
 
@@ -109,7 +109,7 @@ export const resolvers = {
       if (!isMatch) throw new Error("Invalid credentials");
       console.log('IS MATCH', isMatch);
 
-      const token = generateToken({ userId: user?._id.toString() });
+      const token = generateToken({ userId: user?.id });
       return { token };
     },
 
