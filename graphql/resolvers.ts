@@ -7,6 +7,7 @@ import { io } from '../app.js';
 import { generateToken } from '../utils/jwt.js';
 import redisClient from '../utils/redisClient.js';
 import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
 
 import type {
   HotelType,
@@ -20,6 +21,19 @@ import type {
   FeedbackCategory,
   HotelFieldItem
 } from '../types/type.js';
+
+const transporter = nodemailer.createTransport({
+  host: process.env.IONOS_SMTP_HOST,      // ou 'smtp.ionos.com' selon ton domaine
+  port: Number(process.env.IONOS_SMTP_PORT) || 587,                  // 587 pour STARTTLS (recommandé), sinon 465 pour SSL
+  secure: false,              // false pour STARTTLS (port 587)
+  auth: {
+    user: process.env.IONOS_AUTH, // ton adresse mail IONOS complète
+    pass: process.env.IONOS_PASSWORD,         // ton mot de passe
+  },
+  tls: {
+    rejectUnauthorized: false // utile si des erreurs de certificat apparaissent
+  }
+});
 
 export const resolvers = {
   Query: {
@@ -796,5 +810,166 @@ export const resolvers = {
       io.to(supportId).emit(`supportChatRoomMessageDeleted`, messageId);
       return support;
     },
+
+    sendCheckInEmail: async (
+      _: unknown,
+      { senderEmail, email, appLink, logo, hotelName }: { senderEmail: string,email: string; appLink: string; logo: string, hotelName: string },
+      context: any
+    ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await transporter.sendMail({
+          from: senderEmail,
+          to: email,
+          subject: 'E-mail de bienvenue',
+          html: `<div><p>Cher.e client.e,</p><p>Vous êtes sur le point de séjourner chez nous et nous tenions à vous remercier pour toute la confiance que vous nous accordez.</p><p>C'est avec beaucoup d'enthousiasme et de plaisir que nous attendons votre arrivée au sein de notre établissement.</p><p>Ce mail a pour object d'établir un premier contact avec vous afin de recueillir vos attentes concernant le séjour.</p><p>Vous trouverez-ci dessous un lien menant vers le portail de notre application web (auncun téléchargement n'est requis pour y accéder). <br/>Celle-ci dispose d'une messagerie instantanée vous permettant de dialoguer directement avec notre personnel qui sera ravi de répondre à vos attentes.</p><p>Nous vous souhaitons une excellente journée.</p><a href=${appLink}>Cliquez ici pour accéder à notre application web</a><div><br/><br/><img src=${logo} width='100' height="100" /><p>${hotelName}</p></div></div>`,
+        });
+        return true;
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error('Failed to send email');
+      }
+    },
+
+    sendCheckOutEmail: async (
+      _: unknown,
+      { senderEmail, email, logo, hotelName }: { senderEmail: string,email: string; logo: string, hotelName: string },
+      context: any
+    ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await transporter.sendMail({
+          from: senderEmail,
+          to: email,
+          subject: 'E-mail de remerciement',
+          html: `<div><p>Cher.e client.e,</p><p>Vous accueillir au sein de notre établissement fut un immense plaisir et nous tenions encore à vous remercier pour la confiance que vous nous avez accordé.</p><p>Nous espérons que nos efforts ont contribué à rendre votre séjour agréable.</p><p>Nous vous souhaitons un bon retour avec l'espoir de vous revoir très bientôt.</p><p>Cordialement</p><div><br/><br/><img src=${logo} width='100' height="100" /><p>${hotelName}</p></div></div>`,
+        });
+        return true;
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error('Failed to send email');
+      }
+    },
+
+    sendNewCoworkerAccountEmail: async (
+      _: unknown,
+      { senderEmail, email, adminName, mshLogo, coworkerName, coworkerMail }: { senderEmail: string,email: string; adminName: string; mshLogo: string, coworkerName: string; coworkerMail: string },
+      context: any
+    ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await transporter.sendMail({
+          from: senderEmail,
+          to: email,
+          subject: 'Votre compte MySweetHotel a été créé avec succès !',
+          html: `<div><img src="https://i.postimg.cc/h40kFMNY/new-logo-msh.png" width="300" height="300" /><h4><b>${adminName}</b> vous a créé un compte <b>MySweetHotelPro</b>.</h4><h4>Bienvenu.e à bord, ${coworkerName} !</h4><br/><p>Vous pouvez désormais accéder au <b>Desk digital</b> de votre hôtel en suivant ce lien : <a href='https://mysweethotelpro.com' target="_blank">https://mysweethotelpro.com</a></p><p>Vous y trouverez un cahier de consigne, un C.R.M, un registre d'objets trouvés, des feuilles de caisses, des check-lists... bref, tout le nécessaire pour effectuer un <i>shift</i> dans les meilleures conditions.</p><p>Vos identifiants d'accès sont les suivants:<br/> <br/> <b>E-mail</b> : ${coworkerMail}<br/>  <b>Mot de passe</b> : password<br/> <br/> Vous serez libre de modifier vos identifiants en vous rendant dans la section <b>Profil</b> du <b>Desk digital</b>.</p><p>En cas de problème, vous disposez d'un <i>chat</i> dédié au support technique sur l'interface du <b>Desk digital</b>.</p><p>Enfin, nous vous enjoignons vivement à nous faire part de vos avis et suggestions concernant le produit en nous laissant un mot dans la Feedback Box située dans la barre de navigation du <b>Desk digital</b>.</p><p>Toute l'équipe de <b>MySweetHotel</b> vous souhaite encore la bienvenue à bord.</p><br/><p>David Simba<br/> CEO de MySweetHotel</p>  <p><img src=${mshLogo} width='100' height='100' /></p>  </div>`,
+        });
+        return true;
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error('Failed to send email');
+      }
+    },
+
+    sendNewSubscriberEmail: async (
+      _: unknown,
+      { senderEmail, email, hotel, standing, capacity, city, country, subscriber }: { senderEmail: string,email: string; hotel: string; standing: string, capacity: string; city: string; country: string; subscriber: string },
+      context: any
+    ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await transporter.sendMail({
+          from: senderEmail,
+          to: email,
+          subject: 'Another One',
+          html: `<div><p>Nom de l'hotel: ${hotel}</p><p>Standing: ${standing}</p><p>Capacité: ${capacity} pax</p><p>Ville: ${city}</p><p>Pays: ${country}</p><p>Nom du responsable: ${subscriber}</p></div>`,
+        });
+        return true;
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error('Failed to send email');
+      }
+    },
+
+    sendWelcomeEmail: async (
+      _: unknown,
+      { senderEmail, email, prospectName, prospectMail, mshLogo, mshLogoPro }: { senderEmail: string,email: string; prospectName: string; prospectMail: string, mshLogo: string; mshLogoPro: string },
+      context: any
+    ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await transporter.sendMail({
+          from: senderEmail,
+          to: email,
+          subject: "Votre compte MySweetHotel a été créé avec succès !",
+          html: `<div> <p>Bonjour ${prospectName},</p><br/> <p>Comme convenu, nous vous avons créé un compte <b>MySweetHotelPro</b> afin que vous puissiez démarrer dès maintenant la phase de pilotage qui s'étendra sur une durée de 3 mois.<br/> Nous vous rappelons que cette phase de pilotage est entièrement gratuite et sans engagement.</p> <p>Vous pourrez ainsi profiter pleinement de notre solution digitale à 360° comprenant:<br/><br/> La <b>Conciergerie digitale</b> conçue pour améliorer l'expérience client<br/> Le <b>Desk digital</b> conçu pour optimiser la productivité des équipes<br/><br/> Pour un rappel du contenu de nos offres, nous vous invitons à vous rendre sur notre site web <a href="https://mysweethotel.com" target="_blank">https://mysweethotel.com</a>.</p> <p>Votre compte administrateur étant actif, vous pouvez désormais accéder au <b>Desk digital</b> en suivant ce lien: <a href="https://mysweethotelpro.com" target="_blank">https://mysweethotelpro.com</a><br/> Vos identifiants d'accès sont les suivants:<br/><br/> <b>E-mail</b> : ${prospectMail}<br/> <b>Mot de passe</b> : password<br/><br/> Vous serez libre de modifier vos identifiants en vous rendant dans la section <b>Profil</b> du <b>Desk digital</b>.</p> <p>Au sein de cette même section <b>Profil</b> (et uniquement depuis un ordinateur), vous pourrez téléverser le logo de votre établissement afin qu'il soit mis en avant sur toutes nos plateformes.<br/> Vous pourrez également générer les visuels de communication à travers lesquels votre clientèle pourra accéder à la <b>Conciergerie digitale</b> en scannant simplement le qr code figurant sur ces derniers.</p> <p>Enfin, il vous suffira de vous rendre dans la section administration du <b>Desk digital</b> pour y créer les comptes de vos collaborateurs. <br/> Pour ce faire, vous n'aurez besoin que de leurs noms et de leurs adresses e-mail (<i>password</i> étant le mot de passe générique attribué automatiquement lors de chaque création de compte).</p> <p>Toute l'équipe de <b>MySweetHotel</b> vous souhaite la bienvenue et vous remercie pour votre confiance.</p><br/><br/> <p>David Simba<br/> CEO de MySweetHotel<br/> +33 7 52 04 72 99</p> <p><img src=${mshLogo} width='100' height='100' /><img src=${mshLogoPro} width='100' height='100' /></p> </div>`,
+        });
+        return true;
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error('Failed to send email');
+      }
+    },
+
+    sendWelcomeFinalEmail: async (
+      _: unknown,
+      { senderEmail, email, mshBanner, firstName, mshLogo, password, fakeMail, appLink }: { senderEmail: string,email: string; mshBanner: string; firstName: string, mshLogo: string; password: string; fakeMail: string; appLink: string },
+      context: any
+    ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await transporter.sendMail({
+          from: senderEmail,
+          to: email,
+          subject: "Félicitations, vous venez d'économiser du temps et de l'argent !",
+          html: `<div> <img src=${mshBanner} width="300" height="300" /> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, ${firstName} !</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous<br/> connecter au <i>Desk Digital</i> :</p> <p> <b>e-mail :</b> ${email}<br/> <b>mot de passe :</b> ${password}<br/> <b>lien : </b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Vous trouverez également une adresse e-mail avec laquelle vous pourrez effectuez le parcours<br/> client à travers la <i>Conciergerie digitale</i> ainsi qu'un lien donnant accès à la plate-forme : </p> <p> <b>e-mail :</b> ${fakeMail}<br/> <b>lien :</b> <a href="${appLink}" target="_blank"><i>Lien vers la Conciergerie Digitale</i></a> </p> <p>Merci encore pour votre confiance et n'hésitez surtout pas à nous<br/> faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src=${mshLogo} width='100' height='100' /></p> </div> </div>`,
+        });
+        return true;
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error('Failed to send email');
+      }
+    },
+
+    sendWelcomeEmailLogo: async (
+      _: unknown,
+      { senderEmail, email, firstName, logo, mshLogo, password, fakeMail, appLink }: { senderEmail: string; email: string; firstName: string; logo?: string; mshLogo: string; password: string; fakeMail: string; appLink: string },
+      context: any
+    ): Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await transporter.sendMail({
+          from: senderEmail,
+          to: email,
+          subject: "Félicitations, vous venez de prendre 2 ans d'avance sur la concurrence !",
+          html: logo ? `<div> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, ${firstName} !</p> <p>Peut-être est-ce la première fois que vous utilisez ce genre d'outils, auquel cas nous vous accompagnerons lors de vos premiers pas dans le monde de l'hôtellerie digitale.</p> <p>D'après mes informations, j'ai pu constater que vous aviez créé un compte administrateur et téléversé le logo de votre établissement afin que votre clientèle puisse associer les bienfaits apportés par notre solution à votre image de marque et ce, dans un souci de fidélisation.</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous connecter au <i>Desk Digital</i></p> <p> <b>e-mail :</b> ${email}<br/> <b>mot de passe :</b> ${password}<br/> <b>lien :</b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Concernant la <i>Conciergerie digitale</i>, il ne vous sera pas possible d'utiliser la même adresse e-mail que celle utilisée lors de votre première inscription et ce, pour des raisons de sécurité.</p> <p>Vous trouverez ci-dessous une adresse e-mail avec laquelle vous pourrez effectuez le parcours client propre à la <i>Conciergerie digitale</i> (depuis la page d'inscription jusqu'à la page d'accueil) si vous le souhaitez:</p> <p> <b>e-mail :</b> ${fakeMail}<br/> </p> <p>Voici le lien vous donnant accès à la <i>Conciergerie digitale</i>:</p> <p><a href="${appLink}" target="_blank"><b>Lien vers la Conciergerie Digitale</b></a></p> <p>Votre clientèle pourra également accéder à la <i>Conciergerie digitale</i> en scannant le qr code présent sur les visuels de communication téléchargeables depuis la section <i>Profil utilisateur</i> du <i>Desk digital</i>.</p> <p>Si vous rencontrez la moindre difficulté en utilisant notre solution, nous avons mis à votre disposition un <i>chat</i> consacré au support technique accessible depuis le <i>Desk digital</i> et opérationnel 24h/7.</p> <p>Nous sommes heureux de mettre notre solution à disposition des hôteliers (gratuitement et sans engagement) et ce, dans le cadre de notre phase de pré-lancement qui a démarré avec la nouvelle année pour s'étendre sur une durée de 3 à 6 mois.</p> <p>Merci encore d'avoir pris le temps de vous inscrire sur notre plate-forme et n'hésitez surtout pas à nous faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src=${mshLogo} width='100' height='100' /></p> </div> </div>` : `<div> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, {{firstName}} !</p> <p>Peut-être est-ce la première fois que vous utilisez ce genre d'outils, auquel cas nous vous accompagnerons lors de vos premiers pas dans le monde de l'hôtellerie digitale.</p> <p>D'après mes informations, j'ai pu constater que vous aviez créé un compte administrateur mais que vous n'avez pas encore téléversé de logo pour votre hôtel...</p> <p>Notre solution étant une solution en marque blanche, il est important que vous téléversiez le logo de votre établissement afin que votre clientèle puisse associer les bienfaits apportés par notre solution à votre image de marque et ce, dans un souci de fidélisation.</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous connecter au <i>Desk Digital</i></p> <p> <b>e-mail :</b> {{email}}<br/> <b>mot de passe :</b> {{password}}<br/> <b>lien :</b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Concernant la <i>Conciergerie digitale</i>, il ne vous sera pas possible d'utiliser la même adresse e-mail que celle utilisée lors de votre première inscription et ce, pour des raisons de sécurité.</p> <p>Vous trouverez ci-dessous une adresse e-mail avec laquelle vous pourrez effectuez le parcours client propre à la <i>Conciergerie digitale</i> (depuis la page d'inscription jusqu'à la page d'accueil) si vous le souhaitez:</p> <p> <b>e-mail :</b> {{fakeMail}} </p> <p>Voici le lien vous donnant accès à la <i>Conciergerie digitale</i>:</p> <p><a href="{{appLink}}" target="_blank"><b>Lien vers la Conciergerie Digitale</b></a></p> <p>Votre clientèle pourra également accéder à la <i>Conciergerie digitale</i> en scannant le qr code présent sur les visuels de communication lorsque vous aurez téléversé le logo de votre établissement depuis la section <i>Profil utilisateur</i> du <i>Desk digital</i>.</p> <p>Si vous rencontrez la moindre difficulté en utilisant notre solution, nous avons mis à votre disposition un <i>chat</i> consacré au support technique accessible depuis le <i>Desk digital</i> et opérationnel 24h/7.</p> <p>Nous sommes heureux de mettre notre solution à disposition des hôteliers (gratuitement et sans engagement) et ce, dans le cadre de notre phase de pré-lancement qui a démarré avec la nouvelle année pour s'étendre sur une durée de 3 à 6 mois.</p> <p>Merci encore d'avoir pris le temps de vous inscrire sur notre plate-forme et n'hésitez surtout pas à nous faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src={{mshLogo}} width='100' height='100' /></p> </div> </div>`,
+        });
+        return true;
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error('Failed to send email');
+      }
+    }
   },
 };
