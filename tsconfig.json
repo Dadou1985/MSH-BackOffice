@@ -13,7 +13,7 @@
     "resolveJsonModule": true,
     "noEmit": false,
     "emitDeclarationOnly": false,
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "typeRoots": ["./src/types", "./node_modules/@types"],
   },
   "include": ["./"],
   "exclude": ["node_modules", "dist"]
