@@ -725,9 +725,9 @@ export const resolvers = {
             }
         },
         sendWelcomeEmailLogo: async (_, { senderEmail, email, firstName, logo, mshLogo, password, fakeMail, appLink }, context) => {
-            // if (!context.user) {
-            //   throw new Error('Unauthorized');
-            // }
+            if (!context.user) {
+                throw new Error('Unauthorized');
+            }
             try {
                 await transporter.sendMail({
                     from: senderEmail,
