@@ -16,7 +16,7 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "NODE_ENV=production nodemon dist/app.js",
+        "start": "node dist/app.js",
         "dev": "NODE_ENV=development nodemon dist/app.js",
         "build": "npm install && tsc",
         "lint": "eslint .",
