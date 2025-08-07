@@ -3,8 +3,14 @@ import { typeDefs } from './typeDefs.js';
 import { resolvers } from './resolvers.js';
 import { mongoConnect } from '../utils/database.js';
 import jwt from 'jsonwebtoken';
+import { resetGuestUsers } from '../utils/database.js';
+import cron from 'node-cron';
 export async function startApolloServer(app, io) {
     await mongoConnect(); // ⬅️ Connect to MongoDB before Apollo Server starts
+    cron.schedule('56 * * * *', () => {
+        console.log('⏰ Running resetGuestUsers task...');
+        resetGuestUsers();
+    });
     const server = new ApolloServer({
         typeDefs,
         resolvers,
