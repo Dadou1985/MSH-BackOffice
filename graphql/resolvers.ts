@@ -8,6 +8,7 @@ import { generateToken } from '../utils/jwt.js';
 import redisClient from '../utils/redisClient.js';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
+import webpush from '../utils/webpush.js';
 
 import type {
   HotelType,
@@ -970,6 +971,82 @@ export const resolvers = {
         console.error('Error sending email:', error);
         throw new Error('Failed to send email');
       }
+    }, 
+    
+    subscribeToPush: async (_: unknown, { userId, subscription }: any, context: any) : Promise<boolean> => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+
+      try {
+        await GuestUser.findByIdAndUpdate(
+          userId,
+          { token: subscription },
+          { new: true }
+        );
+  
+        console.log('Subscription enregistrée :', subscription);
+        return true;
+      } catch (error) {
+        console.error('Error subscribing to push notifications:', error);
+        throw new Error('Failed to subscribe to push notifications');
+        
+      }
+    },
+
+    sendPushNotification: async (_: unknown, { subscription, data }: any, context: any) : Promise<boolean> => {
+      if (!context.user) {
+          throw new Error('Unauthorized');
+      }
+      try {
+          const icon = data.logo
+          const language = data.language
+          const title = data.hotelName
+          const hotelId = data.hotelId
+          const guestStatus = data.isChatting
+
+          let body
+
+          switch (language) {
+          case 'fr':
+              body = "Vous avez un nouveau message !"
+          break;
+          case 'en':
+              body = "You have a new message !"
+          break;
+          case 'de':
+              body = "Du hast eine neue Nachricht !"
+          break;
+          case 'it':
+              body = "Hai un nuovo messaggio!"
+          break;
+          case 'pt':
+              body = "Você tem uma nova mensagem !"
+          break;
+          case 'es':
+              body = "Tienes un nuevo mensaje !"
+          break;
+          default:
+          break;
+          }
+      
+          const message = {
+              title: title,
+              body: body,
+              icon: icon,
+              hotelId: hotelId,
+              guestStatus: guestStatus
+          };
+
+          const payload = JSON.stringify(message);    
+
+          await webpush.sendNotification(subscription, JSON.stringify(payload));
+          console.log('Notification envoyée !');
+          return true;
+      } catch (err) {
+          console.error('Erreur Web Push:', err);
+          return false;
+      }
     }
-  },
+  }
 };

@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import admin from 'firebase-admin'
 import Hotel from '../models/hotels/hotels.js';
+import dayjs from 'dayjs';
+import GuestUser from '../models/guest/guestUsers.js'; // ton modèle mongoose
+import { sendCheckOutEmail } from './emails.js';
+
+
 const mongoDbUri = process.env.MONGODB_URI;
 const dbName = process.env.MONGO_DB_NAME;
 
@@ -272,4 +277,77 @@ const deleteHotelsInBatches = async () => {
   }
 };
 
-export { mongoConnect, migrate, deepMigration, largeMigration, migrateHotelIds, deleteHotelsInBatches };
+const resetGuestUsers = async () => {
+  try {
+    const today = dayjs().format('DD/MM/YYYY');
+    console.log('date du jour:', typeof today);
+
+    const guests = await GuestUser.find({
+      checkoutDate: today 
+    });
+
+    console.log('GUEST', guests);
+
+
+    // Send emails before bulk update to ensure guest fields are available
+    for (const guest of guests) {
+      try {
+        if (guest.email && guest.logo && guest.hotelName) {
+          await sendCheckOutEmail(guest.email, guest.logo, guest.hotelName);
+          console.log(`📧 Email sent to ${guest.email}`);
+        }
+      } catch (emailErr) {
+        console.error(`❌ Failed to send email to ${guest.email}:`, emailErr);
+      }
+    }
+
+    // Prepare bulk operations, preserving email, logo, hotelName for email logic above
+    const bulkOps = guests.map((guest) => {
+      console.log("guestOne", guest._id);
+      const updatedGuest = {
+        checkoutDate: "",
+        hotelId: "",
+        hotelDept: "",
+        hotelRegion: "",
+        room: "",
+        phone: "",
+        city: "",
+        classement: "",
+        babyBed: false,
+        blanket: false,
+        hairDryer: false,
+        iron: false,
+        pillow: false,
+        toiletPaper: false,
+        towel: false,
+        soap: false,
+        journeyId: ""
+      };
+
+      return {
+        updateOne: {
+          filter: { _id: guest._id },
+          update: { $set: updatedGuest }
+        }
+      };
+    });
+
+    console.log('Bulk operations prepared:', JSON.stringify(bulkOps, null, 2));
+
+    if (bulkOps.length > 0) {
+      try {
+        await GuestUser.bulkWrite(bulkOps);
+      console.log(`✅ Reset done for ${bulkOps.length} guests`);
+      } catch (error) {
+        console.error('❌ Error during bulk update:', error);
+      }
+    }
+    
+
+    console.log(`✅ Reset done for ${guests.length} guests at ${new Date().toISOString()}`);
+  } catch (error) {
+    console.error('❌ Error during guest reset cron:', error);
+  }
+};
+
+export { mongoConnect, migrate, deepMigration, largeMigration, migrateHotelIds, deleteHotelsInBatches, resetGuestUsers };

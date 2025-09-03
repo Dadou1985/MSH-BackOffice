@@ -36,7 +36,7 @@ const guestUserSchema = new mongoose.Schema({
     hotelVisitedArray: [{ type: String }],
     journeyId: { type: String },
     journey: [journeySchema], // Attention : corrige si c’est une faute
-    token: [tokenSchema], // Attention : corrige si c’est une faute
+    token: tokenSchema, // Attention : corrige si c’est une faute
 }, { timestamps: true });
 const GuestUser = mongoose.model('guestUser', guestUserSchema, 'guestUsers');
 export default GuestUser;
