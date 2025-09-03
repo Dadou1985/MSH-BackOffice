@@ -1,4 +1,3 @@
-// routes/support.routes.js
 import express from 'express';
 import { createSupportDocument, addSupportMessage, getSupportMessages, updateSupportMessage, deleteSupportMessage, updateSupportDocument, getAllSupportDocuments } from '../controllers/support.controller.js';
 const router = express.Router();

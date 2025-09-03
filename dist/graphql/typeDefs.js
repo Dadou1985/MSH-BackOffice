@@ -25,6 +25,7 @@ export const typeDefs = gql `
       getSupportById(id: ID!): Support
   }
 
+
   #########################
   # GraphQL Mutations Definitions
 
@@ -90,10 +91,14 @@ export const typeDefs = gql `
       sendCheckInEmail(senderEmail: String!, email: String!, appLink: String!, hotelName: String!): Boolean
       sendCheckOutEmail(senderEmail: String!, email: String!, logo: String!, hotelName: String!): Boolean
       sendNewCoworkerAccountEmail(senderEmail: String!, email: String!, adminName: String!, mshLogo: String!, coworkerName: String!, coworkerMail: String!): Boolean
-      sendNewSubscriberEmail(senderEmail: String!, email: String!, hotel: String!, standing: String!, capacity: String!, city: String!, country: String!, subscriber: String!): Boolean
+      sendNewSubscriberEmail: Boolean
       sendWelcomeEmail(senderEmail: String!, email: String!, prospectName: String!, prospectMail: String!, mshLogo: String!, mshLogoPro: String!): Boolean
       sendWelcomeFinalEmail(senderEmail: String!, email: String!, mshBanner: String!, firstName: String!, mshLogo: String!, password: String!, fakeMail: String!, appLink: String!): Boolean
       sendWelcomeEmailLogo(senderEmail: String!, email: String!, firstName: String!, logo: String, mshLogo: String!, password: String!, fakeMail: String!, appLink: String!): Boolean
+
+    # Push Notification Mutations
+      subscribeToPush(userId: String!, subscription: TokenInput!): Boolean
+      sendPushNotification(subscription: TokenInput!, data: NotificationPayloadInput!): Boolean
 
   }
 
@@ -766,6 +771,19 @@ export const typeDefs = gql `
   type AuthPayload {
     token: String!
   }
+
+  #########################
+  # Generic Item Type/Inputs
+
+  input NotificationPayloadInput {
+    title: String
+    body: String
+    logo: String
+    language: String
+    hotelId: String
+    guestStatus: Boolean
+  }
+
 
   #########################
   # Generic Item Type/Inputs

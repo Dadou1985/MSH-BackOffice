@@ -1,0 +1,828 @@
+ # AUTO-GENERATED OPERATION EXAMPLES #
+
+ # Queries #
+
+ # getHotels
+ # query
+ query GetHotels {
+   getHotels {
+     id
+     hotelName
+   }
+ }
+ # No variables required
+
+ # getHotelById
+ # query
+ query GetHotelById($id: ID!) {
+   getHotelById(id: $id) {
+     id
+     hotelName
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "HOTEL_ID"
+ # }
+
+ # getGuestUsers
+ # query
+ query GetGuestUsers {
+   getGuestUsers {
+     id
+     username
+   }
+ }
+ # No variables required
+
+ getGuestUserById
+ query
+ query GetGuestUserById($id: ID!) {
+   getGuestUserById(id: $id) {
+     id
+     username
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "GUEST_USER_ID"
+ # }
+
+ getBusinessUsers
+ query
+ query GetBusinessUsers {
+   getBusinessUsers {
+     id
+     username
+   }
+ }
+ No variables required
+
+ getBusinessUserById
+ query
+ query GetBusinessUserById($id: ID!) {
+   getBusinessUserById(id: $id) {
+     id
+     username
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "BUSINESS_USER_ID"
+ # }
+
+ getFeedbacks
+ query
+ query GetFeedbacks {
+   getFeedbacks {
+     id
+     hotelId
+   }
+ }
+ No variables required
+
+ getFeedbackById
+ query
+ query GetFeedbackById($id: ID!) {
+   getFeedbackById(id: $id) {
+     id
+     hotelId
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "FEEDBACK_ID"
+ # }
+
+ getSupports
+ query
+ query GetSupports {
+   getSupports {
+     id
+     hotelName
+   }
+ }
+ No variables required
+
+ getSupportById
+ query
+ query GetSupportById($id: ID!) {
+   getSupportById(id: $id) {
+     id
+     hotelName
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "SUPPORT_ID"
+ # }
+
+ --- Mutations ---
+
+ createHotel
+ mutation
+ mutation CreateHotel($input: HotelInput!) {
+   createHotel(input: $input) {
+     id
+     hotelName
+   }
+ }
+ # Variables:
+ # {
+ #   "input": {
+ #     "hotelName": "Hotel Example"
+ #     // ... other HotelInput fields ...
+ #   }
+ # }
+
+ updateHotel
+ mutation
+ mutation UpdateHotel($id: ID!, $input: HotelInput!) {
+   updateHotel(id: $id, input: $input) {
+     id
+     hotelName
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "HOTEL_ID",
+ #   "input": {
+ #     "hotelName": "Updated Hotel"
+ #     // ... other HotelInput fields ...
+ #   }
+ # }
+
+ deleteHotel
+ mutation
+ mutation DeleteHotel($id: ID!) {
+   deleteHotel(id: $id)
+ }
+ # Variables:
+ # {
+ #   "id": "HOTEL_ID"
+ # }
+
+ addHotelFieldItem
+ mutation
+ mutation AddHotelFieldItem($hotelId: ID!, $field: String!, $item: GenericItemInput!) {
+   addHotelFieldItem(hotelId: $hotelId, field: $field, item: $item) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "field": "cab",
+ #   "item": {
+ #     "author": "John Doe"
+ #     // ... other GenericItemInput fields ...
+ #   }
+ # }
+
+ removeHotelFieldItem
+ mutation
+ mutation RemoveHotelFieldItem($hotelId: ID!, $field: String!, $itemId: ID!) {
+   removeHotelFieldItem(hotelId: $hotelId, field: $field, itemId: $itemId) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "field": "cab",
+ #   "itemId": "ITEM_ID"
+ # }
+
+ updateHotelFieldItem
+ mutation
+ mutation UpdateHotelFieldItem($hotelId: ID!, $field: String!, $itemId: ID!, $updates: GenericItemInput!) {
+   updateHotelFieldItem(hotelId: $hotelId, field: $field, itemId: $itemId, updates: $updates) {
+     _id
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "field": "cab",
+ #   "itemId": "ITEM_ID",
+ #   "updates": {
+ #     "author": "Jane Doe"
+ #   }
+ # }
+
+ createChecklist
+ mutation
+ mutation CreateChecklist($input: ChecklistInput!) {
+   createChecklist(input: $input) {
+     morning {
+       task
+       status
+     }
+   }
+ }
+ # Variables:
+ # {
+ #   "input": {
+ #     "morning": [
+ #       { "task": "Do something", "status": false }
+ #     ]
+ #   }
+ # }
+
+ addChecklistItem
+ mutation
+ mutation AddChecklistItem($hotelId: ID!, $period: String!, $item: ChecklistItemInput!) {
+   addChecklistItem(hotelId: $hotelId, period: $period, item: $item) {
+     morning { task status }
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "period": "morning",
+ #   "item": { "task": "New Task", "status": true }
+ # }
+
+ updateChecklistItem
+ mutation
+ mutation UpdateChecklistItem($hotelId: ID!, $period: String!, $itemId: ID!, $item: ChecklistItemInput!) {
+   updateChecklistItem(hotelId: $hotelId, period: $period, itemId: $itemId, item: $item) {
+     morning { task status }
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "period": "morning",
+ #   "itemId": "ITEM_ID",
+ #   "item": { "task": "Updated", "status": false }
+ # }
+
+ deleteChecklistItem
+ mutation
+ mutation DeleteChecklistItem($hotelId: ID!, $period: String!, $itemId: ID!) {
+   deleteChecklistItem(hotelId: $hotelId, period: $period, itemId: $itemId) {
+     morning { task status }
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "period": "morning",
+ #   "itemId": "ITEM_ID"
+ # }
+
+ addChatToHotel
+ mutation
+ mutation AddChatToHotel($hotelId: ID!, $chat: ChatInput!) {
+   addChatToHotel(hotelId: $hotelId, chat: $chat) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "chat": {
+ #     "clientFullName": "John Doe",
+ #     "guestLanguage": "en",
+ #     "userId": "USER_ID"
+ #   }
+ # }
+
+ updateChatFromHotel
+ mutation
+ mutation UpdateChatFromHotel($hotelId: ID!, $userId: String!, $updates: ChatInput!) {
+   updateChatFromHotel(hotelId: $hotelId, userId: $userId, updates: $updates) {
+     userId
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "userId": "USER_ID",
+ #   "updates": {
+ #     "clientFullName": "Jane Doe"
+ #   }
+ # }
+
+ removeChatFromHotel
+ mutation
+ mutation RemoveChatFromHotel($hotelId: ID!, $userId: String!) {
+   removeChatFromHotel(hotelId: $hotelId, userId: $userId) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "userId": "USER_ID"
+ # }
+
+ addMessageToChatRoom
+ mutation
+ mutation AddMessageToChatRoom($hotelId: ID!, $userId: String!, $message: ChatRoomMessageInput!) {
+   addMessageToChatRoom(hotelId: $hotelId, userId: $userId, message: $message) {
+     userId
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "userId": "USER_ID",
+ #   "message": {
+ #     "author": "John Doe",
+ #     "date": "2024-01-01",
+ #     "email": "john@example.com",
+ #     "room": "101",
+ #     "text": "Hello",
+ #     "title": "Greeting"
+ #   }
+ # }
+
+ updateChatRoomMessage
+ mutation
+ mutation UpdateChatRoomMessage($hotelId: ID!, $userId: String!, $messageId: ID!, $updates: ChatRoomMessageInput!) {
+   updateChatRoomMessage(hotelId: $hotelId, userId: $userId, messageId: $messageId, updates: $updates) {
+     author
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "userId": "USER_ID",
+ #   "messageId": "MESSAGE_ID",
+ #   "updates": {
+ #     "text": "Updated text"
+ #   }
+ # }
+
+ deleteChatRoomMessage
+ mutation
+ mutation DeleteChatRoomMessage($hotelId: ID!, $userId: String!, $messageId: ID!) {
+   deleteChatRoomMessage(hotelId: $hotelId, userId: $userId, messageId: $messageId) {
+     userId
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "userId": "USER_ID",
+ #   "messageId": "MESSAGE_ID"
+ # }
+
+ addHousekeepingItem
+ mutation
+ mutation AddHousekeepingItem($hotelId: ID!, $category: String!, $item: HousekeepingItemEntryInput!) {
+   addHousekeepingItem(hotelId: $hotelId, category: $category, item: $item) {
+     client
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "category": "towel",
+ #   "item": {
+ #     "checkoutDate": "2024-01-01",
+ #     "client": "John Doe",
+ #     "room": "101"
+ #   }
+ # }
+
+ updateHousekeepingItem
+ mutation
+ mutation UpdateHousekeepingItem($hotelId: ID!, $category: String!, $itemId: ID!, $updates: HousekeepingItemEntryInput!) {
+   updateHousekeepingItem(hotelId: $hotelId, category: $category, itemId: $itemId, updates: $updates) {
+     client
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "category": "towel",
+ #   "itemId": "ITEM_ID",
+ #   "updates": {
+ #     "client": "Jane Doe"
+ #   }
+ # }
+
+ removeHousekeepingItem
+ mutation
+ mutation RemoveHousekeepingItem($hotelId: ID!, $category: String!, $itemId: ID!) {
+   removeHousekeepingItem(hotelId: $hotelId, category: $category, itemId: $itemId) {
+     client
+   }
+ }
+ # Variables:
+ # {
+ #   "hotelId": "HOTEL_ID",
+ #   "category": "towel",
+ #   "itemId": "ITEM_ID"
+ # }
+
+ createGuestUser
+ mutation
+ mutation CreateGuestUser($input: GuestUserInput!) {
+   createGuestUser(input: $input) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "input": {
+ #     "username": "guestuser"
+ #   }
+ # }
+
+ updateGuestUser
+ mutation
+ mutation UpdateGuestUser($id: ID!, $input: GuestUserInput!) {
+   updateGuestUser(id: $id, input: $input) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "GUEST_USER_ID",
+ #   "input": {
+ #     "username": "updatedguest"
+ #   }
+ # }
+
+ deleteGuestUser
+ mutation
+ mutation DeleteGuestUser($id: ID!) {
+   deleteGuestUser(id: $id)
+ }
+ # Variables:
+ # {
+ #   "id": "GUEST_USER_ID"
+ # }
+
+ createBusinessUser
+ mutation
+ mutation CreateBusinessUser($input: BusinessUserInput!) {
+   createBusinessUser(input: $input) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "input": {
+ #     "username": "businessuser"
+ #   }
+ # }
+
+ updateBusinessUser
+ mutation
+ mutation UpdateBusinessUser($id: ID!, $input: BusinessUserInput!) {
+   updateBusinessUser(id: $id, input: $input) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "BUSINESS_USER_ID",
+ #   "input": {
+ #     "username": "updatedbusiness"
+ #   }
+ # }
+
+ deleteBusinessUser
+ mutation
+ mutation DeleteBusinessUser($id: ID!) {
+   deleteBusinessUser(id: $id)
+ }
+ # Variables:
+ # {
+ #   "id": "BUSINESS_USER_ID"
+ # }
+
+ createFeedback
+ mutation
+ mutation CreateFeedback($input: FeedbackInput!) {
+   createFeedback(input: $input) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "input": {
+ #     "hotelId": "HOTEL_ID"
+ #   }
+ # }
+
+ updateFeedback
+ mutation
+ mutation UpdateFeedback($id: ID!, $input: FeedbackInput!) {
+   updateFeedback(id: $id, input: $input) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "FEEDBACK_ID",
+ #   "input": {
+ #     "hotelId": "HOTEL_ID"
+ #   }
+ # }
+
+ deleteFeedback
+ mutation
+ mutation DeleteFeedback($id: ID!) {
+   deleteFeedback(id: $id)
+ }
+ # Variables:
+ # {
+ #   "id": "FEEDBACK_ID"
+ # }
+
+ addFeedbackCategoryItem
+ mutation
+ mutation AddFeedbackCategoryItem($feedbackId: ID!, $field: String!, $category: CategoryInput!) {
+   addFeedbackCategoryItem(feedbackId: $feedbackId, field: $field, category: $category) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "feedbackId": "FEEDBACK_ID",
+ #   "field": "satisfaction",
+ #   "category": {
+ #     "text": "Great Service"
+ #   }
+ # }
+
+ updateFeedbackCategoryItem
+ mutation
+ mutation UpdateFeedbackCategoryItem($feedbackId: ID!, $field: String!, $itemId: ID!, $updates: CategoryInput!) {
+   updateFeedbackCategoryItem(feedbackId: $feedbackId, field: $field, itemId: $itemId, updates: $updates) {
+     text
+   }
+ }
+ # Variables:
+ # {
+ #   "feedbackId": "FEEDBACK_ID",
+ #   "field": "satisfaction",
+ #   "itemId": "ITEM_ID",
+ #   "updates": {
+ #     "text": "Updated"
+ #   }
+ # }
+
+ removeFeedbackCategoryItem
+ mutation
+ mutation RemoveFeedbackCategoryItem($feedbackId: ID!, $field: String!, $itemId: ID!) {
+   removeFeedbackCategoryItem(feedbackId: $feedbackId, field: $field, itemId: $itemId) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "feedbackId": "FEEDBACK_ID",
+ #   "field": "satisfaction",
+ #   "itemId": "ITEM_ID"
+ # }
+
+ createSupport
+ mutation
+ mutation CreateSupport($input: SupportInput!) {
+   createSupport(input: $input) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "input": {
+ #     "hotelName": "Hotel Example"
+ #   }
+ # }
+
+ updateSupport
+ mutation
+ mutation UpdateSupport($id: ID!, $updates: SupportInput!) {
+   updateSupport(id: $id, updates: $updates) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "id": "SUPPORT_ID",
+ #   "updates": {
+ #     "hotelName": "Updated Hotel"
+ #   }
+ # }
+
+ deleteSupport
+ mutation
+ mutation DeleteSupport($id: ID!) {
+   deleteSupport(id: $id)
+ }
+ # Variables:
+ # {
+ #   "id": "SUPPORT_ID"
+ # }
+
+ addMessageToSupportChatRoom
+ mutation
+ mutation AddMessageToSupportChatRoom($supportId: ID!, $message: SupportRoomMessageInput!) {
+   addMessageToSupportChatRoom(supportId: $supportId, message: $message) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "supportId": "SUPPORT_ID",
+ #   "message": {
+ #     "author": "Support Agent",
+ #     "date": "2024-01-01",
+ #     "email": "agent@example.com",
+ #     "text": "Support message"
+ #   }
+ # }
+
+ updateSupportChatRoomMessage
+ mutation
+ mutation UpdateSupportChatRoomMessage($supportId: ID!, $messageId: ID!, $updates: SupportRoomMessageInput!) {
+   updateSupportChatRoomMessage(supportId: $supportId, messageId: $messageId, updates: $updates) {
+     author
+   }
+ }
+ # Variables:
+ # {
+ #   "supportId": "SUPPORT_ID",
+ #   "messageId": "MESSAGE_ID",
+ #   "updates": {
+ #     "text": "Updated message"
+ #   }
+ # }
+
+ deleteSupportChatRoomMessage
+ mutation
+ mutation DeleteSupportChatRoomMessage($supportId: ID!, $messageId: ID!) {
+   deleteSupportChatRoomMessage(supportId: $supportId, messageId: $messageId) {
+     id
+   }
+ }
+ # Variables:
+ # {
+ #   "supportId": "SUPPORT_ID",
+ #   "messageId": "MESSAGE_ID"
+ # }
+
+ loginUser
+ mutation
+ mutation LoginUser($email: String!, $password: String!, $userCategory: String!) {
+   loginUser(email: $email, password: $password, userCategory: $userCategory) {
+     token
+   }
+ }
+ # Variables:
+ {
+    "email": "user@example.com",
+    "password": "password123",
+    "userCategory": "business"
+}
+
+ logoutUser
+ mutation
+ mutation LogoutUser {
+   logoutUser
+ }
+ No variables required
+
+ sendCheckInEmail
+ mutation
+ mutation SendCheckInEmail($senderEmail: String!, $email: String!, $appLink: String!, $hotelName: String!) {
+   sendCheckInEmail(senderEmail: $senderEmail, email: $email, appLink: $appLink, hotelName: $hotelName)
+ }
+ # Variables:
+ # {
+ #   "senderEmail": "sender@example.com",
+ #   "email": "guest@example.com",
+ #   "appLink": "https://app.example.com",
+ #   "hotelName": "Hotel Example"
+ # }
+
+ sendCheckOutEmail
+ mutation
+ mutation SendCheckOutEmail($senderEmail: String!, $email: String!, $logo: String!, $hotelName: String!) {
+   sendCheckOutEmail(senderEmail: $senderEmail, email: $email, logo: $logo, hotelName: $hotelName)
+ }
+ # Variables:
+ # {
+ #   "senderEmail": "sender@example.com",
+ #   "email": "guest@example.com",
+ #   "logo": "https://logo.url",
+ #   "hotelName": "Hotel Example"
+ # }
+
+ sendNewCoworkerAccountEmail
+ mutation
+ mutation SendNewCoworkerAccountEmail($senderEmail: String!, $email: String!, $adminName: String!, $mshLogo: String!, $coworkerName: String!, $coworkerMail: String!) {
+   sendNewCoworkerAccountEmail(senderEmail: $senderEmail, email: $email, adminName: $adminName, mshLogo: $mshLogo, coworkerName: $coworkerName, coworkerMail: $coworkerMail)
+ }
+ # Variables:
+ # {
+ #   "senderEmail": "sender@example.com",
+ #   "email": "coworker@example.com",
+ #   "adminName": "Admin",
+ #   "mshLogo": "https://logo.url",
+ #   "coworkerName": "Coworker",
+ #   "coworkerMail": "coworker@example.com"
+ # }
+
+ sendNewSubscriberEmail
+ mutation
+ mutation SendNewSubscriberEmail {
+   sendNewSubscriberEmail
+ }
+ No variables required
+
+ sendWelcomeEmail
+ mutation
+ mutation SendWelcomeEmail($senderEmail: String!, $email: String!, $prospectName: String!, $prospectMail: String!, $mshLogo: String!, $mshLogoPro: String!) {
+   sendWelcomeEmail(senderEmail: $senderEmail, email: $email, prospectName: $prospectName, prospectMail: $prospectMail, mshLogo: $mshLogo, mshLogoPro: $mshLogoPro)
+ }
+ # Variables:
+ # {
+ #   "senderEmail": "sender@example.com",
+ #   "email": "user@example.com",
+ #   "prospectName": "Prospect",
+ #   "prospectMail": "prospect@example.com",
+ #   "mshLogo": "https://logo.url",
+ #   "mshLogoPro": "https://prologo.url"
+ # }
+
+ sendWelcomeFinalEmail
+ mutation
+ mutation SendWelcomeFinalEmail($senderEmail: String!, $email: String!, $mshBanner: String!, $firstName: String!, $mshLogo: String!, $password: String!, $fakeMail: String!, $appLink: String!) {
+   sendWelcomeFinalEmail(senderEmail: $senderEmail, email: $email, mshBanner: $mshBanner, firstName: $firstName, mshLogo: $mshLogo, password: $password, fakeMail: $fakeMail, appLink: $appLink)
+ }
+ # Variables:
+ # {
+ #   "senderEmail": "sender@example.com",
+ #   "email": "user@example.com",
+ #   "mshBanner": "https://banner.url",
+ #   "firstName": "First",
+ #   "mshLogo": "https://logo.url",
+ #   "password": "password123",
+ #   "fakeMail": "fake@example.com",
+ #   "appLink": "https://app.example.com"
+ # }
+
+ sendWelcomeEmailLogo
+ mutation
+ mutation SendWelcomeEmailLogo($senderEmail: String!, $email: String!, $firstName: String!, $logo: String, $mshLogo: String!, $password: String!, $fakeMail: String!, $appLink: String!) {
+   sendWelcomeEmailLogo(senderEmail: $senderEmail, email: $email, firstName: $firstName, logo: $logo, mshLogo: $mshLogo, password: $password, fakeMail: $fakeMail, appLink: $appLink)
+ }
+ # Variables:
+ # {
+ #   "senderEmail": "sender@example.com",
+ #   "email": "user@example.com",
+ #   "firstName": "First",
+ #   "logo": "https://logo.url",
+ #   "mshLogo": "https://logo.url",
+ #   "password": "password123",
+ #   "fakeMail": "fake@example.com",
+ #   "appLink": "https://app.example.com"
+# }
+
+subscribeToPush
+mutation SubscribeToPush($subscription: TokenInput!) {
+  subscribeToPush(subscription: $subscription)
+}
+# Variables:
+{
+  "subscription": {
+    "endpoint": "https://fcm.googleapis.com/fcm/send/abc123",
+    "expirationTime": null,
+    "keys": {
+      "p256dh": "p256dh-key-here",
+      "auth": "auth-key-here"
+    }
+  }
+}
+
+sendPushNotification
+mutation SendPushNotification($subscription: TokenInput!, $data: NotificationPayloadInput!) {
+  sendPushNotification(subscription: $subscription, data: $payload)
+}
+# Variables:
+{
+  "subscription": {
+    "endpoint": "https://fcm.googleapis.com/fcm/send/abc123",
+    "expirationTime": null,
+    "keys": {
+      "p256dh": "p256dh-key-here",
+      "auth": "auth-key-here"
+    }
+  },
+  "payload": {
+    "title": "Hello!",
+    "body": "This is a push notification",
+    "logo": "https://example.com/icon.png",
+    "language": "en",
+    "hotelId": "HOTEL_ID",
+    "guestStatus": true
+  }
+}
