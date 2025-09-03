@@ -677,11 +677,11 @@
    }
  }
  # Variables:
- # {
- #   "email": "user@example.com",
- #   "password": "password123",
- #   "userCategory": "business"
- # }
+ {
+    "email": "user@example.com",
+    "password": "password123",
+    "userCategory": "business"
+}
 
  logoutUser
  mutation
@@ -785,4 +785,44 @@
  #   "password": "password123",
  #   "fakeMail": "fake@example.com",
  #   "appLink": "https://app.example.com"
- # }
+# }
+
+subscribeToPush
+mutation SubscribeToPush($subscription: TokenInput!) {
+  subscribeToPush(subscription: $subscription)
+}
+# Variables:
+{
+  "subscription": {
+    "endpoint": "https://fcm.googleapis.com/fcm/send/abc123",
+    "expirationTime": null,
+    "keys": {
+      "p256dh": "p256dh-key-here",
+      "auth": "auth-key-here"
+    }
+  }
+}
+
+sendPushNotification
+mutation SendPushNotification($subscription: TokenInput!, $data: NotificationPayloadInput!) {
+  sendPushNotification(subscription: $subscription, data: $payload)
+}
+# Variables:
+{
+  "subscription": {
+    "endpoint": "https://fcm.googleapis.com/fcm/send/abc123",
+    "expirationTime": null,
+    "keys": {
+      "p256dh": "p256dh-key-here",
+      "auth": "auth-key-here"
+    }
+  },
+  "payload": {
+    "title": "Hello!",
+    "body": "This is a push notification",
+    "logo": "https://example.com/icon.png",
+    "language": "en",
+    "hotelId": "HOTEL_ID",
+    "guestStatus": true
+  }
+}

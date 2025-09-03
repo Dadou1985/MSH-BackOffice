@@ -97,6 +97,10 @@ export const typeDefs = gql`
       sendWelcomeFinalEmail(senderEmail: String!, email: String!, mshBanner: String!, firstName: String!, mshLogo: String!, password: String!, fakeMail: String!, appLink: String!): Boolean
       sendWelcomeEmailLogo(senderEmail: String!, email: String!, firstName: String!, logo: String, mshLogo: String!, password: String!, fakeMail: String!, appLink: String!): Boolean
 
+    # Push Notification Mutations
+      subscribeToPush(userId: String!, subscription: TokenInput!): Boolean
+      sendPushNotification(subscription: TokenInput!, data: NotificationPayloadInput!): Boolean
+
   }
 
   #########################
@@ -768,6 +772,19 @@ export const typeDefs = gql`
   type AuthPayload {
     token: String!
   }
+
+  #########################
+  # Generic Item Type/Inputs
+
+  input NotificationPayloadInput {
+    title: String
+    body: String
+    logo: String
+    language: String
+    hotelId: String
+    guestStatus: Boolean
+  }
+
 
   #########################
   # Generic Item Type/Inputs

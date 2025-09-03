@@ -7,7 +7,7 @@ import { resetGuestUsers } from '../utils/database.js';
 import cron from 'node-cron';
 export async function startApolloServer(app, io) {
     await mongoConnect(); // ⬅️ Connect to MongoDB before Apollo Server starts
-    cron.schedule('56 * * * *', () => {
+    cron.schedule('0 14 * * *', () => {
         console.log('⏰ Running resetGuestUsers task...');
         resetGuestUsers();
     });
