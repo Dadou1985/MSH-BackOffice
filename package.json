@@ -45,7 +45,6 @@
         "@types/mongoose": "^5.11.96",
         "@types/nodemailer": "^6.4.17",
         "@types/socket.io": "^3.0.1",
-        "@types/web-push": "^3.6.4",
         "apollo-server-express": "^3.13.0",
         "bcrypt": "^5.1.1",
         "body-parser": "^2.2.0",

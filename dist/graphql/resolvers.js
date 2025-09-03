@@ -744,8 +744,9 @@ export const resolvers = {
             }
         },
         subscribeToPush: async (_, { userId, subscription }, context) => {
-            console.log('USER ID:', userId);
-            console.log('SUBSCRIPTION:', subscription);
+            if (!context.user) {
+                throw new Error('Unauthorized');
+            }
             try {
                 await GuestUser.findByIdAndUpdate(userId, { token: subscription }, { new: true });
                 console.log('Subscription enregistrée :', subscription);
@@ -757,9 +758,9 @@ export const resolvers = {
             }
         },
         sendPushNotification: async (_, { subscription, data }, context) => {
-            // if (!context.user) {
-            //     throw new Error('Unauthorized');
-            // }
+            if (!context.user) {
+                throw new Error('Unauthorized');
+            }
             try {
                 const icon = data.logo;
                 const language = data.language;
