@@ -31,6 +31,7 @@ export const typeDefs = gql`
   # GraphQL Mutations Definitions
 
   type Mutation {
+    translateText(text: String!, lang: String!): String!
     # Mutations for Hotels
       createHotel(input: HotelInput!): Hotel
       updateHotel(id: ID!, input: HotelInput!): Hotel
