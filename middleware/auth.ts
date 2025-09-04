@@ -5,6 +5,8 @@ export interface AuthRequest extends Request {
   user?: any;
 }
 
+// Test git amend
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret';
 
 export function authenticateJWT(req: AuthRequest, res: Response, next: NextFunction) {

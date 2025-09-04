@@ -9,6 +9,7 @@ import redisClient from '../utils/redisClient.js';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 import webpush from '../utils/webpush.js';
+import { translateText } from '../utils/translate.js';
 
 import type {
   HotelType,
@@ -109,6 +110,10 @@ export const resolvers = {
   },
 
   Mutation: {
+    translateText: async (_: any, { text, lang }: { text: string; lang: string }) => {
+      const translation = await translateText(text, lang);
+      return translation;
+    },
     loginUser: async (
       _: unknown,
       { email, password, userCategory }: { email: string; password: string, userCategory: string }

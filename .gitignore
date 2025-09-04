@@ -30,3 +30,6 @@ typings/
 
 # Mac files
 .DS_Storesendgrid.env
+
+# google translation api
+google-translate-key.json

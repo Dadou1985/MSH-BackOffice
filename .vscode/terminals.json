@@ -1,0 +1,15 @@
+{
+  "autorun": true,
+  "terminals": [
+    {
+      "name": "git",
+      "icon": "git-branch",
+      "color": "#F14E32"
+    },
+    {
+      "name": "npm",
+      "icon": "zap",
+      "color": "#CB3837"
+    }
+  ]
+}

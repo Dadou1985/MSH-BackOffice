@@ -8,6 +8,7 @@ import { generateToken } from '../utils/jwt.js';
 import redisClient from '../utils/redisClient.js';
 import nodemailer from 'nodemailer';
 import webpush from '../utils/webpush.js';
+import { translateText } from '../utils/translate.js';
 const transporter = nodemailer.createTransport({
     host: process.env.IONOS_SMTP_HOST, // ou 'smtp.ionos.com' selon ton domaine
     port: Number(process.env.IONOS_SMTP_PORT) || 587, // 587 pour STARTTLS (recommandé), sinon 465 pour SSL
@@ -91,6 +92,10 @@ export const resolvers = {
         },
     },
     Mutation: {
+        translateText: async (_, { text, lang }) => {
+            const translation = await translateText(text, lang);
+            return translation;
+        },
         loginUser: async (_, { email, password, userCategory }) => {
             const user = userCategory === 'business' ? await BusinessUser.findOne({ email }) : await GuestUser.findOne({ email });
             if (!user)

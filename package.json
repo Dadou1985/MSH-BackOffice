@@ -37,6 +37,7 @@
         "typescript": "^5.8.3"
     },
     "dependencies": {
+        "@google-cloud/translate": "^9.2.0",
         "@sendgrid/mail": "^8.1.5",
         "@types/cookie-parser": "^1.4.9",
         "@types/cors": "^2.8.19",
@@ -45,6 +46,7 @@
         "@types/mongoose": "^5.11.96",
         "@types/nodemailer": "^6.4.17",
         "@types/socket.io": "^3.0.1",
+        "@types/web-push": "^3.6.4",
         "apollo-server-express": "^3.13.0",
         "bcrypt": "^5.1.1",
         "body-parser": "^2.2.0",
