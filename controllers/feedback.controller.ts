@@ -19,7 +19,6 @@ export const createFeedbackCollection = async (req: Request, res: Response) => {
   }
 };
 
-
 // READ single feedback document by hotelId
 export const createFeedback = async (req: Request, res: Response) => {
   const { id, category } = req.params;
@@ -27,12 +26,15 @@ export const createFeedback = async (req: Request, res: Response) => {
 
   try {
     const feedback = await Feedbacks.findOne({ hotelId: id });
-    if (!feedback) return res.status(404).json({ message: 'Feedback not found' });
+    if (!feedback)
+      return res.status(404).json({ message: 'Feedback not found' });
     const categoryArray = getCategoryArray(feedback, category);
     categoryArray.push(newFeedback);
 
     await feedback.save();
-    res.status(201).json({ message: 'New feedback added', feedback: newFeedback });
+    res
+      .status(201)
+      .json({ message: 'New feedback added', feedback: newFeedback });
   } catch (error) {
     res.status(500).json({ message: 'Error creating feedback', error });
   }
@@ -50,7 +52,6 @@ export const getAllFeedbacks = async (req: Request, res: Response) => {
   }
 };
 
-
 // UPDATE feedback by hotelId
 export const updateFeedbackByHotelId = async (req: Request, res: Response) => {
   try {
@@ -59,7 +60,8 @@ export const updateFeedbackByHotelId = async (req: Request, res: Response) => {
       { $set: req.body },
       { new: true, runValidators: true }
     );
-    if (!updatedFeedback) return res.status(404).json({ message: 'Feedback not found' });
+    if (!updatedFeedback)
+      return res.status(404).json({ message: 'Feedback not found' });
     res.status(200).json(updatedFeedback);
   } catch (error) {
     res.status(400).json({ message: 'Error updating feedback', error });
@@ -69,8 +71,11 @@ export const updateFeedbackByHotelId = async (req: Request, res: Response) => {
 // DELETE feedback by hotelId
 export const deleteFeedbackByHotelId = async (req: Request, res: Response) => {
   try {
-    const deletedFeedback = await Feedbacks.findOneAndDelete({ hotelId: req.params.hotelId });
-    if (!deletedFeedback) return res.status(404).json({ message: 'Feedback not found' });
+    const deletedFeedback = await Feedbacks.findOneAndDelete({
+      hotelId: req.params.hotelId,
+    });
+    if (!deletedFeedback)
+      return res.status(404).json({ message: 'Feedback not found' });
     res.status(200).json({ message: 'Feedback deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting feedback', error });

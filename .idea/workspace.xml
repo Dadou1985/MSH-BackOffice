@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="67a47ffc-e19b-47df-82af-8f1b44520e35" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/env.ts" beforeDir="false" afterPath="$PROJECT_DIR$/config/env.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/feedback.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/feedback.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/hotel/first-level/firstLevel.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/hotel/first-level/firstLevel.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/hotel/hotel.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/hotel/hotel.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/hotel/second-level/chat.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/hotel/second-level/chat.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/hotel/second-level/checklist.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/hotel/second-level/checklist.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/hotel/second-level/housekeeping.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/hotel/second-level/housekeeping.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/support.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/support.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/users/business/businessUsers.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users/business/businessUsers.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/users/guest/guestUsers.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users/guest/guestUsers.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/feedback.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/feedback.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/hotel/first-level/firstLevel.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/hotel/first-level/firstLevel.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/hotel/hotel.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/hotel/hotel.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/hotel/second-level/chat.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/hotel/second-level/chat.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/hotel/second-level/checklist.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/hotel/second-level/checklist.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/hotel/second-level/housekeeping.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/hotel/second-level/housekeeping.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/support.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/support.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/users/business/businessUsers.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/users/business/businessUsers.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/controllers/users/guest/guestUsers.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/controllers/users/guest/guestUsers.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/graphql/resolvers.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/graphql/resolvers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/graphql/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/graphql/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/graphql/typeDefs.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/graphql/typeDefs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/middleware/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/middleware/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/middleware/errorMiddelware.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/middleware/errorMiddelware.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/businessUsers.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/businessUsers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/feedbacks.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/feedbacks.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/guest/first-level/journey.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/guest/first-level/journey.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/guest/first-level/token.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/guest/first-level/token.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/guest/guestUsers.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/guest/guestUsers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/hotels/first-level/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/hotels/first-level/chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/hotels/first-level/checklist.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/hotels/first-level/checklist.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/hotels/first-level/firstLevel.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/hotels/first-level/firstLevel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/hotels/first-level/housekeeping.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/hotels/first-level/housekeeping.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/hotels/hotels.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/hotels/hotels.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/support.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/support.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/feedbacks.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/feedbacks.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/hotel/first-level/generic.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/hotel/first-level/generic.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/hotel/hotel.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/hotel/hotel.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/hotel/second-level/chat.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/hotel/second-level/chat.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/hotel/second-level/checklist.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/hotel/second-level/checklist.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/hotel/second-level/housekeeping.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/hotel/second-level/housekeeping.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/support.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/support.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/user/businessUsers.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/user/businessUsers.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/user/guestUsers.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/user/guestUsers.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/utils/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils/emails.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/utils/emails.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils/jwt.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/utils/jwt.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils/redisClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/utils/redisClient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils/sockets.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/utils/sockets.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils/translate.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/utils/translate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils/webpush.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/utils/webpush.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphql/resolvers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/graphql/resolvers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphql/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/graphql/server.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphql/typeDefs.ts" beforeDir="false" afterPath="$PROJECT_DIR$/graphql/typeDefs.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/middleware/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/middleware/errorMiddelware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/errorMiddelware.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/businessUsers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/businessUsers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/feedbacks.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/feedbacks.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/guest/first-level/journey.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/guest/first-level/journey.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/guest/first-level/token.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/guest/first-level/token.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/guest/guestUsers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/guest/guestUsers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/hotels/first-level/chat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/hotels/first-level/chat.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/hotels/first-level/checklist.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/hotels/first-level/checklist.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/hotels/first-level/firstLevel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/hotels/first-level/firstLevel.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/hotels/first-level/housekeeping.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/hotels/first-level/housekeeping.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/hotels/hotels.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/hotels/hotels.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/support.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/support.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mongo-data/WiredTiger.turtle" beforeDir="false" afterPath="$PROJECT_DIR$/mongo-data/WiredTiger.turtle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mongo-data/WiredTiger.wt" beforeDir="false" afterPath="$PROJECT_DIR$/mongo-data/WiredTiger.wt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mongo-data/collection-2--2393547906816981533.wt" beforeDir="false" afterPath="$PROJECT_DIR$/mongo-data/collection-2--2393547906816981533.wt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mongo-data/index-3--2393547906816981533.wt" beforeDir="false" afterPath="$PROJECT_DIR$/mongo-data/index-3--2393547906816981533.wt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mongo-data/journal/WiredTigerLog.0000000002" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mongo-data/mongod.lock" beforeDir="false" afterPath="$PROJECT_DIR$/mongo-data/mongod.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mongo-data/sizeStorer.wt" beforeDir="false" afterPath="$PROJECT_DIR$/mongo-data/sizeStorer.wt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msh_request.graphql" beforeDir="false" afterPath="$PROJECT_DIR$/msh_request.graphql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock 2.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/feedbacks.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/feedbacks.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/hotel/first-level/generic.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/hotel/first-level/generic.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/hotel/hotel.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/hotel/hotel.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/hotel/second-level/chat.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/hotel/second-level/chat.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/hotel/second-level/checklist.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/hotel/second-level/checklist.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/support.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/support.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/user/businessUsers.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user/businessUsers.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/user/guestUsers.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user/guestUsers.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/bcrypt.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/bcrypt.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/web-push.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/web-push.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/database.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/database.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/emails.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/emails.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/jwt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/jwt.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/redisClient.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/redisClient.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/sockets.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/sockets.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/translate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/translate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/webpush.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/webpush.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="docker-setup" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="33PtaW6B4MO6bxrDqrs9hvCAkuf" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;MSH-BO-Feature/docker+kubernetes-implementation&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/davidsimba/Documents/Projects/MSH-BackOffice/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-WS-252.26199.162" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="67a47ffc-e19b-47df-82af-8f1b44520e35" name="Changes" comment="" />
+      <created>1759230598962</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1759230598962</updated>
+      <workItem from="1759230600141" duration="1593000" />
+      <workItem from="1759232217270" duration="1840000" />
+      <workItem from="1759234068181" duration="650000" />
+      <workItem from="1759234726080" duration="7151000" />
+      <workItem from="1759243627847" duration="136000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="docker-setup" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

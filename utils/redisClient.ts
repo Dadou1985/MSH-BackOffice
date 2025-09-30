@@ -5,7 +5,7 @@ const redisClient = createClient({
   url: process.env.REDIS_URL, // ex: redis://localhost:6379 ou l'URL Render
 });
 
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
+redisClient.on('error', err => console.error('Redis Client Error', err));
 
 await redisClient.connect();
 

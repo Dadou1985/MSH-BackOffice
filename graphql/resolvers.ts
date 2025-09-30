@@ -21,20 +21,20 @@ import type {
   HousekeepingItem,
   ChecklistItem,
   FeedbackCategory,
-  HotelFieldItem
+  HotelFieldItem,
 } from '../types/type.js';
 
 const transporter = nodemailer.createTransport({
-  host: process.env.IONOS_SMTP_HOST,      // ou 'smtp.ionos.com' selon ton domaine
-  port: Number(process.env.IONOS_SMTP_PORT) || 587,                  // 587 pour STARTTLS (recommandé), sinon 465 pour SSL
-  secure: false,              // false pour STARTTLS (port 587)
+  host: process.env.IONOS_SMTP_HOST, // ou 'smtp.ionos.com' selon ton domaine
+  port: Number(process.env.IONOS_SMTP_PORT) || 587, // 587 pour STARTTLS (recommandé), sinon 465 pour SSL
+  secure: false, // false pour STARTTLS (port 587)
   auth: {
     user: process.env.IONOS_AUTH, // ton adresse mail IONOS complète
-    pass: process.env.IONOS_PASSWORD,         // ton mot de passe
+    pass: process.env.IONOS_PASSWORD, // ton mot de passe
   },
   tls: {
-    rejectUnauthorized: false // utile si des erreurs de certificat apparaissent
-  }
+    rejectUnauthorized: false, // utile si des erreurs de certificat apparaissent
+  },
 });
 
 export const resolvers = {
@@ -65,7 +65,7 @@ export const resolvers = {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      return await Feedbacks.findOne({hotelId: id});
+      return await Feedbacks.findOne({ hotelId: id });
     },
     getSupports: async (_: any, __: any, context: any) => {
       if (!context.user) {
@@ -77,7 +77,7 @@ export const resolvers = {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      return await Support.findOne({hotelId: id});
+      return await Support.findOne({ hotelId: id });
     },
     getBusinessUsers: async (_: any, __: any, context: any) => {
       if (!context.user) {
@@ -89,7 +89,7 @@ export const resolvers = {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      return await BusinessUser.findOne({userId: id});
+      return await BusinessUser.findOne({ userId: id });
     },
 
     // Combined user queries
@@ -98,53 +98,66 @@ export const resolvers = {
         throw new Error('Unauthorized');
       }
       const guestUsers = await GuestUser.find();
-      return guestUsers
+      return guestUsers;
     },
     getGuestUserById: async (_: any, { id }: any, context: any) => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const guestUser = await GuestUser.findOne({userId: id});
+      const guestUser = await GuestUser.findOne({ userId: id });
       return guestUser;
     },
   },
 
   Mutation: {
-    translateText: async (_: any, { text, lang }: { text: string; lang: string }) => {
+    translateText: async (
+      _: any,
+      { text, lang }: { text: string; lang: string }
+    ) => {
       const translation = await translateText(text, lang);
       return translation;
     },
     loginUser: async (
       _: unknown,
-      { email, password, userCategory }: { email: string; password: string, userCategory: string }
+      {
+        email,
+        password,
+        userCategory,
+      }: { email: string; password: string; userCategory: string }
     ): Promise<{ token: string }> => {
-      const user = userCategory === 'business' ? await BusinessUser.findOne({ email }) : await GuestUser.findOne({ email });
-      if (!user) throw new Error("User not found");
+      const user =
+        userCategory === 'business'
+          ? await BusinessUser.findOne({ email })
+          : await GuestUser.findOne({ email });
+      if (!user) throw new Error('User not found');
       console.log('PASSWORD', password);
       console.log('USER PASSWORD', user);
 
       // const isMatch = await bcrypt.compare(password, user.password as any);
 
       const isMatch = password === user?.password; // For simplicity, using direct comparison. Replace with bcrypt.compare in production.
-      if (!isMatch) throw new Error("Invalid credentials");
+      if (!isMatch) throw new Error('Invalid credentials');
       console.log('IS MATCH', isMatch);
 
       const token = generateToken({ userId: user?.id });
       return { token };
     },
 
-    
-    logoutUser: async (_: unknown, __: unknown, context: any): Promise<boolean> => {
+    logoutUser: async (
+      _: unknown,
+      __: unknown,
+      context: any
+    ): Promise<boolean> => {
       const authHeader = context.req.headers.authorization;
-    
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         throw new Error('Authorization header missing');
       }
-    
+
       const token = authHeader.split(' ')[1];
-    
+
       const expirySeconds = 60 * 60; // Exemple : 1h
-    
+
       try {
         await redisClient.set(`blacklist:${token}`, '1', { EX: expirySeconds });
         return true;
@@ -154,49 +167,75 @@ export const resolvers = {
       }
     },
 
-    createHotel: async (_: unknown, { input }: { input: HotelType }, context: any): Promise<HotelType> => {
+    createHotel: async (
+      _: unknown,
+      { input }: { input: HotelType },
+      context: any
+    ): Promise<HotelType> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const newHotel = new Hotel(input);
       return await newHotel.save();
     },
-    updateHotel: async (_: unknown, { id, input }: { id: string, input: Partial<HotelType> }, context: any): Promise<HotelType | null> => {
+    updateHotel: async (
+      _: unknown,
+      { id, input }: { id: string; input: Partial<HotelType> },
+      context: any
+    ): Promise<HotelType | null> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       return await Hotel.findByIdAndUpdate(id, input, { new: true });
     },
 
-    deleteHotel: async (_: unknown, { id }: { id: string }, context: any): Promise<string> => {
+    deleteHotel: async (
+      _: unknown,
+      { id }: { id: string },
+      context: any
+    ): Promise<string> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const result = await Hotel.findByIdAndDelete(id);
-      return "Hotel deleted";
+      return 'Hotel deleted';
     },
     // New mutations for updating specific hotel fields
     addHotelFieldItem: async (
       _: unknown,
-      { hotelId, field, item }: { hotelId: string; field: string; item: HotelFieldItem },
+      {
+        hotelId,
+        field,
+        item,
+      }: { hotelId: string; field: string; item: HotelFieldItem },
       context: any
     ): Promise<HotelType> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
-    
+      const allowedFields = [
+        'cab',
+        'note',
+        'sticker',
+        'clock',
+        'safe',
+        'roomChange',
+        'maintenance',
+        'lostAndFound',
+        'chat',
+      ];
+
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not allowed or is not a list field`);
       }
-    
+
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
-    
+      if (!hotel) throw new Error('Hotel not found');
+
       if (!Array.isArray(hotel[field])) {
         throw new Error(`${field} is not an array`);
       }
-    
+
       hotel[field].push(item);
       await hotel.save();
       io.to(hotelId).emit(`${field}Added`, item);
@@ -204,20 +243,34 @@ export const resolvers = {
     },
     removeHotelFieldItem: async (
       _: unknown,
-      { hotelId, field, itemId }: { hotelId: string; field: string; itemId: string },
+      {
+        hotelId,
+        field,
+        itemId,
+      }: { hotelId: string; field: string; itemId: string },
       context: any
     ): Promise<HotelType> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
+      const allowedFields = [
+        'cab',
+        'note',
+        'sticker',
+        'clock',
+        'safe',
+        'roomChange',
+        'maintenance',
+        'lostAndFound',
+        'chat',
+      ];
 
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not allowed or is not a list field`);
       }
 
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
       if (!Array.isArray(hotel[field])) {
         throw new Error(`${field} is not an array`);
@@ -235,20 +288,40 @@ export const resolvers = {
     },
     updateHotelFieldItem: async (
       _: unknown,
-      { hotelId, field, itemId, updates }: { hotelId: string; field: string; itemId: string; updates: Partial<HotelFieldItem> },
+      {
+        hotelId,
+        field,
+        itemId,
+        updates,
+      }: {
+        hotelId: string;
+        field: string;
+        itemId: string;
+        updates: Partial<HotelFieldItem>;
+      },
       context: any
     ): Promise<HotelFieldItem> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const allowedFields = ['cab', 'note', 'sticker', 'clock', 'safe', 'roomChange', 'maintenance', 'lostAndFound', 'chat'];
+      const allowedFields = [
+        'cab',
+        'note',
+        'sticker',
+        'clock',
+        'safe',
+        'roomChange',
+        'maintenance',
+        'lostAndFound',
+        'chat',
+      ];
 
       if (!allowedFields.includes(field)) {
         throw new Error(`${field} is not allowed or is not a list field`);
       }
 
       const hotel: HotelType = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
       if (!Array.isArray(hotel[field])) {
         throw new Error(`${field} is not an array`);
@@ -267,71 +340,92 @@ export const resolvers = {
 
     createChecklist: async (
       _: unknown,
-      { hotelId, checklist }: { hotelId: string; checklist: Record<string, ChecklistItem[]> },
+      {
+        hotelId,
+        checklist,
+      }: { hotelId: string; checklist: Record<string, ChecklistItem[]> },
       context: any
     ): Promise<Record<string, ChecklistItem[]>> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-        const hotel: any = await Hotel.findById(hotelId);
-        if (!hotel) throw new Error("Hotel not found");
+      const hotel: any = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error('Hotel not found');
 
-        hotel.checklist = checklist;
-        await hotel.save();
-        io.to(hotelId).emit(`checklistUpdated`, hotel.checklist);
-        return hotel.checklist;
+      hotel.checklist = checklist;
+      await hotel.save();
+      io.to(hotelId).emit(`checklistUpdated`, hotel.checklist);
+      return hotel.checklist;
     },
     addChecklistItem: async (
       _: unknown,
-      { hotelId, period, item }: { hotelId: string; period: string; item: ChecklistItem },
+      {
+        hotelId,
+        period,
+        item,
+      }: { hotelId: string; period: string; item: ChecklistItem },
       context: any
     ): Promise<ChecklistItem> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-        const hotel: any = await Hotel.findById(hotelId);
-        if (!hotel) throw new Error("Hotel not found");
+      const hotel: any = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error('Hotel not found');
 
-        if (!hotel.checklist[period]) hotel.checklist[period] = [];
-        hotel.checklist[period].push(item);
-        await hotel.save();
-        io.to(hotelId).emit(`checklistItemAdded`, { period, item });
-        return item;
+      if (!hotel.checklist[period]) hotel.checklist[period] = [];
+      hotel.checklist[period].push(item);
+      await hotel.save();
+      io.to(hotelId).emit(`checklistItemAdded`, { period, item });
+      return item;
     },
     updateChecklistItem: async (
       _: unknown,
-      { hotelId, period, itemId, updates }: { hotelId: string; period: string; itemId: string; updates: Partial<ChecklistItem> },
+      {
+        hotelId,
+        period,
+        itemId,
+        updates,
+      }: {
+        hotelId: string;
+        period: string;
+        itemId: string;
+        updates: Partial<ChecklistItem>;
+      },
       context: any
     ): Promise<ChecklistItem> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-        const hotel: any = await Hotel.findById(hotelId);
-        if (!hotel) throw new Error("Hotel not found");
+      const hotel: any = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error('Hotel not found');
 
-        const item = hotel.checklist[period]?.id(itemId);
-        if (!item) throw new Error("Checklist item not found");
+      const item = hotel.checklist[period]?.id(itemId);
+      if (!item) throw new Error('Checklist item not found');
 
-        Object.assign(item, updates);
-        await hotel.save();
-        io.to(hotelId).emit(`checklistItemUpdated`, { period, item });
-        return item;
+      Object.assign(item, updates);
+      await hotel.save();
+      io.to(hotelId).emit(`checklistItemUpdated`, { period, item });
+      return item;
     },
     deleteChecklistItem: async (
       _: unknown,
-      { hotelId, period, itemId }: { hotelId: string; period: string; itemId: string },
+      {
+        hotelId,
+        period,
+        itemId,
+      }: { hotelId: string; period: string; itemId: string },
       context: any
     ): Promise<string> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-        const hotel: any = await Hotel.findById(hotelId);
-        if (!hotel) throw new Error("Hotel not found");
+      const hotel: any = await Hotel.findById(hotelId);
+      if (!hotel) throw new Error('Hotel not found');
 
-        hotel.checklist[period].pull(itemId);
-        await hotel.save();
-        io.to(hotelId).emit(`checklistItemDeleted`, { period, itemId });
-        return "Item deleted";
+      hotel.checklist[period].pull(itemId);
+      await hotel.save();
+      io.to(hotelId).emit(`checklistItemDeleted`, { period, itemId });
+      return 'Item deleted';
     },
 
     // Chat-specific mutations
@@ -344,9 +438,11 @@ export const resolvers = {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
-      hotel.chat = hotel.chat.filter((c: { userId: string; }) => c.userId !== userId);
+      hotel.chat = hotel.chat.filter(
+        (c: { userId: string }) => c.userId !== userId
+      );
       await hotel.save();
       io.to(hotelId).emit(`chatRemoved`, userId);
       return hotel;
@@ -354,17 +450,22 @@ export const resolvers = {
 
     addMessageToChatRoom: async (
       _: unknown,
-      { hotelId, userId, message }: { hotelId: string; userId: string; message: ChatRoomMessage },
+      {
+        hotelId,
+        userId,
+        message,
+      }: { hotelId: string; userId: string; message: ChatRoomMessage },
       context: any
-    ): Promise<any> => { // TODO: Replace 'any' with proper Chat type if available
+    ): Promise<any> => {
+      // TODO: Replace 'any' with proper Chat type if available
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
       const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
-      if (!chatEntry) throw new Error("Chat not found for user");
+      if (!chatEntry) throw new Error('Chat not found for user');
 
       chatEntry.chatRoom.push(message);
       await hotel.save();
@@ -374,20 +475,30 @@ export const resolvers = {
 
     updateChatRoomMessage: async (
       _: unknown,
-      { hotelId, userId, messageId, updates }: { hotelId: string; userId: string; messageId: string; updates: Partial<ChatRoomMessage> },
+      {
+        hotelId,
+        userId,
+        messageId,
+        updates,
+      }: {
+        hotelId: string;
+        userId: string;
+        messageId: string;
+        updates: Partial<ChatRoomMessage>;
+      },
       context: any
     ): Promise<ChatRoomMessage> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
       const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
-      if (!chatEntry) throw new Error("Chat not found for user");
+      if (!chatEntry) throw new Error('Chat not found for user');
 
       const message = chatEntry.chatRoom.id(messageId);
-      if (!message) throw new Error("Message not found");
+      if (!message) throw new Error('Message not found');
 
       Object.assign(message, updates);
       await hotel.save();
@@ -397,20 +508,25 @@ export const resolvers = {
 
     deleteChatRoomMessage: async (
       _: unknown,
-      { hotelId, userId, messageId }: { hotelId: string; userId: string; messageId: string },
+      {
+        hotelId,
+        userId,
+        messageId,
+      }: { hotelId: string; userId: string; messageId: string },
       context: any
-    ): Promise<any> => { // TODO: Replace 'any' with proper Chat type if available
+    ): Promise<any> => {
+      // TODO: Replace 'any' with proper Chat type if available
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
       const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
-      if (!chatEntry) throw new Error("Chat not found for user");
+      if (!chatEntry) throw new Error('Chat not found for user');
 
       const message = chatEntry.chatRoom.id(messageId);
-      if (!message) throw new Error("Message not found");
+      if (!message) throw new Error('Message not found');
 
       message.deleteOne();
       await hotel.save();
@@ -427,7 +543,7 @@ export const resolvers = {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
       hotel.chat.push(chat);
       await hotel.save();
@@ -437,17 +553,22 @@ export const resolvers = {
 
     updateChatFromHotel: async (
       _: unknown,
-      { hotelId, userId, updates }: { hotelId: string; userId: string; updates: Partial<any> }, // TODO: Replace 'any' with Chat type
+      {
+        hotelId,
+        userId,
+        updates,
+      }: { hotelId: string; userId: string; updates: Partial<any> }, // TODO: Replace 'any' with Chat type
       context: any
-    ): Promise<any> => { // TODO: Replace 'any' with Chat type
+    ): Promise<any> => {
+      // TODO: Replace 'any' with Chat type
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
       const chatEntry = hotel.chat.find((c: any) => c.userId === userId);
-      if (!chatEntry) throw new Error("Chat not found");
+      if (!chatEntry) throw new Error('Chat not found');
 
       Object.assign(chatEntry, updates);
       await hotel.save();
@@ -458,16 +579,29 @@ export const resolvers = {
     // Housekeeping-specific mutations
     addHousekeepingItem: async (
       _: unknown,
-      { hotelId, category, item }: { hotelId: string; category: string; item: HousekeepingItem },
+      {
+        hotelId,
+        category,
+        item,
+      }: { hotelId: string; category: string; item: HousekeepingItem },
       context: any
     ): Promise<HousekeepingItem[]> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
-      const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
+      const housekeepingCategories = [
+        'towel',
+        'pillow',
+        'blanket',
+        'soap',
+        'babyBed',
+        'iron',
+        'toiletPaper',
+        'hairDryer',
+      ];
       if (!housekeepingCategories.includes(category)) {
         throw new Error(`${category} is not a valid housekeeping category`);
       }
@@ -484,22 +618,41 @@ export const resolvers = {
 
     updateHousekeepingItem: async (
       _: unknown,
-      { hotelId, category, itemId, updates }: { hotelId: string; category: string; itemId: string; updates: Partial<HousekeepingItem> },
+      {
+        hotelId,
+        category,
+        itemId,
+        updates,
+      }: {
+        hotelId: string;
+        category: string;
+        itemId: string;
+        updates: Partial<HousekeepingItem>;
+      },
       context: any
     ): Promise<HousekeepingItem> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const hotel: any = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
-      const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
+      const housekeepingCategories = [
+        'towel',
+        'pillow',
+        'blanket',
+        'soap',
+        'babyBed',
+        'iron',
+        'toiletPaper',
+        'hairDryer',
+      ];
       if (!housekeepingCategories.includes(category)) {
         throw new Error(`${category} is not a valid housekeeping category`);
       }
 
       const item = hotel.housekeeping[category]?.id(itemId);
-      if (!item) throw new Error("Housekeeping item not found");
+      if (!item) throw new Error('Housekeeping item not found');
 
       Object.assign(item, updates);
       await hotel.save();
@@ -509,16 +662,29 @@ export const resolvers = {
 
     removeHousekeepingItem: async (
       _: unknown,
-      { hotelId, category, itemId }: { hotelId: string; category: string; itemId: string },
+      {
+        hotelId,
+        category,
+        itemId,
+      }: { hotelId: string; category: string; itemId: string },
       context: any
     ): Promise<HousekeepingItem[]> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
       const hotel: HotelType = await Hotel.findById(hotelId);
-      if (!hotel) throw new Error("Hotel not found");
+      if (!hotel) throw new Error('Hotel not found');
 
-      const housekeepingCategories = ['towel', "pillow", "blanket", "soap", "babyBed", "iron", "toiletPaper", "hairDryer"];
+      const housekeepingCategories = [
+        'towel',
+        'pillow',
+        'blanket',
+        'soap',
+        'babyBed',
+        'iron',
+        'toiletPaper',
+        'hairDryer',
+      ];
       if (!housekeepingCategories.includes(category)) {
         throw new Error(`${category} is not a valid housekeeping category`);
       }
@@ -527,8 +693,10 @@ export const resolvers = {
         throw new Error(`${category} is not a valid housekeeping category`);
       }
 
-      const item = hotel.housekeeping[category].find((item: any) => item.id === itemId);
-      if (!item) throw new Error("Item not found");
+      const item = hotel.housekeeping[category].find(
+        (item: any) => item.id === itemId
+      );
+      if (!item) throw new Error('Item not found');
 
       item.deleteOne();
       await hotel.save();
@@ -558,7 +726,9 @@ export const resolvers = {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const updatedFeedback = await Feedbacks.findByIdAndUpdate(id, input, { new: true });
+      const updatedFeedback = await Feedbacks.findByIdAndUpdate(id, input, {
+        new: true,
+      });
       if (updatedFeedback) {
         io.to(updatedFeedback.hotelId).emit(`feedbackUpdated`, updatedFeedback);
       }
@@ -573,7 +743,7 @@ export const resolvers = {
         throw new Error('Unauthorized');
       }
       const feedback: any = await Feedbacks.findById(id);
-      if (!feedback) throw new Error("Feedback not found");
+      if (!feedback) throw new Error('Feedback not found');
       await Feedbacks.findByIdAndDelete(id);
       io.to(feedback.hotelId).emit(`feedbackDeleted`, id);
       return true;
@@ -582,7 +752,11 @@ export const resolvers = {
     // Feedback Category mutations (generic for satisfaction & improvement)
     addFeedbackCategoryItem: async (
       _: unknown,
-      { feedbackId, field, category }: { feedbackId: string; field: string; category: FeedbackCategory },
+      {
+        feedbackId,
+        field,
+        category,
+      }: { feedbackId: string; field: string; category: FeedbackCategory },
       context: any
     ): Promise<FeedbackType> => {
       if (!context.user) {
@@ -593,18 +767,31 @@ export const resolvers = {
         throw new Error(`${field} is not a valid category field`);
       }
 
-      const feedback: any = await Feedbacks.findOne({hotelId: feedbackId});
-      if (!feedback) throw new Error("Feedback not found");
+      const feedback: any = await Feedbacks.findOne({ hotelId: feedbackId });
+      if (!feedback) throw new Error('Feedback not found');
 
       feedback[field].push(category);
       await feedback.save();
-      io.to(feedback.hotelId).emit(`feedbackCategoryItemAdded`, { field, category });
+      io.to(feedback.hotelId).emit(`feedbackCategoryItemAdded`, {
+        field,
+        category,
+      });
       return feedback;
     },
 
     updateFeedbackCategoryItem: async (
       _: unknown,
-      { feedbackId, field, itemId, updates }: { feedbackId: string; field: string; itemId: string; updates: Partial<FeedbackCategory> },
+      {
+        feedbackId,
+        field,
+        itemId,
+        updates,
+      }: {
+        feedbackId: string;
+        field: string;
+        itemId: string;
+        updates: Partial<FeedbackCategory>;
+      },
       context: any
     ): Promise<FeedbackCategory> => {
       if (!context.user) {
@@ -615,21 +802,28 @@ export const resolvers = {
         throw new Error(`${field} is not a valid category field`);
       }
 
-      const feedback: any = await Feedbacks.findOne({hotelId: feedbackId});
-      if (!feedback) throw new Error("Feedback not found");
+      const feedback: any = await Feedbacks.findOne({ hotelId: feedbackId });
+      if (!feedback) throw new Error('Feedback not found');
 
       const item = feedback[field].id(itemId);
-      if (!item) throw new Error("Category item not found");
+      if (!item) throw new Error('Category item not found');
 
       Object.assign(item, updates);
       await feedback.save();
-      io.to(feedback.hotelId).emit(`feedbackCategoryItemUpdated`, { field, item });
+      io.to(feedback.hotelId).emit(`feedbackCategoryItemUpdated`, {
+        field,
+        item,
+      });
       return item;
     },
 
     removeFeedbackCategoryItem: async (
       _: unknown,
-      { feedbackId, field, itemId }: { feedbackId: string; field: string; itemId: string },
+      {
+        feedbackId,
+        field,
+        itemId,
+      }: { feedbackId: string; field: string; itemId: string },
       context: any
     ): Promise<FeedbackType> => {
       if (!context.user) {
@@ -640,15 +834,18 @@ export const resolvers = {
         throw new Error(`${field} is not a valid category field`);
       }
 
-      const feedback: any = await Feedbacks.findOne({hotelId: feedbackId});
-      if (!feedback) throw new Error("Feedback not found");
+      const feedback: any = await Feedbacks.findOne({ hotelId: feedbackId });
+      if (!feedback) throw new Error('Feedback not found');
 
       const item = feedback[field].id(itemId);
-      if (!item) throw new Error("Category item not found");
+      if (!item) throw new Error('Category item not found');
 
       item.deleteOne();
       await feedback.save();
-      io.to(feedback.hotelId).emit(`feedbackCategoryItemRemoved`, { field, itemId });
+      io.to(feedback.hotelId).emit(`feedbackCategoryItemRemoved`, {
+        field,
+        itemId,
+      });
       return feedback;
     },
 
@@ -742,7 +939,9 @@ export const resolvers = {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const updatedSupport = await Support.findByIdAndUpdate(id, updates, { new: true });
+      const updatedSupport = await Support.findByIdAndUpdate(id, updates, {
+        new: true,
+      });
       if (updatedSupport) {
         io.to(updatedSupport.hotelId).emit(`supportUpdated`, updatedSupport);
       }
@@ -757,7 +956,7 @@ export const resolvers = {
         throw new Error('Unauthorized');
       }
       const support = await Support.findById(id);
-      if (!support) throw new Error("Support not found");
+      if (!support) throw new Error('Support not found');
       await Support.findByIdAndDelete(id);
       io.to(support.hotelId).emit(`supportDeleted`, id);
       return true;
@@ -770,8 +969,8 @@ export const resolvers = {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const support = await Support.findOne({hotelId: supportId});
-      if (!support) throw new Error("Support not found");
+      const support = await Support.findOne({ hotelId: supportId });
+      if (!support) throw new Error('Support not found');
 
       support.chatRoom.push(message);
       await support.save();
@@ -780,17 +979,22 @@ export const resolvers = {
     },
     updateSupportChatRoomMessage: async (
       _: unknown,
-      { supportId, messageId, updates }: { supportId: string; messageId: string; updates: Partial<any> }, // TODO: Define SupportChatRoomMessage type
+      {
+        supportId,
+        messageId,
+        updates,
+      }: { supportId: string; messageId: string; updates: Partial<any> }, // TODO: Define SupportChatRoomMessage type
       context: any
-    ): Promise<any> => { // TODO: Replace 'any' with SupportChatRoomMessage type
+    ): Promise<any> => {
+      // TODO: Replace 'any' with SupportChatRoomMessage type
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const support = await Support.findOne({hotelId: supportId});
-      if (!support) throw new Error("Support not found");
+      const support = await Support.findOne({ hotelId: supportId });
+      if (!support) throw new Error('Support not found');
 
       const message = support.chatRoom.id(messageId);
-      if (!message) throw new Error("Message not found");
+      if (!message) throw new Error('Message not found');
 
       Object.assign(message, updates);
       await support.save();
@@ -805,11 +1009,11 @@ export const resolvers = {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
-      const support = await Support.findOne({hotelId: supportId});
-      if (!support) throw new Error("Support not found");
+      const support = await Support.findOne({ hotelId: supportId });
+      if (!support) throw new Error('Support not found');
 
       const message = support.chatRoom.id(messageId);
-      if (!message) throw new Error("Message not found");
+      if (!message) throw new Error('Message not found');
 
       message.deleteOne();
       await support.save();
@@ -819,7 +1023,19 @@ export const resolvers = {
 
     sendCheckInEmail: async (
       _: unknown,
-      { senderEmail, email, appLink, logo, hotelName }: { senderEmail: string,email: string; appLink: string; logo: string, hotelName: string },
+      {
+        senderEmail,
+        email,
+        appLink,
+        logo,
+        hotelName,
+      }: {
+        senderEmail: string;
+        email: string;
+        appLink: string;
+        logo: string;
+        hotelName: string;
+      },
       context: any
     ): Promise<boolean> => {
       if (!context.user) {
@@ -842,7 +1058,17 @@ export const resolvers = {
 
     sendCheckOutEmail: async (
       _: unknown,
-      { senderEmail, email, logo, hotelName }: { senderEmail: string,email: string; logo: string, hotelName: string },
+      {
+        senderEmail,
+        email,
+        logo,
+        hotelName,
+      }: {
+        senderEmail: string;
+        email: string;
+        logo: string;
+        hotelName: string;
+      },
       context: any
     ): Promise<boolean> => {
       if (!context.user) {
@@ -865,7 +1091,21 @@ export const resolvers = {
 
     sendNewCoworkerAccountEmail: async (
       _: unknown,
-      { senderEmail, email, adminName, mshLogo, coworkerName, coworkerMail }: { senderEmail: string,email: string; adminName: string; mshLogo: string, coworkerName: string; coworkerMail: string },
+      {
+        senderEmail,
+        email,
+        adminName,
+        mshLogo,
+        coworkerName,
+        coworkerMail,
+      }: {
+        senderEmail: string;
+        email: string;
+        adminName: string;
+        mshLogo: string;
+        coworkerName: string;
+        coworkerMail: string;
+      },
       context: any
     ): Promise<boolean> => {
       if (!context.user) {
@@ -888,7 +1128,25 @@ export const resolvers = {
 
     sendNewSubscriberEmail: async (
       _: unknown,
-      { senderEmail, email, hotel, standing, capacity, city, country, subscriber }: { senderEmail: string,email: string; hotel: string; standing: string, capacity: string; city: string; country: string; subscriber: string },
+      {
+        senderEmail,
+        email,
+        hotel,
+        standing,
+        capacity,
+        city,
+        country,
+        subscriber,
+      }: {
+        senderEmail: string;
+        email: string;
+        hotel: string;
+        standing: string;
+        capacity: string;
+        city: string;
+        country: string;
+        subscriber: string;
+      },
       context: any
     ): Promise<boolean> => {
       if (!context.user) {
@@ -911,7 +1169,21 @@ export const resolvers = {
 
     sendWelcomeEmail: async (
       _: unknown,
-      { senderEmail, email, prospectName, prospectMail, mshLogo, mshLogoPro }: { senderEmail: string,email: string; prospectName: string; prospectMail: string, mshLogo: string; mshLogoPro: string },
+      {
+        senderEmail,
+        email,
+        prospectName,
+        prospectMail,
+        mshLogo,
+        mshLogoPro,
+      }: {
+        senderEmail: string;
+        email: string;
+        prospectName: string;
+        prospectMail: string;
+        mshLogo: string;
+        mshLogoPro: string;
+      },
       context: any
     ): Promise<boolean> => {
       if (!context.user) {
@@ -922,7 +1194,7 @@ export const resolvers = {
         await transporter.sendMail({
           from: senderEmail,
           to: email,
-          subject: "Votre compte MySweetHotel a été créé avec succès !",
+          subject: 'Votre compte MySweetHotel a été créé avec succès !',
           html: `<div> <p>Bonjour ${prospectName},</p><br/> <p>Comme convenu, nous vous avons créé un compte <b>MySweetHotelPro</b> afin que vous puissiez démarrer dès maintenant la phase de pilotage qui s'étendra sur une durée de 3 mois.<br/> Nous vous rappelons que cette phase de pilotage est entièrement gratuite et sans engagement.</p> <p>Vous pourrez ainsi profiter pleinement de notre solution digitale à 360° comprenant:<br/><br/> La <b>Conciergerie digitale</b> conçue pour améliorer l'expérience client<br/> Le <b>Desk digital</b> conçu pour optimiser la productivité des équipes<br/><br/> Pour un rappel du contenu de nos offres, nous vous invitons à vous rendre sur notre site web <a href="https://mysweethotel.com" target="_blank">https://mysweethotel.com</a>.</p> <p>Votre compte administrateur étant actif, vous pouvez désormais accéder au <b>Desk digital</b> en suivant ce lien: <a href="https://mysweethotelpro.com" target="_blank">https://mysweethotelpro.com</a><br/> Vos identifiants d'accès sont les suivants:<br/><br/> <b>E-mail</b> : ${prospectMail}<br/> <b>Mot de passe</b> : password<br/><br/> Vous serez libre de modifier vos identifiants en vous rendant dans la section <b>Profil</b> du <b>Desk digital</b>.</p> <p>Au sein de cette même section <b>Profil</b> (et uniquement depuis un ordinateur), vous pourrez téléverser le logo de votre établissement afin qu'il soit mis en avant sur toutes nos plateformes.<br/> Vous pourrez également générer les visuels de communication à travers lesquels votre clientèle pourra accéder à la <b>Conciergerie digitale</b> en scannant simplement le qr code figurant sur ces derniers.</p> <p>Enfin, il vous suffira de vous rendre dans la section administration du <b>Desk digital</b> pour y créer les comptes de vos collaborateurs. <br/> Pour ce faire, vous n'aurez besoin que de leurs noms et de leurs adresses e-mail (<i>password</i> étant le mot de passe générique attribué automatiquement lors de chaque création de compte).</p> <p>Toute l'équipe de <b>MySweetHotel</b> vous souhaite la bienvenue et vous remercie pour votre confiance.</p><br/><br/> <p>David Simba<br/> CEO de MySweetHotel<br/> +33 7 52 04 72 99</p> <p><img src=${mshLogo} width='100' height='100' /><img src=${mshLogoPro} width='100' height='100' /></p> </div>`,
         });
         return true;
@@ -934,7 +1206,25 @@ export const resolvers = {
 
     sendWelcomeFinalEmail: async (
       _: unknown,
-      { senderEmail, email, mshBanner, firstName, mshLogo, password, fakeMail, appLink }: { senderEmail: string,email: string; mshBanner: string; firstName: string, mshLogo: string; password: string; fakeMail: string; appLink: string },
+      {
+        senderEmail,
+        email,
+        mshBanner,
+        firstName,
+        mshLogo,
+        password,
+        fakeMail,
+        appLink,
+      }: {
+        senderEmail: string;
+        email: string;
+        mshBanner: string;
+        firstName: string;
+        mshLogo: string;
+        password: string;
+        fakeMail: string;
+        appLink: string;
+      },
       context: any
     ): Promise<boolean> => {
       if (!context.user) {
@@ -945,7 +1235,8 @@ export const resolvers = {
         await transporter.sendMail({
           from: senderEmail,
           to: email,
-          subject: "Félicitations, vous venez d'économiser du temps et de l'argent !",
+          subject:
+            "Félicitations, vous venez d'économiser du temps et de l'argent !",
           html: `<div> <img src=${mshBanner} width="300" height="300" /> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, ${firstName} !</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous<br/> connecter au <i>Desk Digital</i> :</p> <p> <b>e-mail :</b> ${email}<br/> <b>mot de passe :</b> ${password}<br/> <b>lien : </b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Vous trouverez également une adresse e-mail avec laquelle vous pourrez effectuez le parcours<br/> client à travers la <i>Conciergerie digitale</i> ainsi qu'un lien donnant accès à la plate-forme : </p> <p> <b>e-mail :</b> ${fakeMail}<br/> <b>lien :</b> <a href="${appLink}" target="_blank"><i>Lien vers la Conciergerie Digitale</i></a> </p> <p>Merci encore pour votre confiance et n'hésitez surtout pas à nous<br/> faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src=${mshLogo} width='100' height='100' /></p> </div> </div>`,
         });
         return true;
@@ -957,7 +1248,25 @@ export const resolvers = {
 
     sendWelcomeEmailLogo: async (
       _: unknown,
-      { senderEmail, email, firstName, logo, mshLogo, password, fakeMail, appLink }: { senderEmail: string; email: string; firstName: string; logo?: string; mshLogo: string; password: string; fakeMail: string; appLink: string },
+      {
+        senderEmail,
+        email,
+        firstName,
+        logo,
+        mshLogo,
+        password,
+        fakeMail,
+        appLink,
+      }: {
+        senderEmail: string;
+        email: string;
+        firstName: string;
+        logo?: string;
+        mshLogo: string;
+        password: string;
+        fakeMail: string;
+        appLink: string;
+      },
       context: any
     ): Promise<boolean> => {
       if (!context.user) {
@@ -968,17 +1277,24 @@ export const resolvers = {
         await transporter.sendMail({
           from: senderEmail,
           to: email,
-          subject: "Félicitations, vous venez de prendre 2 ans d'avance sur la concurrence !",
-          html: logo ? `<div> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, ${firstName} !</p> <p>Peut-être est-ce la première fois que vous utilisez ce genre d'outils, auquel cas nous vous accompagnerons lors de vos premiers pas dans le monde de l'hôtellerie digitale.</p> <p>D'après mes informations, j'ai pu constater que vous aviez créé un compte administrateur et téléversé le logo de votre établissement afin que votre clientèle puisse associer les bienfaits apportés par notre solution à votre image de marque et ce, dans un souci de fidélisation.</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous connecter au <i>Desk Digital</i></p> <p> <b>e-mail :</b> ${email}<br/> <b>mot de passe :</b> ${password}<br/> <b>lien :</b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Concernant la <i>Conciergerie digitale</i>, il ne vous sera pas possible d'utiliser la même adresse e-mail que celle utilisée lors de votre première inscription et ce, pour des raisons de sécurité.</p> <p>Vous trouverez ci-dessous une adresse e-mail avec laquelle vous pourrez effectuez le parcours client propre à la <i>Conciergerie digitale</i> (depuis la page d'inscription jusqu'à la page d'accueil) si vous le souhaitez:</p> <p> <b>e-mail :</b> ${fakeMail}<br/> </p> <p>Voici le lien vous donnant accès à la <i>Conciergerie digitale</i>:</p> <p><a href="${appLink}" target="_blank"><b>Lien vers la Conciergerie Digitale</b></a></p> <p>Votre clientèle pourra également accéder à la <i>Conciergerie digitale</i> en scannant le qr code présent sur les visuels de communication téléchargeables depuis la section <i>Profil utilisateur</i> du <i>Desk digital</i>.</p> <p>Si vous rencontrez la moindre difficulté en utilisant notre solution, nous avons mis à votre disposition un <i>chat</i> consacré au support technique accessible depuis le <i>Desk digital</i> et opérationnel 24h/7.</p> <p>Nous sommes heureux de mettre notre solution à disposition des hôteliers (gratuitement et sans engagement) et ce, dans le cadre de notre phase de pré-lancement qui a démarré avec la nouvelle année pour s'étendre sur une durée de 3 à 6 mois.</p> <p>Merci encore d'avoir pris le temps de vous inscrire sur notre plate-forme et n'hésitez surtout pas à nous faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src=${mshLogo} width='100' height='100' /></p> </div> </div>` : `<div> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, {{firstName}} !</p> <p>Peut-être est-ce la première fois que vous utilisez ce genre d'outils, auquel cas nous vous accompagnerons lors de vos premiers pas dans le monde de l'hôtellerie digitale.</p> <p>D'après mes informations, j'ai pu constater que vous aviez créé un compte administrateur mais que vous n'avez pas encore téléversé de logo pour votre hôtel...</p> <p>Notre solution étant une solution en marque blanche, il est important que vous téléversiez le logo de votre établissement afin que votre clientèle puisse associer les bienfaits apportés par notre solution à votre image de marque et ce, dans un souci de fidélisation.</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous connecter au <i>Desk Digital</i></p> <p> <b>e-mail :</b> {{email}}<br/> <b>mot de passe :</b> {{password}}<br/> <b>lien :</b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Concernant la <i>Conciergerie digitale</i>, il ne vous sera pas possible d'utiliser la même adresse e-mail que celle utilisée lors de votre première inscription et ce, pour des raisons de sécurité.</p> <p>Vous trouverez ci-dessous une adresse e-mail avec laquelle vous pourrez effectuez le parcours client propre à la <i>Conciergerie digitale</i> (depuis la page d'inscription jusqu'à la page d'accueil) si vous le souhaitez:</p> <p> <b>e-mail :</b> {{fakeMail}} </p> <p>Voici le lien vous donnant accès à la <i>Conciergerie digitale</i>:</p> <p><a href="{{appLink}}" target="_blank"><b>Lien vers la Conciergerie Digitale</b></a></p> <p>Votre clientèle pourra également accéder à la <i>Conciergerie digitale</i> en scannant le qr code présent sur les visuels de communication lorsque vous aurez téléversé le logo de votre établissement depuis la section <i>Profil utilisateur</i> du <i>Desk digital</i>.</p> <p>Si vous rencontrez la moindre difficulté en utilisant notre solution, nous avons mis à votre disposition un <i>chat</i> consacré au support technique accessible depuis le <i>Desk digital</i> et opérationnel 24h/7.</p> <p>Nous sommes heureux de mettre notre solution à disposition des hôteliers (gratuitement et sans engagement) et ce, dans le cadre de notre phase de pré-lancement qui a démarré avec la nouvelle année pour s'étendre sur une durée de 3 à 6 mois.</p> <p>Merci encore d'avoir pris le temps de vous inscrire sur notre plate-forme et n'hésitez surtout pas à nous faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src={{mshLogo}} width='100' height='100' /></p> </div> </div>`,
+          subject:
+            "Félicitations, vous venez de prendre 2 ans d'avance sur la concurrence !",
+          html: logo
+            ? `<div> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, ${firstName} !</p> <p>Peut-être est-ce la première fois que vous utilisez ce genre d'outils, auquel cas nous vous accompagnerons lors de vos premiers pas dans le monde de l'hôtellerie digitale.</p> <p>D'après mes informations, j'ai pu constater que vous aviez créé un compte administrateur et téléversé le logo de votre établissement afin que votre clientèle puisse associer les bienfaits apportés par notre solution à votre image de marque et ce, dans un souci de fidélisation.</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous connecter au <i>Desk Digital</i></p> <p> <b>e-mail :</b> ${email}<br/> <b>mot de passe :</b> ${password}<br/> <b>lien :</b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Concernant la <i>Conciergerie digitale</i>, il ne vous sera pas possible d'utiliser la même adresse e-mail que celle utilisée lors de votre première inscription et ce, pour des raisons de sécurité.</p> <p>Vous trouverez ci-dessous une adresse e-mail avec laquelle vous pourrez effectuez le parcours client propre à la <i>Conciergerie digitale</i> (depuis la page d'inscription jusqu'à la page d'accueil) si vous le souhaitez:</p> <p> <b>e-mail :</b> ${fakeMail}<br/> </p> <p>Voici le lien vous donnant accès à la <i>Conciergerie digitale</i>:</p> <p><a href="${appLink}" target="_blank"><b>Lien vers la Conciergerie Digitale</b></a></p> <p>Votre clientèle pourra également accéder à la <i>Conciergerie digitale</i> en scannant le qr code présent sur les visuels de communication téléchargeables depuis la section <i>Profil utilisateur</i> du <i>Desk digital</i>.</p> <p>Si vous rencontrez la moindre difficulté en utilisant notre solution, nous avons mis à votre disposition un <i>chat</i> consacré au support technique accessible depuis le <i>Desk digital</i> et opérationnel 24h/7.</p> <p>Nous sommes heureux de mettre notre solution à disposition des hôteliers (gratuitement et sans engagement) et ce, dans le cadre de notre phase de pré-lancement qui a démarré avec la nouvelle année pour s'étendre sur une durée de 3 à 6 mois.</p> <p>Merci encore d'avoir pris le temps de vous inscrire sur notre plate-forme et n'hésitez surtout pas à nous faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src=${mshLogo} width='100' height='100' /></p> </div> </div>`
+            : `<div> <p>Merci de vous être inscrit.e sur notre plate-forme et bienvenue à bord, {{firstName}} !</p> <p>Peut-être est-ce la première fois que vous utilisez ce genre d'outils, auquel cas nous vous accompagnerons lors de vos premiers pas dans le monde de l'hôtellerie digitale.</p> <p>D'après mes informations, j'ai pu constater que vous aviez créé un compte administrateur mais que vous n'avez pas encore téléversé de logo pour votre hôtel...</p> <p>Notre solution étant une solution en marque blanche, il est important que vous téléversiez le logo de votre établissement afin que votre clientèle puisse associer les bienfaits apportés par notre solution à votre image de marque et ce, dans un souci de fidélisation.</p> <p>Vous trouverez ci-dessous les codes d'accès ainsi que le lien qui vous permettront de vous connecter au <i>Desk Digital</i></p> <p> <b>e-mail :</b> {{email}}<br/> <b>mot de passe :</b> {{password}}<br/> <b>lien :</b><a href='https://mysweethotelpro.com/'>Lien vers le <i>Desk digital</i></a> </p> <p>Concernant la <i>Conciergerie digitale</i>, il ne vous sera pas possible d'utiliser la même adresse e-mail que celle utilisée lors de votre première inscription et ce, pour des raisons de sécurité.</p> <p>Vous trouverez ci-dessous une adresse e-mail avec laquelle vous pourrez effectuez le parcours client propre à la <i>Conciergerie digitale</i> (depuis la page d'inscription jusqu'à la page d'accueil) si vous le souhaitez:</p> <p> <b>e-mail :</b> {{fakeMail}} </p> <p>Voici le lien vous donnant accès à la <i>Conciergerie digitale</i>:</p> <p><a href="{{appLink}}" target="_blank"><b>Lien vers la Conciergerie Digitale</b></a></p> <p>Votre clientèle pourra également accéder à la <i>Conciergerie digitale</i> en scannant le qr code présent sur les visuels de communication lorsque vous aurez téléversé le logo de votre établissement depuis la section <i>Profil utilisateur</i> du <i>Desk digital</i>.</p> <p>Si vous rencontrez la moindre difficulté en utilisant notre solution, nous avons mis à votre disposition un <i>chat</i> consacré au support technique accessible depuis le <i>Desk digital</i> et opérationnel 24h/7.</p> <p>Nous sommes heureux de mettre notre solution à disposition des hôteliers (gratuitement et sans engagement) et ce, dans le cadre de notre phase de pré-lancement qui a démarré avec la nouvelle année pour s'étendre sur une durée de 3 à 6 mois.</p> <p>Merci encore d'avoir pris le temps de vous inscrire sur notre plate-forme et n'hésitez surtout pas à nous faire part de vos suggestions concernant le produit.</p><br/> <p>Cordialement</p><br/> <div> <p>David SIMBA <br/>CEO de My Sweet Hotel<br/>07 52 04 72 99<br/><img src={{mshLogo}} width='100' height='100' /></p> </div> </div>`,
         });
         return true;
       } catch (error) {
         console.error('Error sending email:', error);
         throw new Error('Failed to send email');
       }
-    }, 
-    
-    subscribeToPush: async (_: unknown, { userId, subscription }: any, context: any) : Promise<boolean> => {
+    },
+
+    subscribeToPush: async (
+      _: unknown,
+      { userId, subscription }: any,
+      context: any
+    ): Promise<boolean> => {
       if (!context.user) {
         throw new Error('Unauthorized');
       }
@@ -989,69 +1305,72 @@ export const resolvers = {
           { token: subscription },
           { new: true }
         );
-  
+
         console.log('Subscription enregistrée :', subscription);
         return true;
       } catch (error) {
         console.error('Error subscribing to push notifications:', error);
         throw new Error('Failed to subscribe to push notifications');
-        
       }
     },
 
-    sendPushNotification: async (_: unknown, { subscription, data }: any, context: any) : Promise<boolean> => {
+    sendPushNotification: async (
+      _: unknown,
+      { subscription, data }: any,
+      context: any
+    ): Promise<boolean> => {
       if (!context.user) {
-          throw new Error('Unauthorized');
+        throw new Error('Unauthorized');
       }
       try {
-          const icon = data.logo
-          const language = data.language
-          const title = data.hotelName
-          const hotelId = data.hotelId
-          const guestStatus = data.isChatting
+        const icon = data.logo;
+        const language = data.language;
+        const title = data.hotelName;
+        const hotelId = data.hotelId;
+        const guestStatus = data.isChatting;
 
-          let body
+        let body;
 
-          switch (language) {
+        switch (language) {
           case 'fr':
-              body = "Vous avez un nouveau message !"
-          break;
+            body = 'Vous avez un nouveau message !';
+            break;
           case 'en':
-              body = "You have a new message !"
-          break;
+            body = 'You have a new message !';
+            break;
           case 'de':
-              body = "Du hast eine neue Nachricht !"
-          break;
+            body = 'Du hast eine neue Nachricht !';
+            break;
           case 'it':
-              body = "Hai un nuovo messaggio!"
-          break;
+            body = 'Hai un nuovo messaggio!';
+            break;
           case 'pt':
-              body = "Você tem uma nova mensagem !"
-          break;
+            body = 'Você tem uma nova mensagem !';
+            break;
           case 'es':
-              body = "Tienes un nuevo mensaje !"
-          break;
+            body = 'Tienes un nuevo mensaje !';
+            break;
           default:
-          break;
-          }
-      
-          const message = {
-              title: title,
-              body: body,
-              icon: icon,
-              hotelId: hotelId,
-              guestStatus: guestStatus
-          };
+            break;
+        }
 
-          const payload = JSON.stringify(message);    
+        const message = {
+          title: title,
+          body: body,
+          icon: icon,
+          hotelId: hotelId,
+          guestStatus: guestStatus,
+        };
 
-          await webpush.sendNotification(subscription, JSON.stringify(payload));
-          console.log('Notification envoyée !');
-          return true;
+        const payload = JSON.stringify(message);
+
+        await webpush.sendNotification(subscription, JSON.stringify(payload));
+        console.log('Notification envoyée !');
+        return true;
       } catch (err) {
-          console.error('Erreur Web Push:', err);
-          return false;
+        console.error('Erreur Web Push:', err);
+        return false;
       }
-    }
-  }
+    },
+  },
 };

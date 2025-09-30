@@ -1,19 +1,23 @@
 import mongoose from 'mongoose';
-const itemSchema = new mongoose.Schema({
+const itemSchema = new mongoose.Schema(
+  {
     checkoutDate: {
-        type: String, // Format : "DD/MM/YYYY"
-        required: true
+      type: String, // Format : "DD/MM/YYYY"
+      required: true,
     },
     client: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     room: {
-        type: String,
-        required: true
-    }
-}, { timestamps: true });
-export const housekeepingSchema = new mongoose.Schema({
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+export const housekeepingSchema = new mongoose.Schema(
+  {
     towel: [itemSchema],
     pillow: [itemSchema],
     iron: [itemSchema],
@@ -22,4 +26,6 @@ export const housekeepingSchema = new mongoose.Schema({
     soap: [itemSchema],
     hairDryer: [itemSchema],
     babyBed: [itemSchema],
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);

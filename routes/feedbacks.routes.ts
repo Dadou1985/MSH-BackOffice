@@ -4,7 +4,7 @@ import {
   createFeedback,
   getAllFeedbacks,
   updateFeedbackByHotelId,
-  deleteFeedbackByHotelId
+  deleteFeedbackByHotelId,
 } from '../controllers/feedback.controller.js';
 
 const router = express.Router();

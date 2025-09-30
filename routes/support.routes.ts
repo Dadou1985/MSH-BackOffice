@@ -6,7 +6,7 @@ import {
   updateSupportMessage,
   deleteSupportMessage,
   updateSupportDocument,
-  getAllSupportDocuments
+  getAllSupportDocuments,
 } from '../controllers/support.controller.js';
 
 const router = express.Router();

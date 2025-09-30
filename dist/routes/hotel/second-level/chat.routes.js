@@ -1,5 +1,10 @@
 import express from 'express';
-import { createChatRoomMessage, getChatRoomMessages, updateChatRoomMessage, deleteChatRoomMessage } from '../../../controllers/hotel/second-level/chat.controller.js';
+import {
+  createChatRoomMessage,
+  getChatRoomMessages,
+  updateChatRoomMessage,
+  deleteChatRoomMessage,
+} from '../../../controllers/hotel/second-level/chat.controller.js';
 const router = express.Router({ mergeParams: true });
 // POST: Create a new message in a specific chatRoom
 router.post('/:hotelId/:chatId/chatRoom', createChatRoomMessage);

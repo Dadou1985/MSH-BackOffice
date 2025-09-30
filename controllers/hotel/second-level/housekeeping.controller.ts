@@ -4,7 +4,7 @@ import Hotel from '../../../models/hotels/hotels.js';
 import { io } from '../../../app.js';
 
 // Helper to get the correct category (towel, pillow, etc.)
-const getCategoryArray = async(hotel: any, category: string) => {
+const getCategoryArray = async (hotel: any, category: string) => {
   if (!hotel.housekeeping) {
     hotel.housekeeping = {
       towel: [],
@@ -14,7 +14,7 @@ const getCategoryArray = async(hotel: any, category: string) => {
       hairDryer: [],
       iron: [],
       babyBed: [],
-      soap: []
+      soap: [],
     };
   } else if (!hotel.housekeeping[category]) {
     hotel.housekeeping[category] = [];
@@ -48,7 +48,7 @@ export const addHousekeepingItem = async (req: Request, res: Response) => {
 // READ
 export const getHousekeepingItems = async (req: Request, res: Response) => {
   const { hotelId, category } = req.params;
-//   const { category } = req.query;
+  //   const { category } = req.query;
 
   try {
     const hotel = await Hotel.findById(hotelId);

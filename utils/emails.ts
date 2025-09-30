@@ -9,11 +9,15 @@ const transporter = nodemailer.createTransport({
     pass: process.env.IONOS_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 });
 
-export async function sendCheckOutEmail(email: string, logo: string, hotelName: string): Promise<boolean> {
+export async function sendCheckOutEmail(
+  email: string,
+  logo: string,
+  hotelName: string
+): Promise<boolean> {
   try {
     await transporter.sendMail({
       from: `${hotelName} <contact@mysweethotel.com>`,

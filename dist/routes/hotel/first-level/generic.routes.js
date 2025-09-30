@@ -1,5 +1,11 @@
 import express from 'express';
-import { createField, getAllFields, getFieldById, updateField, deleteField } from '../../../controllers/hotel/first-level/firstLevel.controller.js';
+import {
+  createField,
+  getAllFields,
+  getFieldById,
+  updateField,
+  deleteField,
+} from '../../../controllers/hotel/first-level/firstLevel.controller.js';
 const router = express.Router();
 // Routes dynamiques pour chaque sous-ressource du modèle Hotel
 router.post('/:hotelId/:field', createField); // Créer un élément dans une sous-collection

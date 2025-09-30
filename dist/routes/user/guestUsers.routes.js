@@ -1,5 +1,11 @@
 import express from 'express';
-import { getAllGuestUsers, getGuestUserById, createGuestUser, updateGuestUser, deleteGuestUser } from '../../controllers/users/guest/guestUsers.controller.js';
+import {
+  getAllGuestUsers,
+  getGuestUserById,
+  createGuestUser,
+  updateGuestUser,
+  deleteGuestUser,
+} from '../../controllers/users/guest/guestUsers.controller.js';
 const router = express.Router();
 /**
  * Routes pour la gestion des utilisateurs invités (Guest Users)

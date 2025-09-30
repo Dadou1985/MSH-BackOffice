@@ -1,5 +1,11 @@
 import express from 'express';
-import { getAllBusinessUsers, getBusinessUserById, createBusinessUser, updateBusinessUser, deleteBusinessUser } from '../../controllers/users/business/businessUsers.controller.js';
+import {
+  getAllBusinessUsers,
+  getBusinessUserById,
+  createBusinessUser,
+  updateBusinessUser,
+  deleteBusinessUser,
+} from '../../controllers/users/business/businessUsers.controller.js';
 const router = express.Router();
 // Lire tous les utilisateurs professionnels
 router.get('/', getAllBusinessUsers);

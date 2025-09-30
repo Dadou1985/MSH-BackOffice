@@ -4,7 +4,7 @@ import {
   getGuestUserById,
   createGuestUser,
   updateGuestUser,
-  deleteGuestUser
+  deleteGuestUser,
 } from '../../controllers/users/guest/guestUsers.controller.js';
 
 const router = express.Router();
