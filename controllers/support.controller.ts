@@ -3,7 +3,7 @@ import Support from '../models/support.js';
 
 // CREATE CHAT SUPPORT
 export const createSupportDocument = async (req: Request, res: Response) => {
-  const newSupportChat = req.body
+  const newSupportChat = req.body;
   try {
     const support = new Support(newSupportChat);
     await support.save();
@@ -19,8 +19,9 @@ export const addSupportMessage = async (req: Request, res: Response) => {
     const { hotelId } = req.params;
     const messageData = req.body;
 
-    const support = await Support.findOne({hotelId: hotelId});
-    if (!support) return res.status(404).json({ message: 'Support document not found' });
+    const support = await Support.findOne({ hotelId: hotelId });
+    if (!support)
+      return res.status(404).json({ message: 'Support document not found' });
 
     support.chatRoom.push(messageData);
     await support.save();
@@ -34,10 +35,13 @@ export const addSupportMessage = async (req: Request, res: Response) => {
 export const getAllSupportDocuments = async (req: Request, res: Response) => {
   try {
     const supportDocuments = await Support.find();
-    if (!supportDocuments) return res.status(404).json({ message: 'No support documents found' });
+    if (!supportDocuments)
+      return res.status(404).json({ message: 'No support documents found' });
     res.status(200).json(supportDocuments);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving support documents', error });
+    res
+      .status(500)
+      .json({ message: 'Error retrieving support documents', error });
   }
 };
 
@@ -46,7 +50,7 @@ export const getSupportMessages = async (req: Request, res: Response) => {
   const { hotelId } = req.params;
 
   try {
-    console.log("++++++++++++++++++++", hotelId);
+    console.log('++++++++++++++++++++', hotelId);
     const support = await Support.findById(hotelId);
     if (!support) return res.status(404).json({ message: 'Support not found' });
 
@@ -62,14 +66,16 @@ export const updateSupportDocument = async (req: Request, res: Response) => {
   const updates = req.body;
   try {
     const support = await Support.findById(hotelId);
-    if (!support) return res.status(404).json({ message: 'Support document not found' });
+    if (!support)
+      return res.status(404).json({ message: 'Support document not found' });
 
     support.set(updates);
     await support.save();
 
-    res.status(200).json({ message: 'Support document updated', data: support });
-  }
-  catch (error) {
+    res
+      .status(200)
+      .json({ message: 'Support document updated', data: support });
+  } catch (error) {
     res.status(500).json({ message: 'Error updating support document', error });
   }
 };

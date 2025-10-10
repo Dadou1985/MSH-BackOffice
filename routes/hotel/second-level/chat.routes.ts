@@ -1,11 +1,9 @@
-
-
 import express from 'express';
 import {
   createChatRoomMessage,
   getChatRoomMessages,
   updateChatRoomMessage,
-  deleteChatRoomMessage
+  deleteChatRoomMessage,
 } from '../../../controllers/hotel/second-level/chat.controller.js';
 
 const router = express.Router({ mergeParams: true });

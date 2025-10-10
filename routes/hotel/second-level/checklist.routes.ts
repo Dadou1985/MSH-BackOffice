@@ -5,7 +5,7 @@ import {
   addChecklistItem,
   getChecklistItems,
   updateChecklistItem,
-  deleteChecklistItem
+  deleteChecklistItem,
 } from '../../../controllers/hotel/second-level/checklist.controller.js';
 
 const router = express.Router({ mergeParams: true });

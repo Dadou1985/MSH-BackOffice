@@ -1,16 +1,15 @@
 import mongoose from 'mongoose';
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import admin from 'firebase-admin'
+import admin from 'firebase-admin';
 import Hotel from '../models/hotels/hotels.js';
 import dayjs from 'dayjs';
 import GuestUser from '../models/guest/guestUsers.js'; // ton modèle mongoose
 import { sendCheckOutEmail } from './emails.js';
 
-
 const mongoDbUri = process.env.MONGODB_URI;
 const dbName = process.env.MONGO_DB_NAME;
 
-console.log(dbName)
+console.log(dbName);
 
 const serviceAccount = {
   project_id: process.env.FIREBASE_PROJECT_ID,
@@ -21,7 +20,7 @@ const serviceAccount = {
   auth_uri: process.env.FIREBASE_AUTH_URI,
   token_uri: process.env.FIREBASE_TOKEN_URI,
   auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
-  client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
 } as admin.ServiceAccount;
 
 //Initialise Firestore
@@ -30,7 +29,6 @@ admin.initializeApp({
 });
 
 const firestore = admin.firestore();
-
 
 if (!mongoDbUri) {
   throw new Error('MongoDB URI is not defined in the environment variables.');
@@ -42,7 +40,7 @@ const client = new MongoClient(mongoDbUri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 const BATCH_SIZE = 500;
@@ -63,39 +61,39 @@ const mongoConnect = async () => {
   // }
 
   try {
-    await mongoose.connect(mongoDbUri, { dbName: process.env.MONGO_DB_NAME});
+    await mongoose.connect(mongoDbUri, { dbName: process.env.MONGO_DB_NAME });
     console.log('Connecté à MongoDB avec Mongoose');
   } catch (error) {
     console.error('Erreur de connexion à MongoDB:', error);
   }
-}
+};
 
 const migrate = async () => {
-    try {
-      await client.connect();
-      const db = client.db(dbName); // nom de ta base MongoDB
-      const collection = db.collection('guestUsers');
-  
-      const snapshot = await firestore.collection('guestUsers').get();
-  
-      const docs: any = [];
-      snapshot.forEach(doc => {
-        docs.push({ _id: doc.id, ...doc.data() }); 
-        // _id: doc.id pour garder les ID Firestore, sinon MongoDB créera ses propres _id
-      });
-  
-      if (docs.length > 0) {
-        await collection.insertMany(docs);
-        console.log('Migration terminée avec succès !');
-      } else {
-        console.log('Aucun document à migrer.');
-      }
-    } catch (error) {
-      console.error('Erreur pendant la migration:', error);
-    } finally {
-      await client.close();
+  try {
+    await client.connect();
+    const db = client.db(dbName); // nom de ta base MongoDB
+    const collection = db.collection('guestUsers');
+
+    const snapshot = await firestore.collection('guestUsers').get();
+
+    const docs: any = [];
+    snapshot.forEach(doc => {
+      docs.push({ _id: doc.id, ...doc.data() });
+      // _id: doc.id pour garder les ID Firestore, sinon MongoDB créera ses propres _id
+    });
+
+    if (docs.length > 0) {
+      await collection.insertMany(docs);
+      console.log('Migration terminée avec succès !');
+    } else {
+      console.log('Aucun document à migrer.');
     }
-}
+  } catch (error) {
+    console.error('Erreur pendant la migration:', error);
+  } finally {
+    await client.close();
+  }
+};
 
 async function getSubCollectionsData(docRef: any) {
   const subcollections = await docRef.listCollections();
@@ -108,7 +106,7 @@ async function getSubCollectionsData(docRef: any) {
     subSnapshot.forEach((subdoc: any) => {
       result[subcol.id].push({
         _id: subdoc.id,
-        ...subdoc.data()
+        ...subdoc.data(),
       });
     });
   }
@@ -133,7 +131,7 @@ const deepMigration = async () => {
       const fullDoc = {
         _id: doc.id, // garder le même ID
         ...data,
-        ...subcollectionsData // sous-collections intégrées
+        ...subcollectionsData, // sous-collections intégrées
       };
 
       docs.push(fullDoc);
@@ -150,7 +148,7 @@ const deepMigration = async () => {
   } finally {
     await client.close();
   }
-}
+};
 
 const largeMigration = async () => {
   try {
@@ -163,7 +161,10 @@ const largeMigration = async () => {
     let totalMigrated = 0;
 
     while (hasMore) {
-      let query = firestore.collection(firestoreCollection).orderBy('hotelName', 'asc').limit(BATCH_SIZE);
+      let query = firestore
+        .collection(firestoreCollection)
+        .orderBy('hotelName', 'asc')
+        .limit(BATCH_SIZE);
 
       if (lastDoc) {
         query = query.startAfter(lastDoc);
@@ -183,7 +184,9 @@ const largeMigration = async () => {
 
       await mongoCol.insertMany(docs);
       totalMigrated += docs.length;
-      console.log(`Migrated ${docs.length} documents. Total so far: ${totalMigrated}`);
+      console.log(
+        `Migrated ${docs.length} documents. Total so far: ${totalMigrated}`
+      );
 
       lastDoc = snapshot.docs[snapshot.docs.length - 1];
 
@@ -198,7 +201,7 @@ const largeMigration = async () => {
   } finally {
     await client.close();
   }
-}
+};
 
 const migrateHotelIds = async () => {
   await client.connect();
@@ -210,7 +213,7 @@ const migrateHotelIds = async () => {
   for await (const hotel of cursor) {
     const oldId = hotel?._id?.toString?.();
     if (!oldId) {
-      console.warn("⛔️ Document without valid _id, skipping:", hotel);
+      console.warn('⛔️ Document without valid _id, skipping:', hotel);
       continue;
     }
 
@@ -221,13 +224,13 @@ const migrateHotelIds = async () => {
         insertOne: {
           document: {
             ...hotel.toObject(),
-            _id: new mongoose.Types.ObjectId(newId)
-          }
-        }
+            _id: new mongoose.Types.ObjectId(newId),
+          },
+        },
       });
 
       batch.push({
-        deleteOne: { filter: { _id: hotel._id } }
+        deleteOne: { filter: { _id: hotel._id } },
       });
 
       if (batch.length >= BATCH_SIZE * 2) {
@@ -241,10 +244,9 @@ const migrateHotelIds = async () => {
     await Hotel.bulkWrite(batch);
   }
 
-  console.log("✅ Migration terminée");
+  console.log('✅ Migration terminée');
   process.exit();
 };
-
 
 const deleteHotelsInBatches = async () => {
   try {
@@ -283,11 +285,10 @@ const resetGuestUsers = async () => {
     console.log('date du jour:', typeof today);
 
     const guests = await GuestUser.find({
-      checkoutDate: today 
+      checkoutDate: today,
     });
 
     console.log('GUEST', guests);
-
 
     // Send emails before bulk update to ensure guest fields are available
     for (const guest of guests) {
@@ -302,17 +303,17 @@ const resetGuestUsers = async () => {
     }
 
     // Prepare bulk operations, preserving email, logo, hotelName for email logic above
-    const bulkOps = guests.map((guest) => {
-      console.log("guestOne", guest._id);
+    const bulkOps = guests.map(guest => {
+      console.log('guestOne', guest._id);
       const updatedGuest = {
-        checkoutDate: "",
-        hotelId: "",
-        hotelDept: "",
-        hotelRegion: "",
-        room: "",
-        phone: "",
-        city: "",
-        classement: "",
+        checkoutDate: '',
+        hotelId: '',
+        hotelDept: '',
+        hotelRegion: '',
+        room: '',
+        phone: '',
+        city: '',
+        classement: '',
         babyBed: false,
         blanket: false,
         hairDryer: false,
@@ -321,14 +322,14 @@ const resetGuestUsers = async () => {
         toiletPaper: false,
         towel: false,
         soap: false,
-        journeyId: ""
+        journeyId: '',
       };
 
       return {
         updateOne: {
           filter: { _id: guest._id },
-          update: { $set: updatedGuest }
-        }
+          update: { $set: updatedGuest },
+        },
       };
     });
 
@@ -337,17 +338,26 @@ const resetGuestUsers = async () => {
     if (bulkOps.length > 0) {
       try {
         await GuestUser.bulkWrite(bulkOps);
-      console.log(`✅ Reset done for ${bulkOps.length} guests`);
+        console.log(`✅ Reset done for ${bulkOps.length} guests`);
       } catch (error) {
         console.error('❌ Error during bulk update:', error);
       }
     }
-    
 
-    console.log(`✅ Reset done for ${guests.length} guests at ${new Date().toISOString()}`);
+    console.log(
+      `✅ Reset done for ${guests.length} guests at ${new Date().toISOString()}`
+    );
   } catch (error) {
     console.error('❌ Error during guest reset cron:', error);
   }
 };
 
-export { mongoConnect, migrate, deepMigration, largeMigration, migrateHotelIds, deleteHotelsInBatches, resetGuestUsers };
+export {
+  mongoConnect,
+  migrate,
+  deepMigration,
+  largeMigration,
+  migrateHotelIds,
+  deleteHotelsInBatches,
+  resetGuestUsers,
+};

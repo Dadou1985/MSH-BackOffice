@@ -15,7 +15,9 @@ export const createChatRoomMessage = async (req: Request, res: Response) => {
 
     const chat = hotel.chat.id(chatId);
     if (!chat || !Array.isArray(chat.chatRoom)) {
-      return res.status(404).json({ message: 'Chat not found or chatRoom missing' });
+      return res
+        .status(404)
+        .json({ message: 'Chat not found or chatRoom missing' });
     }
 
     chat.chatRoom.push(messageData);
@@ -33,7 +35,9 @@ export const createChatRoomMessage = async (req: Request, res: Response) => {
     res.status(201).json(chat.chatRoom[chat.chatRoom.length - 1]);
   } catch (err) {
     console.error('Erreur création chatRoom:', err);
-    res.status(500).json({ message: 'Erreur lors de la création du message', error: err });
+    res
+      .status(500)
+      .json({ message: 'Erreur lors de la création du message', error: err });
   }
 };
 
@@ -50,7 +54,9 @@ export const getChatRoomMessages = async (req: Request, res: Response) => {
 
     res.status(200).json(chat.chatRoom);
   } catch (err) {
-    res.status(500).json({ message: 'Error retrieving chatRoom messages', error: err });
+    res
+      .status(500)
+      .json({ message: 'Error retrieving chatRoom messages', error: err });
   }
 };
 
@@ -66,7 +72,9 @@ export const updateChatRoomMessage = async (req: Request, res: Response) => {
     const chat = hotel.chat.id(chatId);
     if (!chat) return res.status(404).json({ message: 'Chat not found' });
 
-    const message = chat.chatRoom.find((i: any) => i._id.toString() === messageId);
+    const message = chat.chatRoom.find(
+      (i: any) => i._id.toString() === messageId
+    );
     if (!message) return res.status(404).json({ message: 'Message not found' });
 
     message.set(updateData);
@@ -91,7 +99,10 @@ export const deleteChatRoomMessage = async (req: Request, res: Response) => {
     chat.chatRoom.pull(messageId);
 
     await hotel.save();
-    io.to(`chat_${chatId}`).emit('chatRoomMessageDeleted', { chatId, messageId });
+    io.to(`chat_${chatId}`).emit('chatRoomMessageDeleted', {
+      chatId,
+      messageId,
+    });
     res.status(200).json({ message: 'Message deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting message', error: err });

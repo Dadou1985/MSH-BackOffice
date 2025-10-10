@@ -5,7 +5,10 @@ import cookieParser from 'cookie-parser';
 import { errorMiddleware } from './middleware/errorMiddelware.js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { registerAppSocketHandlers, registerChatSocketHandlers } from './utils/sockets.js';
+import {
+  registerAppSocketHandlers,
+  registerChatSocketHandlers,
+} from './utils/sockets.js';
 import { startApolloServer } from './graphql/server.js';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -23,16 +26,16 @@ import housekeepingRoutes from './routes/hotel/second-level/housekeeping.routes.
 
 const app = express();
 const allowedOrigins = [
-    'https://mysweethotelpro.web.app', // ton front MSH-Pro en production
-    'https://mysweethotel.eu', // ton front MSH en production
-    'http://localhost:3000'           // ton front en dev local
-  ];
+  'https://mysweethotelpro.web.app', // ton front MSH-Pro en production
+  'https://mysweethotel.eu', // ton front MSH en production
+  'http://localhost:3000', // ton front en dev local
+];
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-    cors: {
-        origin: allowedOrigins,
-        methods: ['GET', 'POST'],
-    },
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+  },
 });
 
 registerAppSocketHandlers(io);
@@ -44,10 +47,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(errorMiddleware);
 app.use(helmet()); // Sécurise l'application en définissant des en-têtes HTTP appropriés
-app.use(cors({
+app.use(
+  cors({
     origin: allowedOrigins,
-    credentials: true
-}));
+    credentials: true,
+  })
+);
 
 app.get('/', (_, res) => {
   res.send('🟢 MSH Back Office API is running');
@@ -66,19 +71,19 @@ await startApolloServer(app, io);
 // app.use('/api/v1/housekeeping', housekeepingRoutes);
 
 httpServer.listen(PORT, async () => {
-    // try {
-    //     await mongoConnect();
-    //     console.log('MongoDB connected', PORT);
+  // try {
+  //     await mongoConnect();
+  //     console.log('MongoDB connected', PORT);
 
-    // } catch (error) {
-    //     console.error('MongoDB connection error:', error);
-    // }
+  // } catch (error) {
+  //     console.error('MongoDB connection error:', error);
+  // }
 
-    if (process.env.NODE_ENV === 'development') {
-        console.log(`Server is running in development mode`);
-    } else {
-        console.log(`Server is running in production mode`);
-    }
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`Server is running in development mode`);
+  } else {
+    console.log(`Server is running in production mode`);
+  }
 });
 
 export { io };

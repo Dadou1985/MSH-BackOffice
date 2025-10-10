@@ -2,12 +2,12 @@ import type { Request, Response } from 'express';
 import Hotel from '../../../models/hotels/hotels.js';
 import { io } from '../../../app.js';
 
-const getChecklistArray = async(hotel: any, period: any) => {
+const getChecklistArray = async (hotel: any, period: any) => {
   if (!hotel.checklist) {
     hotel.checklist = {
       morning: [],
       evening: [],
-      night: []
+      night: [],
     };
   } else if (!hotel.checklist[period]) {
     hotel.checklist[period] = [];
@@ -66,7 +66,8 @@ export const updateChecklistItem = async (req: Request, res: Response) => {
 
     const checklistArray = await getChecklistArray(hotel, period as any);
     const item = checklistArray.find((i: any) => i._id.toString() === itemId);
-    if (!item) return res.status(404).json({ message: 'Checklist item not found' });
+    if (!item)
+      return res.status(404).json({ message: 'Checklist item not found' });
 
     item.set(updates);
     await hotel.save();
@@ -83,8 +84,16 @@ export const deleteChecklistItem = async (req: Request, res: Response) => {
   const { hotelId, period, itemId } = req.params;
 
   try {
-    if (!period || (period !== 'morning' && period !== 'evening' && period !== 'night')) {
-      return res.status(400).json({ message: 'Period query parameter is required and must be one of: morning, evening, night' });
+    if (
+      !period ||
+      (period !== 'morning' && period !== 'evening' && period !== 'night')
+    ) {
+      return res
+        .status(400)
+        .json({
+          message:
+            'Period query parameter is required and must be one of: morning, evening, night',
+        });
     }
 
     const hotel = await Hotel.findById(hotelId);
@@ -92,7 +101,8 @@ export const deleteChecklistItem = async (req: Request, res: Response) => {
 
     const checklistArray = await getChecklistArray(hotel, period as any);
     const item = checklistArray.id(itemId);
-    if (!item) return res.status(404).json({ message: 'Checklist item not found' });
+    if (!item)
+      return res.status(404).json({ message: 'Checklist item not found' });
 
     checklistArray.pull(itemId);
     await hotel.save();

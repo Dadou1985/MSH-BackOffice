@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-const businessUserSchema = new mongoose.Schema({
+const businessUserSchema = new mongoose.Schema(
+  {
     country: { type: String },
     createdAt: { type: Date },
     username: { type: String },
@@ -22,7 +23,13 @@ const businessUserSchema = new mongoose.Schema({
     hotelId: { type: String },
     hotelName: { type: String },
     room: { type: String },
-    hotelRegion: { type: String }
-}, { timestamps: true });
-const BusinessUser = mongoose.model('businessUser', businessUserSchema, 'businessUsers');
+    hotelRegion: { type: String },
+  },
+  { timestamps: true }
+);
+const BusinessUser = mongoose.model(
+  'businessUser',
+  businessUserSchema,
+  'businessUsers'
+);
 export default BusinessUser;

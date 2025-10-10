@@ -1,5 +1,11 @@
 import express from 'express';
-import { getHotels, getHotelById, createHotel, updateHotel, deleteHotel } from '../../controllers/hotel/hotel.controller.js';
+import {
+  getHotels,
+  getHotelById,
+  createHotel,
+  updateHotel,
+  deleteHotel,
+} from '../../controllers/hotel/hotel.controller.js';
 const router = express.Router();
 // GET all hotels
 router.get('/', getHotels);

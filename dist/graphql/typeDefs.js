@@ -1,30 +1,29 @@
 import { gql } from 'apollo-server-express';
-export const typeDefs = gql `
- ##########################
- # GraphQL Query Definitions
+export const typeDefs = gql`
+  ##########################
+  # GraphQL Query Definitions
 
   type Query {
     # Queries for Hotels
-      getHotels: [Hotel]
-      getHotelById(id: ID!): Hotel
+    getHotels: [Hotel]
+    getHotelById(id: ID!): Hotel
 
     # Queries for Guest Users
-      getGuestUsers: [GuestUser]
-      getGuestUserById(id: ID!): GuestUser
+    getGuestUsers: [GuestUser]
+    getGuestUserById(id: ID!): GuestUser
 
     # Queries for Business Users
-      getBusinessUsers: [BusinessUser]
-      getBusinessUserById(id: ID!): BusinessUser
+    getBusinessUsers: [BusinessUser]
+    getBusinessUserById(id: ID!): BusinessUser
 
     # Queries for Feedback
-      getFeedbacks: [Feedback]
-      getFeedbackById(id: ID!): Feedback
-      
-    # Queries for Support
-      getSupports: [Support]
-      getSupportById(id: ID!): Support
-  }
+    getFeedbacks: [Feedback]
+    getFeedbackById(id: ID!): Feedback
 
+    # Queries for Support
+    getSupports: [Support]
+    getSupportById(id: ID!): Support
+  }
 
   #########################
   # GraphQL Mutations Definitions
@@ -32,75 +31,187 @@ export const typeDefs = gql `
   type Mutation {
     translateText(text: String!, lang: String!): String!
     # Mutations for Hotels
-      createHotel(input: HotelInput!): Hotel
-      updateHotel(id: ID!, input: HotelInput!): Hotel
-      deleteHotel(id: ID!): Boolean
-      addHotelFieldItem(hotelId: ID!, field: String!, item: GenericItemInput!): Hotel
-      removeHotelFieldItem(hotelId: ID!, field: String!, itemId: ID!): Hotel
-      updateHotelFieldItem(hotelId: ID!, field: String!, itemId: ID!, updates: GenericItemInput!): GenericItem
+    createHotel(input: HotelInput!): Hotel
+    updateHotel(id: ID!, input: HotelInput!): Hotel
+    deleteHotel(id: ID!): Boolean
+    addHotelFieldItem(
+      hotelId: ID!
+      field: String!
+      item: GenericItemInput!
+    ): Hotel
+    removeHotelFieldItem(hotelId: ID!, field: String!, itemId: ID!): Hotel
+    updateHotelFieldItem(
+      hotelId: ID!
+      field: String!
+      itemId: ID!
+      updates: GenericItemInput!
+    ): GenericItem
 
     # Mutations for Checklists
-      createChecklist(input: ChecklistInput!): Checklist
-      addChecklistItem(hotelId: ID!, period: String!, item: ChecklistItemInput!): Checklist
-      updateChecklistItem(hotelId: ID!, period: String!, itemId: ID!, item: ChecklistItemInput!): Checklist
-      deleteChecklistItem(hotelId: ID!, period: String!, itemId: ID!): Checklist
+    createChecklist(input: ChecklistInput!): Checklist
+    addChecklistItem(
+      hotelId: ID!
+      period: String!
+      item: ChecklistItemInput!
+    ): Checklist
+    updateChecklistItem(
+      hotelId: ID!
+      period: String!
+      itemId: ID!
+      item: ChecklistItemInput!
+    ): Checklist
+    deleteChecklistItem(hotelId: ID!, period: String!, itemId: ID!): Checklist
 
     # Chat-specific mutations
-      addChatToHotel(hotelId: ID!, chat: ChatInput!): Hotel
-      updateChatFromHotel(hotelId: ID!, userId: String!, updates: ChatInput!): Chat
-      removeChatFromHotel(hotelId: ID!, userId: String!): Hotel
-      addMessageToChatRoom(hotelId: ID!, userId: String!, message: ChatRoomMessageInput!): Chat
-      updateChatRoomMessage(hotelId: ID!, userId: String!, messageId: ID!, updates: ChatRoomMessageInput!): ChatRoomMessage
-      deleteChatRoomMessage(hotelId: ID!, userId: String!, messageId: ID!): Chat
+    addChatToHotel(hotelId: ID!, chat: ChatInput!): Hotel
+    updateChatFromHotel(
+      hotelId: ID!
+      userId: String!
+      updates: ChatInput!
+    ): Chat
+    removeChatFromHotel(hotelId: ID!, userId: String!): Hotel
+    addMessageToChatRoom(
+      hotelId: ID!
+      userId: String!
+      message: ChatRoomMessageInput!
+    ): Chat
+    updateChatRoomMessage(
+      hotelId: ID!
+      userId: String!
+      messageId: ID!
+      updates: ChatRoomMessageInput!
+    ): ChatRoomMessage
+    deleteChatRoomMessage(hotelId: ID!, userId: String!, messageId: ID!): Chat
 
     # Housekeeping-specific mutations
-      addHousekeepingItem(hotelId: ID!, category: String!, item: HousekeepingItemEntryInput!): [HousekeepingItemEntry]
-      updateHousekeepingItem(hotelId: ID!, category: String!, itemId: ID!, updates: HousekeepingItemEntryInput!): HousekeepingItemEntry
-      removeHousekeepingItem(hotelId: ID!, category: String!, itemId: ID!): [HousekeepingItemEntry]
+    addHousekeepingItem(
+      hotelId: ID!
+      category: String!
+      item: HousekeepingItemEntryInput!
+    ): [HousekeepingItemEntry]
+    updateHousekeepingItem(
+      hotelId: ID!
+      category: String!
+      itemId: ID!
+      updates: HousekeepingItemEntryInput!
+    ): HousekeepingItemEntry
+    removeHousekeepingItem(
+      hotelId: ID!
+      category: String!
+      itemId: ID!
+    ): [HousekeepingItemEntry]
 
     # Guest User Mutations
-      createGuestUser(input: GuestUserInput!): GuestUser
-      updateGuestUser(id: ID!, input: GuestUserInput!): GuestUser
-      deleteGuestUser(id: ID!): Boolean
+    createGuestUser(input: GuestUserInput!): GuestUser
+    updateGuestUser(id: ID!, input: GuestUserInput!): GuestUser
+    deleteGuestUser(id: ID!): Boolean
 
     # Business User Mutations
-      createBusinessUser(input: BusinessUserInput!): BusinessUser
-      updateBusinessUser(id: ID!, input: BusinessUserInput!): BusinessUser
-      deleteBusinessUser(id: ID!): Boolean
+    createBusinessUser(input: BusinessUserInput!): BusinessUser
+    updateBusinessUser(id: ID!, input: BusinessUserInput!): BusinessUser
+    deleteBusinessUser(id: ID!): Boolean
 
     # Feedback Mutations
-      createFeedback(input: FeedbackInput!): Feedback
-      updateFeedback(id: ID!, input: FeedbackInput!): Feedback
-      deleteFeedback(id: ID!): Boolean
-      addFeedbackCategoryItem(feedbackId: ID!, field: String!, category: CategoryInput!): Feedback
-      updateFeedbackCategoryItem(feedbackId: ID!, field: String!, itemId: ID!, updates: CategoryInput!): Category
-      removeFeedbackCategoryItem(feedbackId: ID!, field: String!, itemId: ID!): Feedback
+    createFeedback(input: FeedbackInput!): Feedback
+    updateFeedback(id: ID!, input: FeedbackInput!): Feedback
+    deleteFeedback(id: ID!): Boolean
+    addFeedbackCategoryItem(
+      feedbackId: ID!
+      field: String!
+      category: CategoryInput!
+    ): Feedback
+    updateFeedbackCategoryItem(
+      feedbackId: ID!
+      field: String!
+      itemId: ID!
+      updates: CategoryInput!
+    ): Category
+    removeFeedbackCategoryItem(
+      feedbackId: ID!
+      field: String!
+      itemId: ID!
+    ): Feedback
 
     # Support Mutations
-      createSupport(input: SupportInput!): Support
-      updateSupport(id: ID!, updates: SupportInput!): Support
-      deleteSupport(id: ID!): Boolean
-      addMessageToSupportChatRoom(supportId: ID!, message: SupportRoomMessageInput!): Support
-      updateSupportChatRoomMessage(supportId: ID!, messageId: ID!, updates: SupportRoomMessageInput!): SupportRoomMessage
-      deleteSupportChatRoomMessage(supportId: ID!, messageId: ID!): Support
-    
+    createSupport(input: SupportInput!): Support
+    updateSupport(id: ID!, updates: SupportInput!): Support
+    deleteSupport(id: ID!): Boolean
+    addMessageToSupportChatRoom(
+      supportId: ID!
+      message: SupportRoomMessageInput!
+    ): Support
+    updateSupportChatRoomMessage(
+      supportId: ID!
+      messageId: ID!
+      updates: SupportRoomMessageInput!
+    ): SupportRoomMessage
+    deleteSupportChatRoomMessage(supportId: ID!, messageId: ID!): Support
+
     # Log User Mutations
-      loginUser(email: String!, password: String!, userCategory: String!): AuthPayload
-      logoutUser: Boolean
-    
+    loginUser(
+      email: String!
+      password: String!
+      userCategory: String!
+    ): AuthPayload
+    logoutUser: Boolean
+
     # Email Mutations
-      sendCheckInEmail(senderEmail: String!, email: String!, appLink: String!, hotelName: String!): Boolean
-      sendCheckOutEmail(senderEmail: String!, email: String!, logo: String!, hotelName: String!): Boolean
-      sendNewCoworkerAccountEmail(senderEmail: String!, email: String!, adminName: String!, mshLogo: String!, coworkerName: String!, coworkerMail: String!): Boolean
-      sendNewSubscriberEmail: Boolean
-      sendWelcomeEmail(senderEmail: String!, email: String!, prospectName: String!, prospectMail: String!, mshLogo: String!, mshLogoPro: String!): Boolean
-      sendWelcomeFinalEmail(senderEmail: String!, email: String!, mshBanner: String!, firstName: String!, mshLogo: String!, password: String!, fakeMail: String!, appLink: String!): Boolean
-      sendWelcomeEmailLogo(senderEmail: String!, email: String!, firstName: String!, logo: String, mshLogo: String!, password: String!, fakeMail: String!, appLink: String!): Boolean
+    sendCheckInEmail(
+      senderEmail: String!
+      email: String!
+      appLink: String!
+      hotelName: String!
+    ): Boolean
+    sendCheckOutEmail(
+      senderEmail: String!
+      email: String!
+      logo: String!
+      hotelName: String!
+    ): Boolean
+    sendNewCoworkerAccountEmail(
+      senderEmail: String!
+      email: String!
+      adminName: String!
+      mshLogo: String!
+      coworkerName: String!
+      coworkerMail: String!
+    ): Boolean
+    sendNewSubscriberEmail: Boolean
+    sendWelcomeEmail(
+      senderEmail: String!
+      email: String!
+      prospectName: String!
+      prospectMail: String!
+      mshLogo: String!
+      mshLogoPro: String!
+    ): Boolean
+    sendWelcomeFinalEmail(
+      senderEmail: String!
+      email: String!
+      mshBanner: String!
+      firstName: String!
+      mshLogo: String!
+      password: String!
+      fakeMail: String!
+      appLink: String!
+    ): Boolean
+    sendWelcomeEmailLogo(
+      senderEmail: String!
+      email: String!
+      firstName: String!
+      logo: String
+      mshLogo: String!
+      password: String!
+      fakeMail: String!
+      appLink: String!
+    ): Boolean
 
     # Push Notification Mutations
-      subscribeToPush(userId: String!, subscription: TokenInput!): Boolean
-      sendPushNotification(subscription: TokenInput!, data: NotificationPayloadInput!): Boolean
-
+    subscribeToPush(userId: String!, subscription: TokenInput!): Boolean
+    sendPushNotification(
+      subscription: TokenInput!
+      data: NotificationPayloadInput!
+    ): Boolean
   }
 
   #########################
@@ -169,7 +280,6 @@ export const typeDefs = gql `
     lostAndFound: [LostAndFoundItemInput]
   }
 
-
   # Checklist Type Definitions
 
   type ChecklistItem {
@@ -193,7 +303,6 @@ export const typeDefs = gql `
     evening: [ChecklistItemInput]
     night: [ChecklistItemInput]
   }
-
 
   #########################
   # Housekeeping Type Definitions
@@ -231,7 +340,6 @@ export const typeDefs = gql `
     hairDryer: [HousekeepingItemEntryInput]
     babyBed: [HousekeepingItemEntryInput]
   }
-
 
   #########################
   # Additional Type Definitions
@@ -406,7 +514,7 @@ export const typeDefs = gql `
     placeClone: String
     status: Boolean
     category: String
-  } 
+  }
 
   input LostAndFoundItemInput {
     author: String
@@ -418,7 +526,7 @@ export const typeDefs = gql `
     placeClone: String
     status: Boolean
     category: String
-  } 
+  }
 
   #########################
   # Chat Type Definitions
@@ -538,25 +646,25 @@ export const typeDefs = gql `
   input GuestUserInput {
     notificationStatus: String
     gender: String
-    photo: String     
+    photo: String
     guestCategory: String
     language: String
     password: String
-    lastTimeConnected: Float 
+    lastTimeConnected: Float
     localLanguage: String
     email: String
     username: String
     website: String
     phone: String
-    babyBed: Boolean 
-    towel: Boolean 
-    pillow: Boolean 
-    iron: Boolean 
-    toiletPaper: Boolean 
-    blanket: Boolean 
-    soap: Boolean 
-    hairDryer: Boolean 
-    newConnection: Boolean 
+    babyBed: Boolean
+    towel: Boolean
+    pillow: Boolean
+    iron: Boolean
+    toiletPaper: Boolean
+    blanket: Boolean
+    soap: Boolean
+    hairDryer: Boolean
+    newConnection: Boolean
     checkoutDate: String
     room: String
     hotelRegion: String
@@ -784,7 +892,6 @@ export const typeDefs = gql `
     hotelId: String
     guestStatus: Boolean
   }
-
 
   #########################
   # Generic Item Type/Inputs

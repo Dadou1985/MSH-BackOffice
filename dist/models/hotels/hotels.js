@@ -1,9 +1,19 @@
 import mongoose from 'mongoose';
-import { cabSchema, clockSchema, maintenanceSchema, roomChangeSchema, safeSchema, noteSchema, stickerSchema, lostAndFoundSchema } from './first-level/firstLevel.js';
+import {
+  cabSchema,
+  clockSchema,
+  maintenanceSchema,
+  roomChangeSchema,
+  safeSchema,
+  noteSchema,
+  stickerSchema,
+  lostAndFoundSchema,
+} from './first-level/firstLevel.js';
 import { chatSchema } from './first-level/chat.js';
 import { checklistSchema } from './first-level/checklist.js';
 import { housekeepingSchema } from './first-level/housekeeping.js';
-const hotelSchema = new mongoose.Schema({
+const hotelSchema = new mongoose.Schema(
+  {
     country: { type: String, required: true },
     code_postal: { type: String, required: true },
     partnership: { type: Boolean, required: true },
@@ -31,8 +41,10 @@ const hotelSchema = new mongoose.Schema({
     lostAndFound: [lostAndFoundSchema],
     chat: [chatSchema],
     housekeeping: housekeepingSchema,
-    checklist: checklistSchema
-}, { timestamps: true });
+    checklist: checklistSchema,
+  },
+  { timestamps: true }
+);
 // hotelSchema.set('toJSON', {
 //   virtuals: true,         // Inclut les champs virtuels (comme id si tu en as)
 //   versionKey: false,      // Supprime __v du JSON renvoyé

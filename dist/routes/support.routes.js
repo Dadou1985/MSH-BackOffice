@@ -1,5 +1,13 @@
 import express from 'express';
-import { createSupportDocument, addSupportMessage, getSupportMessages, updateSupportMessage, deleteSupportMessage, updateSupportDocument, getAllSupportDocuments } from '../controllers/support.controller.js';
+import {
+  createSupportDocument,
+  addSupportMessage,
+  getSupportMessages,
+  updateSupportMessage,
+  deleteSupportMessage,
+  updateSupportDocument,
+  getAllSupportDocuments,
+} from '../controllers/support.controller.js';
 const router = express.Router();
 // Créer un document de support
 router.post('/', createSupportDocument);

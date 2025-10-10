@@ -7,7 +7,11 @@ export interface AuthRequest extends Request {
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret';
 
-export function authenticateJWT(req: AuthRequest, res: Response, next: NextFunction) {
+export function authenticateJWT(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) {
   const authHeader = req.headers.authorization;
 
   if (authHeader?.startsWith('Bearer ')) {

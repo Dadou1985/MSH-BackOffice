@@ -1,5 +1,9 @@
 import express from 'express';
-import { createFeedbackCollection, createFeedback, getAllFeedbacks } from '../controllers/feedback.controller.js';
+import {
+  createFeedbackCollection,
+  createFeedback,
+  getAllFeedbacks,
+} from '../controllers/feedback.controller.js';
 const router = express.Router();
 // Créer une collection feedback
 router.post('/', createFeedbackCollection);

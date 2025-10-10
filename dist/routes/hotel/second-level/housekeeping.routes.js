@@ -1,5 +1,10 @@
 import express from 'express';
-import { addHousekeepingItem, getHousekeepingItems, updateHousekeepingItem, deleteHousekeepingItem, } from '../../../controllers/hotel/second-level/housekeeping.controller.js';
+import {
+  addHousekeepingItem,
+  getHousekeepingItems,
+  updateHousekeepingItem,
+  deleteHousekeepingItem,
+} from '../../../controllers/hotel/second-level/housekeeping.controller.js';
 const router = express.Router();
 // Add a new housekeeping item
 router.post('/:hotelId/:category', addHousekeepingItem);
