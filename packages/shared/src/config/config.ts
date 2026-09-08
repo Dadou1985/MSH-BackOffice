@@ -1,6 +1,6 @@
 import { configSchema, Env } from '../schemas/config/config.schemas';
 
-function parseEnv(): Env {
+export function parseEnv(): Env {
     const result = configSchema.safeParse(process.env)
   
     if (!result.success) {
